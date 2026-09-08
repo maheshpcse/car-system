@@ -1,0 +1,23 @@
+.rail {
+  position: fixed;
+  top: calc(var(--navbar-height) + var(--space-6));
+  bottom: var(--space-6);
+  right: 10px;
+  width: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+  z-index: var(--z-sticky);
+  pointer-events: none;
+
+  @include down($bp-md) {
+    display: none;
+  }
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: top;
+  border-radius: inherit;
+  background: var(--color-primary);
+}

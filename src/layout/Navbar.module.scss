@@ -1,0 +1,205 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 520px) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+  height: var(--navbar-height);
+  padding-inline: var(--gutter);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  z-index: var(--z-navbar);
+  transition:
+    background-color var(--duration-normal) var(--ease-standard),
+    border-color var(--duration-normal) var(--ease-standard),
+    backdrop-filter var(--duration-normal) var(--ease-standard);
+
+  @include down($bp-lg) {
+    grid-template-columns: auto 1fr auto;
+  }
+}
+
+.scrolled {
+  background: var(--color-scrim);
+  border-bottom-color: var(--color-border);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.left,
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.right {
+  justify-content: flex-end;
+}
+
+.center {
+  min-width: 0;
+
+  @include down($bp-md) {
+    display: none;
+  }
+}
+
+.menuButton {
+  display: none;
+  @include down($bp-lg) {
+    display: inline-flex;
+  }
+}
+
+.mobileBrand {
+  display: none;
+  @include down($bp-lg) {
+    display: inline-flex;
+  }
+}
+
+.context {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+
+  @include down($bp-lg) {
+    display: none;
+  }
+}
+
+.contextLabel {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.showroom {
+  @include down($bp-xl) {
+    display: none;
+  }
+}
+
+.searchButton {
+  display: none;
+  @include down($bp-md) {
+    display: inline-flex;
+  }
+}
+
+.themeButton svg {
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+.themeButton:hover svg {
+  transform: rotate(-16deg);
+}
+
+.bell {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+}
+
+.notifications {
+  display: grid;
+  gap: 2px;
+}
+
+.notification {
+  display: flex;
+  gap: var(--space-3);
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius-sm);
+  @include hover {
+    background: var(--color-hover);
+  }
+}
+
+.notificationDot {
+  flex-shrink: 0;
+  margin-top: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+.notificationTitle {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.notificationDetail {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.profile {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 0.5rem 0 0.25rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+
+  @include hover {
+    background: var(--color-hover);
+    border-color: var(--color-border);
+  }
+}
+
+.profileName {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  @include down($bp-md) {
+    display: none;
+  }
+}
+
+.profileChevron {
+  color: var(--color-text-tertiary);
+  @include down($bp-md) {
+    display: none;
+  }
+}
+
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-3);
+}
+
+.profileCardName {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.profileCardMeta {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.login {
+  margin-left: var(--space-1);
+}

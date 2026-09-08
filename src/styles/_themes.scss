@@ -1,0 +1,131 @@
+/* ---------------------------------------------------------------------------
+ * Semantic color tokens
+ *
+ * Brand palette:  #1400C3  #F8F2D8  #FF4E02  #BA0001  #E8ECD1
+ * Tech palette:   #0984E3  #1E272E  #00CEC9  #F5F6FA
+ *
+ * Bright brand colors are reserved for CTAs, selected controls, active
+ * navigation, highlights, badges and status feedback.
+ * ------------------------------------------------------------------------ */
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  --color-primary: #1400c3;
+  --color-primary-strong: #0f0094;
+  --color-primary-soft: rgba(20, 0, 195, 0.08);
+  --color-primary-contrast: #f8f2d8;
+
+  --color-secondary: #0984e3;
+  --color-secondary-soft: rgba(9, 132, 227, 0.1);
+
+  --color-accent: #ff4e02;
+  --color-accent-strong: #e14300;
+  --color-accent-soft: rgba(255, 78, 2, 0.1);
+  --color-accent-contrast: #ffffff;
+
+  --color-teal: #00cec9;
+  --color-teal-soft: rgba(0, 206, 201, 0.14);
+
+  --color-danger: #ba0001;
+  --color-danger-soft: rgba(186, 0, 1, 0.08);
+  --color-success: #1f8a5b;
+  --color-success-soft: rgba(31, 138, 91, 0.1);
+  --color-warning: #c47a00;
+  --color-warning-soft: rgba(196, 122, 0, 0.1);
+
+  --color-background: #f8f2d8;
+  --color-background-elevated: #fbf7e6;
+  --color-surface: #fffdf7;
+  --color-surface-2: #f3efe0;
+  --color-surface-3: #e8ecd1;
+  --color-surface-inverse: #1e272e;
+
+  --color-text-primary: #1e272e;
+  --color-text-secondary: #4d5860;
+  --color-text-tertiary: #7a848c;
+  --color-text-inverse: #f5f6fa;
+  --color-muted: #9aa3aa;
+
+  --color-border: rgba(30, 39, 46, 0.12);
+  --color-border-strong: rgba(30, 39, 46, 0.24);
+  --color-hover: rgba(30, 39, 46, 0.05);
+  --color-active: rgba(30, 39, 46, 0.09);
+  --color-focus: #0984e3;
+  --color-overlay: rgba(30, 39, 46, 0.45);
+  --color-scrim: rgba(248, 242, 216, 0.72);
+
+  --shadow-color: 30 39 46;
+  --shadow-xs: 0 1px 2px rgba(var(--shadow-color) / 0.06);
+  --shadow-sm: 0 2px 6px rgba(var(--shadow-color) / 0.07), 0 1px 2px rgba(var(--shadow-color) / 0.05);
+  --shadow-md: 0 8px 22px -6px rgba(var(--shadow-color) / 0.14), 0 2px 6px rgba(var(--shadow-color) / 0.05);
+  --shadow-lg: 0 22px 44px -14px rgba(var(--shadow-color) / 0.2), 0 6px 14px -6px rgba(var(--shadow-color) / 0.08);
+  --shadow-floating: 0 32px 70px -20px rgba(var(--shadow-color) / 0.28), 0 12px 24px -12px rgba(var(--shadow-color) / 0.1);
+
+  /* 3D scene */
+  --scene-bg: #efe9d2;
+  --scene-floor: #e2dcc6;
+  --scene-fog: #f8f2d8;
+  --scene-light-intensity: 1;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-primary: #7d6bff;
+  --color-primary-strong: #9a8cff;
+  --color-primary-soft: rgba(125, 107, 255, 0.14);
+  --color-primary-contrast: #0f0a3a;
+
+  --color-secondary: #3ea0f0;
+  --color-secondary-soft: rgba(62, 160, 240, 0.14);
+
+  --color-accent: #ff6a2c;
+  --color-accent-strong: #ff8352;
+  --color-accent-soft: rgba(255, 106, 44, 0.16);
+  --color-accent-contrast: #1a0c05;
+
+  --color-teal: #00cec9;
+  --color-teal-soft: rgba(0, 206, 201, 0.16);
+
+  --color-danger: #ff5c5c;
+  --color-danger-soft: rgba(255, 92, 92, 0.14);
+  --color-success: #3fc98a;
+  --color-success-soft: rgba(63, 201, 138, 0.14);
+  --color-warning: #f0b23a;
+  --color-warning-soft: rgba(240, 178, 58, 0.14);
+
+  --color-background: #12181d;
+  --color-background-elevated: #171e24;
+  --color-surface: #1e272e;
+  --color-surface-2: #253039;
+  --color-surface-3: #2c3944;
+  --color-surface-inverse: #f5f6fa;
+
+  --color-text-primary: #f5f6fa;
+  --color-text-secondary: #b3bcc4;
+  --color-text-tertiary: #7f8a93;
+  --color-text-inverse: #1e272e;
+  --color-muted: #5f6b74;
+
+  --color-border: rgba(245, 246, 250, 0.09);
+  --color-border-strong: rgba(245, 246, 250, 0.18);
+  --color-hover: rgba(245, 246, 250, 0.05);
+  --color-active: rgba(245, 246, 250, 0.09);
+  --color-focus: #00cec9;
+  --color-overlay: rgba(5, 8, 11, 0.6);
+  --color-scrim: rgba(18, 24, 29, 0.72);
+
+  --shadow-color: 0 0 0;
+  --shadow-xs: 0 1px 2px rgba(var(--shadow-color) / 0.4);
+  --shadow-sm: 0 2px 6px rgba(var(--shadow-color) / 0.45), 0 0 0 1px rgba(255 255 255 / 0.03);
+  --shadow-md: 0 10px 26px -8px rgba(var(--shadow-color) / 0.6), 0 0 0 1px rgba(255 255 255 / 0.04);
+  --shadow-lg: 0 24px 50px -16px rgba(var(--shadow-color) / 0.7), 0 0 0 1px rgba(255 255 255 / 0.05);
+  --shadow-floating: 0 36px 80px -20px rgba(var(--shadow-color) / 0.8), 0 0 0 1px rgba(255 255 255 / 0.06);
+
+  --scene-bg: #141b21;
+  --scene-floor: #1a2229;
+  --scene-fog: #12181d;
+  --scene-light-intensity: 0.75;
+}
