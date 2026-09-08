@@ -1,4 +1,5 @@
 import { Html, MeshReflectorMaterial } from '@react-three/drei'
+import { enableContextRecovery } from '@/three/scene/contextRecovery'
 import { Canvas, useThree } from '@react-three/fiber'
 import { Suspense, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
@@ -110,7 +111,7 @@ function Floor({ reflective }: { reflective: boolean }) {
       {reflective ? (
         <MeshReflectorMaterial
           blur={[400, 120]}
-          resolution={768}
+          resolution={512}
           mixBlur={1}
           mixStrength={dark ? 18 : 6}
           roughness={0.85}
@@ -138,11 +139,14 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
 
   return (
     <Canvas
-      shadows
+      shadows="percentage"
       dpr={isMobile || reducedEffects ? [1, 1.25] : [1, 1.6]}
       camera={{ position: pose.position, fov: 34, near: 0.05, far: 120 }}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
-      onCreated={onReady}
+      onCreated={(state) => {
+        enableContextRecovery(state)
+        onReady()
+      }}
       className={styles.canvas}
     >
       <SceneBackground dark={theme === 'dark'} />

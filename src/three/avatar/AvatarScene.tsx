@@ -1,4 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber'
+import { enableContextRecovery } from '@/three/scene/contextRecovery'
 import { Suspense, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { usePrefersReducedMotion } from '@/core/hooks/useMediaQuery'
@@ -255,7 +256,8 @@ export default function AvatarScene(props: AvatarSceneProps) {
       <Canvas
         className={styles.canvas}
         dpr={[1, 1.5]}
-        shadows
+        shadows="percentage"
+        onCreated={enableContextRecovery}
         camera={{ position: [0, 0.05, 3.3], fov: 30, near: 0.1, far: 30 }}
         gl={{ antialias: true, alpha: true }}
       >

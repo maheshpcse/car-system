@@ -138,6 +138,14 @@
   bottom: calc(var(--space-5) + 52px);
 }
 
+/* The hero caption sits bottom-left, so keep the hint clear of it. */
+.hero .hint {
+  left: auto;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  transform: none;
+}
+
 /* Controls -------------------------------------------------------------- */
 .controls {
   position: absolute;

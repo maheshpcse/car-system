@@ -1,4 +1,5 @@
 import { Html } from '@react-three/drei'
+import { enableContextRecovery } from '@/three/scene/contextRecovery'
 import { Canvas } from '@react-three/fiber'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -135,11 +136,14 @@ export function VehicleViewer({
         fallback={<ViewerFallback vehicle={vehicle} color={paint.hex} message="3D model unavailable — showing a static preview." />}
       >
         <Canvas
-          shadows
+          shadows="percentage"
           dpr={dpr}
           camera={{ position: pose.position, fov: 32, near: 0.05, far: 80 }}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-          onCreated={() => setRendererReady(true)}
+          onCreated={(state) => {
+            enableContextRecovery(state)
+            setRendererReady(true)
+          }}
           onPointerDown={() => setInteracted(true)}
           className={styles.canvas}
         >

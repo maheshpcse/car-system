@@ -43,16 +43,25 @@ export function CameraRig({
 }: CameraRigProps) {
   const controls = useRef<OrbitControlsImpl>(null)
   const { camera, pointer } = useThree()
+  const aspect = useThree((s) => s.viewport.aspect)
   const goalPos = useRef(new THREE.Vector3(...pose.position))
   const goalTarget = useRef(new THREE.Vector3(...pose.target))
   const animating = useRef(true)
   const dragging = useRef(false)
 
+  // Portrait viewports frame less horizontal width for the same fov, so exterior
+  // poses back off proportionally. Interior poses (tiny maxDistance) are left alone.
+  const isInterior = (pose.maxDistance ?? Infinity) < 1
+  const distanceFactor = !isInterior && aspect < 1.6 ? Math.min(1.9, Math.pow(1.6 / aspect, 0.7)) : 1
+
   useEffect(() => {
-    goalPos.current.set(...pose.position)
-    goalTarget.current.set(...pose.target)
+    const target = new THREE.Vector3(...pose.target)
+    const position = new THREE.Vector3(...pose.position)
+    position.sub(target).multiplyScalar(distanceFactor).add(target)
+    goalPos.current.copy(position)
+    goalTarget.current.copy(target)
     animating.current = true
-  }, [pose, poseKey])
+  }, [pose, poseKey, distanceFactor])
 
   useFrame((_, delta) => {
     const c = controls.current
@@ -84,7 +93,7 @@ export function CameraRig({
       autoRotate={autoRotate}
       autoRotateSpeed={0.4}
       minDistance={pose.minDistance ?? 3.2}
-      maxDistance={pose.maxDistance ?? 12}
+      maxDistance={(pose.maxDistance ?? 12) * distanceFactor}
       minPolarAngle={minPolarAngle}
       maxPolarAngle={maxPolarAngle}
       rotateSpeed={0.6}

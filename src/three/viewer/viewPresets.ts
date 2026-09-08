@@ -59,6 +59,6 @@ export function poseFor(id: ViewPresetId, silhouette: Vehicle['silhouette']): Ca
       }
     case 'hero':
     default:
-      return { position: [d * 0.8, h * 1.05, d * 0.62], target: centre }
+      return { position: [d * 0.86, h * 1.1, d * 0.68], target: centre }
   }
 }
