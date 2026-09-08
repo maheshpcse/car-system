@@ -135,10 +135,11 @@ export interface SavedBuild {
   vehicleId: string
   name: string
   createdAt: string
+  variantId: string
   colorId: string
   wheelId: string
   interiorId: string
   trimId: string
   accessoryIds: string[]
-  total: number
+  totalPrice: number
 }

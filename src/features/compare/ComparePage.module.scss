@@ -1,0 +1,174 @@
+.page {
+  display: grid;
+  gap: var(--space-6);
+  padding-block: var(--space-8) var(--space-11);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+
+  > div:first-child {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 600px;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.emptyPicker {
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+  min-width: 260px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-sm);
+
+  th,
+  td {
+    padding: 0.85rem var(--space-5);
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  thead th {
+    vertical-align: top;
+    border-bottom-color: var(--color-border-strong);
+    padding-top: var(--space-5);
+  }
+
+  tbody th {
+    font-weight: var(--weight-medium);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+
+  td {
+    font-family: var(--font-display);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+    position: relative;
+  }
+}
+
+.labelCol {
+  width: 200px;
+}
+
+.vehicleCol {
+  min-width: 200px;
+}
+
+.vehicleHead {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+}
+
+.remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
+.vehicleVisual {
+  width: 100%;
+  max-width: 180px;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  margin-bottom: var(--space-2);
+}
+
+.vehicleBrand {
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.vehicleModel {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+
+.vehicleVariant {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-regular);
+  color: var(--color-text-secondary);
+}
+
+.addHead {
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-3);
+  min-height: 200px;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-border-strong);
+  font-weight: var(--weight-regular);
+}
+
+.addIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.addLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.groupRow th {
+  padding-top: var(--space-5);
+  padding-bottom: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  background: var(--color-surface-2);
+}
+
+.best {
+  color: var(--color-success);
+}
+
+.bestIcon {
+  margin-left: 6px;
+  vertical-align: -2px;
+}
+
+.placeholderCell {
+  background: repeating-linear-gradient(-45deg, transparent 0 8px, var(--color-surface-2) 8px 9px);
+}
