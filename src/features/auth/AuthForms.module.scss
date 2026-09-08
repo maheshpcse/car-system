@@ -1,0 +1,256 @@
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+
+  @include down($bp-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inlineLink {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.formError {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.hint {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-text-tertiary);
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    padding: 0 0.3em;
+    border-radius: 3px;
+    background: var(--color-surface-2);
+    color: var(--color-text-secondary);
+  }
+}
+
+/* Password strength ------------------------------------------------------ */
+.strength {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.strengthBars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+
+  span {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--color-border);
+    transition: background-color var(--duration-normal) var(--ease-standard);
+  }
+}
+
+.strengthLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.s1 span:nth-child(-n + 1) {
+  background: var(--color-danger);
+}
+.s2 span:nth-child(-n + 2) {
+  background: var(--color-warning);
+}
+.s3 span:nth-child(-n + 3) {
+  background: var(--color-secondary);
+}
+.s4 span:nth-child(-n + 4) {
+  background: var(--color-success);
+}
+
+/* Steps (forgot password) ------------------------------------------------ */
+.steps {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+
+  &::before {
+    content: '';
+    width: 22px;
+    height: 2px;
+    border-radius: var(--radius-pill);
+    background: var(--color-border-strong);
+    transition: background-color var(--duration-normal) var(--ease-standard);
+  }
+}
+
+.stepActive {
+  color: var(--color-text-primary);
+  &::before {
+    background: var(--color-primary);
+  }
+}
+
+.stepDone::before {
+  background: var(--color-success);
+}
+
+.success {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+}
+
+.successIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.codeHint {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+
+  code {
+    font-family: var(--font-mono);
+    padding: 0 0.3em;
+    border-radius: 3px;
+    background: var(--color-surface-2);
+  }
+}
+
+/* Demo personas ---------------------------------------------------------- */
+.personas {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.persona {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  text-align: left;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-normal) var(--ease-standard),
+    transform var(--duration-normal) var(--ease-standard);
+
+  @include hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+}
+
+.personaActive {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.personaText {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+
+  strong {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+  }
+  span {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+}
+
+.personaRole {
+  align-self: flex-start;
+}
+
+.personaArrow {
+  color: var(--color-text-tertiary);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.persona:hover .personaArrow {
+  transform: translateX(3px);
+  color: var(--color-primary);
+}
+
+.credentials {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  font-size: var(--text-sm);
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  code {
+    font-family: var(--font-mono);
+  }
+
+  span:first-child {
+    color: var(--color-text-tertiary);
+  }
+}

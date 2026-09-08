@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E272E"/>
+      <stop offset="1" stop-color="#0d1217"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="800" cy="450" rx="340" ry="26" fill="#000" opacity=".45"/>
+  <path d="M520 420c0-22 14-42 40-56l52-62c12-14 30-22 50-22h180c26 0 50 12 64 32l40 56c26 6 42 28 42 56v24c0 12-10 22-22 22h-30a46 46 0 0 1-92 0H640a46 46 0 0 1-92 0h-6c-12 0-22-10-22-22v-28z" fill="#F8F2D8"/>
+  <path d="M640 308h150c14 0 26 6 34 18l28 40H610l30-58z" fill="#1E272E" opacity=".9"/>
+  <text x="80" y="230" font-family="Sora, Arial, sans-serif" font-size="22" letter-spacing="6" fill="#00CEC9">DIGITAL AUTOMOTIVE STUDIO</text>
+  <text x="80" y="310" font-family="Sora, Arial, sans-serif" font-size="72" font-weight="600" fill="#F5F6FA">Aurora Motors</text>
+  <text x="80" y="370" font-family="Instrument Sans, Arial, sans-serif" font-size="26" fill="#B8C0C8">Discover, inspect, configure and experience cars in 3D.</text>
+</svg>

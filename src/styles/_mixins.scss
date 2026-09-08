@@ -1,0 +1,39 @@
+/* Breakpoints (min-width, mobile-first) --------------------------------- */
+$bp-sm: 640px;
+$bp-md: 820px;
+$bp-lg: 1080px;
+$bp-xl: 1400px;
+
+@mixin up($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+
+@mixin down($bp) {
+  @media (max-width: ($bp - 0.02px)) {
+    @content;
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

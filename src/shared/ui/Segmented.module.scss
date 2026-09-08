@@ -1,0 +1,63 @@
+.root {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+}
+
+.option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: calc(var(--radius-sm) - 2px);
+  color: var(--color-text-secondary);
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  transition: color var(--duration-fast) var(--ease-standard);
+
+  @include hover {
+    color: var(--color-text-primary);
+  }
+}
+
+.md .option {
+  height: 34px;
+  padding-inline: 0.85rem;
+  font-size: var(--text-sm);
+  &.iconOnly {
+    width: 34px;
+    padding: 0;
+  }
+}
+
+.sm .option {
+  height: 28px;
+  padding-inline: 0.65rem;
+  font-size: var(--text-xs);
+  &.iconOnly {
+    width: 28px;
+    padding: 0;
+  }
+}
+
+.selected {
+  color: var(--color-text-primary);
+}
+
+.indicator {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.content {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}

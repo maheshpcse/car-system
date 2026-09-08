@@ -1,0 +1,42 @@
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-primary);
+
+  &:hover {
+    opacity: 1;
+    .mark {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.mark {
+  display: inline-flex;
+  color: var(--color-primary);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3em;
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.name {
+  font-weight: var(--weight-semibold);
+}
+
+.suffix {
+  font-weight: var(--weight-light);
+  color: var(--color-text-secondary);
+}
+
+.compact .text {
+  display: none;
+}
