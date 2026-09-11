@@ -221,7 +221,7 @@ export default function CarDetailsPage() {
             <ul className={styles.gallery}>
               {vehicle.colors.map((c, i) => (
                 <li key={c.id} className={cx(styles.galleryItem, i === 0 && styles.galleryLead)}>
-                  <button type="button" className={styles.galleryButton} onClick={() => { setColorIndex(i); document.getElementById('viewer')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }} data-cursor="view" data-cursor-label="360°">
+                  <button type="button" className={styles.galleryButton} onClick={() => { setColorIndex(i); document.getElementById('viewer')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }}>
                     <VehicleSilhouette profile={vehicle.silhouette} color={c.hex} />
                     <span className={styles.galleryCaption}>{c.name}</span>
                   </button>

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
+import { dismissBootLoader } from '@/shared/feedback/bootLoader'
 import { pageVariants } from './motion'
 
 interface PageTransitionProps {
@@ -10,6 +11,9 @@ interface PageTransitionProps {
 /** Wraps a routed page with the shared entry/exit motion. */
 export function PageTransition({ children, className }: PageTransitionProps) {
   const reduced = useReducedMotion()
+  useEffect(() => {
+    dismissBootLoader()
+  }, [])
   return (
     <motion.div
       className={className}

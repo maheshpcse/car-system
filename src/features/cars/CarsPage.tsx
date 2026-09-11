@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { PageTransition } from '@/animations/PageTransition'
 import { useDocumentTitle } from '@/core/hooks/useDocumentTitle'
@@ -11,6 +11,7 @@ import { Icon } from '@/shared/icons/Icon'
 import { Button, ButtonLink, IconButton } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { Select } from '@/shared/ui/Field'
+import { Pagination } from '@/shared/ui/Pagination'
 import { MenuItem, Popover } from '@/shared/ui/Popover'
 import { Segmented } from '@/shared/ui/Segmented'
 import { VehicleCard, VehicleCardSkeleton } from '@/shared/vehicle/VehicleCard'
@@ -20,6 +21,7 @@ import styles from './CarsPage.module.scss'
 
 const CATEGORY_OPTIONS = CATEGORIES.map((c) => ({ value: c.id, label: c.label }))
 const FILTER_STORAGE_KEY = 'carFilters'
+const PAGE_SIZE = 6
 
 export default function CarsPage() {
   useDocumentTitle('Explore Cars', 'Search, filter and sort the complete Aurora Motors line-up.')
@@ -46,17 +48,33 @@ export default function CarsPage() {
   const { results, loading, total } = useVehicleQuery(filters, sort)
   const activeCount = countActiveFilters(filters)
 
+  const [page, setPage] = useState(() => Math.max(1, Number(params.get('page')) || 1))
+  const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE))
+  const currentPage = Math.min(page, pageCount)
+  const pageResults = useMemo(
+    () => results.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [results, currentPage],
+  )
+  const toolbarRef = useRef<HTMLDivElement>(null)
+
+  const changePage = (next: number) => {
+    setPage(next)
+    const top = toolbarRef.current?.getBoundingClientRect().top ?? 0
+    window.scrollTo({ top: window.scrollY + top - 140, behavior: 'smooth' })
+  }
+
   // Keep URL and storage in sync with the current search state.
   useEffect(() => {
     const next = new URLSearchParams()
     if (filters.query) next.set('q', filters.query)
     if (filters.category !== 'all') next.set('category', filters.category)
     if (sort !== 'recommended') next.set('sort', sort)
+    if (currentPage > 1) next.set('page', String(currentPage))
     setParams(next, { replace: true })
     const { query: _q, ...persisted } = filters
     writeStorage(FILTER_STORAGE_KEY, persisted)
     writeStorage('carSort', sort)
-  }, [filters, sort, setParams])
+  }, [filters, sort, currentPage, setParams])
 
   // React to external navigation (e.g. from the global search) while mounted.
   useEffect(() => {
@@ -72,11 +90,13 @@ export default function CarsPage() {
 
   const submitSearch = (e: FormEvent) => {
     e.preventDefault()
+    setPage(1)
     setFilters((f) => ({ ...f, query: draftQuery.trim() }))
     addRecentSearch(draftQuery)
   }
 
   const clearAll = useCallback(() => {
+    setPage(1)
     setFilters(DEFAULT_FILTERS)
     setDraftQuery('')
   }, [])
@@ -116,13 +136,16 @@ export default function CarsPage() {
         </header>
 
         {/* Toolbar --------------------------------------------------------- */}
-        <div className={styles.toolbar} role="search">
+        <div ref={toolbarRef} className={styles.toolbar} role="search">
           <form className={styles.searchGroup} onSubmit={submitSearch}>
             <Select
               aria-label="Category"
               options={CATEGORY_OPTIONS}
               value={filters.category}
-              onChange={(value) => setFilters((f) => ({ ...f, category: value }))}
+              onChange={(value) => {
+                setPage(1)
+                setFilters((f) => ({ ...f, category: value }))
+              }}
               iconLeft="layers"
               wrapperClassName={styles.category}
             />
@@ -172,7 +195,7 @@ export default function CarsPage() {
               }
             >
               {SORT_OPTIONS.map((opt) => (
-                <MenuItem key={opt.id} active={opt.id === sort} onClick={() => { setSort(opt.id); setSortOpen(false) }} trailing={opt.id === sort ? <Icon name="check" size={14} /> : undefined}>
+                <MenuItem key={opt.id} active={opt.id === sort} onClick={() => { setSort(opt.id); setPage(1); setSortOpen(false) }} trailing={opt.id === sort ? <Icon name="check" size={14} /> : undefined}>
                   {opt.label}
                 </MenuItem>
               ))}
@@ -209,10 +232,13 @@ export default function CarsPage() {
               ))}
             </motion.div>
           ) : results.length > 0 ? (
-            <motion.div key={`results-${viewMode}`} className={`${styles.results} ${styles[viewMode]}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-              {results.map((v, i) => (
-                <VehicleCard key={v.id} vehicle={v} mode={viewMode} index={i} />
-              ))}
+            <motion.div key={`results-${viewMode}-${currentPage}`} className={styles.resultsBlock} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+              <div className={`${styles.results} ${styles[viewMode]}`}>
+                {pageResults.map((v, i) => (
+                  <VehicleCard key={v.id} vehicle={v} mode={viewMode} index={i} />
+                ))}
+              </div>
+              <Pagination page={currentPage} pageCount={pageCount} onChange={changePage} total={results.length} pageSize={PAGE_SIZE} />
             </motion.div>
           ) : (
             <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
@@ -236,7 +262,7 @@ export default function CarsPage() {
         </AnimatePresence>
       </div>
 
-      <FilterPanel open={filtersOpen} onClose={() => setFiltersOpen(false)} filters={filters} onChange={setFilters} resultCount={results.length} />
+      <FilterPanel open={filtersOpen} onClose={() => setFiltersOpen(false)} filters={filters} onChange={(next) => { setPage(1); setFilters(next) }} resultCount={results.length} />
       <IconButton icon="filter" label="Open filters" size="lg" variant="primary" className={styles.fab} onClick={() => setFiltersOpen(true)} />
     </PageTransition>
   )

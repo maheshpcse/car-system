@@ -28,7 +28,7 @@ export default function CategoriesPage() {
             const minPrice = Math.min(...list.map((v) => v.price))
             return (
               <Reveal as="li" key={c.id} delay={i * 0.05}>
-                <Link to={`/cars?category=${c.id}`} className={styles.card} data-cursor="view" data-cursor-label="Explore">
+                <Link to={`/cars?category=${c.id}`} className={styles.card}>
                   <div className={styles.visual}>{lead && <VehicleSilhouette profile={lead.silhouette} color={lead.colors[0].hex} />}</div>
                   <div className={styles.body}>
                     <span className={styles.icon}>

@@ -9,6 +9,7 @@ import { formatAcceleration, formatPower, formatPrice, formatRange, formatSpeed 
 import { FUEL_TYPES, labelFor } from '@/data/categories'
 import { vehicles } from '@/data/vehicles'
 import { Brand } from '@/layout/Brand'
+import { dismissBootLoader } from '@/shared/feedback/bootLoader'
 import { useToast } from '@/shared/feedback/ToastProvider'
 import { Icon, type IconName } from '@/shared/icons/Icon'
 import { ButtonLink, IconButton } from '@/shared/ui/Button'
@@ -70,6 +71,7 @@ export default function ShowroomPage() {
   }, [mode])
 
   useEffect(() => {
+    dismissBootLoader()
     const onKey = (e: KeyboardEvent) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) return
       if (e.key === 'ArrowRight') setSelected((i) => (i + 1) % LINEUP.length)
@@ -183,7 +185,7 @@ export default function ShowroomPage() {
                 const isOther = mode === 'compare' && i === compareWith
                 return (
                   <li key={v.id}>
-                    <button type="button" className={cx(styles.railItem, isSelected && styles.railItemActive, isOther && styles.railItemOther)} onClick={() => select(i)} aria-pressed={isSelected || isOther} data-cursor="view" data-cursor-label={mode === 'compare' ? 'Compare' : 'Focus'}>
+                    <button type="button" className={cx(styles.railItem, isSelected && styles.railItemActive, isOther && styles.railItemOther)} onClick={() => select(i)} aria-pressed={isSelected || isOther}>
                       <span className={styles.railVisual}>
                         <VehicleSilhouette profile={v.silhouette} color={v.colors[0].hex} shadow={false} />
                       </span>

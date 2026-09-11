@@ -1,10 +1,13 @@
 import {
   forwardRef,
+  useEffect,
   useId,
+  useRef,
   useState,
+  type ButtonHTMLAttributes,
   type InputHTMLAttributes,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
-  type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from 'react'
 import { Icon, type IconName } from '@/shared/icons/Icon'
@@ -140,7 +143,7 @@ export interface SelectOption<T extends string = string> {
   disabled?: boolean
 }
 
-export interface SelectProps<T extends string = string> extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange' | 'value'> {
+export interface SelectProps<T extends string = string> {
   label?: string
   hint?: string
   error?: string
@@ -150,6 +153,11 @@ export interface SelectProps<T extends string = string> extends Omit<SelectHTMLA
   iconLeft?: IconName
   compact?: boolean
   wrapperClassName?: string
+  id?: string
+  className?: string
+  disabled?: boolean
+  name?: string
+  'aria-label'?: string
 }
 
 export function Select<T extends string>({
@@ -164,28 +172,108 @@ export function Select<T extends string>({
   id: idProp,
   className,
   wrapperClassName,
+  disabled,
+  name,
   ...rest
 }: SelectProps<T>) {
   const generated = useId()
   const id = idProp ?? generated
+  const listId = `${id}-list`
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const selected = options.find((o) => o.value === value) ?? options[0]
+
+  useEffect(() => {
+    if (!open) return
+    const onPointer = (e: PointerEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointer)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onPointer)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  const pick = (next: T) => {
+    onChange(next)
+    setOpen(false)
+  }
+
+  const onTriggerKey = (e: ReactKeyboardEvent<HTMLButtonElement>) => {
+    const enabled = options.filter((o) => !o.disabled)
+    const idx = enabled.findIndex((o) => o.value === value)
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault()
+      if (!open) {
+        setOpen(true)
+        return
+      }
+      const dir = e.key === 'ArrowDown' ? 1 : -1
+      const next = enabled[(idx + dir + enabled.length) % enabled.length]
+      if (next) onChange(next.value)
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      setOpen((v) => !v)
+    }
+    if (e.key === 'Home' && enabled[0]) {
+      e.preventDefault()
+      onChange(enabled[0].value)
+    }
+    if (e.key === 'End' && enabled.length) {
+      e.preventDefault()
+      onChange(enabled[enabled.length - 1].value)
+    }
+  }
+
   return (
     <FieldShell id={id} label={label} hint={hint} error={error} className={wrapperClassName}>
-      <div className={cx(styles.control, styles.selectControl, iconLeft && styles.withIcon, compact && styles.compact)}>
+      <div ref={rootRef} className={cx(styles.control, styles.selectControl, iconLeft && styles.withIcon, compact && styles.compact, open && styles.selectOpen)}>
         {iconLeft && <Icon name={iconLeft} size={17} className={styles.icon} />}
-        <select
+        {name && <input type="hidden" name={name} value={value} />}
+        <button
+          type="button"
           id={id}
           className={cx(styles.input, styles.select, className)}
-          value={value}
-          onChange={(e) => onChange(e.target.value as T)}
-          {...rest}
+          disabled={disabled}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={listId}
+          aria-invalid={error ? true : undefined}
+          onClick={() => setOpen((v) => !v)}
+          onKeyDown={onTriggerKey}
+          {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
         >
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value} disabled={opt.disabled}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          <span className={cx(!selected?.value && styles.selectPlaceholder)}>{selected?.label ?? 'Choose…'}</span>
+        </button>
         <Icon name="chevronDown" size={16} className={styles.chevron} />
+        {open && (
+          <ul id={listId} className={styles.selectMenu} role="listbox" aria-labelledby={id}>
+            {options.map((opt) => {
+              const isActive = opt.value === value
+              return (
+                <li key={opt.value} role="presentation">
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={isActive}
+                    disabled={opt.disabled}
+                    className={cx(styles.selectOption, isActive && styles.selectOptionActive)}
+                    onClick={() => pick(opt.value)}
+                  >
+                    <span>{opt.label}</span>
+                    {isActive && <Icon name="check" size={14} />}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </div>
     </FieldShell>
   )
