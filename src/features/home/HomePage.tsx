@@ -69,7 +69,7 @@ export default function HomePage() {
             <Suspense fallback={<div className={styles.heroFallback}><VehicleSilhouette profile={HERO_VEHICLE.silhouette} color={HERO_VEHICLE.colors[0].hex} /></div>}>
               <VehicleViewer vehicle={HERO_VEHICLE} variant="hero" autoRotate />
             </Suspense>
-            <Link to={`/cars/${HERO_VEHICLE.id}`} className={styles.heroCaption} data-cursor="view" data-cursor-label="Explore">
+            <Link to={`/cars/${HERO_VEHICLE.id}`} className={styles.heroCaption}>
               <span className={styles.heroCaptionName}>
                 {HERO_VEHICLE.manufacturer} {HERO_VEHICLE.model}
               </span>
@@ -113,7 +113,7 @@ export default function HomePage() {
             const count = vehicles.filter((v) => v.category.includes(c.id as never)).length
             return (
               <Reveal as="li" key={c.id} delay={i * 0.04}>
-                <Link to={`/cars?category=${c.id}`} className={styles.category} data-cursor="link">
+                <Link to={`/cars?category=${c.id}`} className={styles.category}>
                   <span className={styles.categoryIcon}>
                     <Icon name={c.icon} size={20} />
                   </span>

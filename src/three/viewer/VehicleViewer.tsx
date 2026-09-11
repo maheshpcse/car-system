@@ -128,8 +128,6 @@ export function VehicleViewer({
     <div
       ref={wrapper}
       className={cx(styles.viewer, styles[variant], fullscreen && styles.fullscreen, className)}
-      data-cursor={interacted ? 'orbit' : 'drag'}
-      data-cursor-label={interacted ? '' : 'Drag'}
     >
       <SceneErrorBoundary
         onError={() => setFailed(true)}
@@ -167,7 +165,6 @@ export function VehicleViewer({
                     onClick={() => setActiveHotspot((a) => (a === h.id ? null : h.id))}
                     aria-label={`${h.label}: ${h.detail}`}
                     aria-expanded={activeHotspot === h.id}
-                    data-cursor="link"
                   >
                     <span className={styles.hotspotDot} />
                     <AnimatePresence>

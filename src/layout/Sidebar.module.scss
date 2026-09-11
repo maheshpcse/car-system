@@ -30,10 +30,26 @@
     pointer-events: none;
   }
 
+  .label,
+  .count {
+    position: absolute;
+    width: 0;
+    overflow: hidden;
+    margin: 0;
+  }
+
   .link,
   .collapse {
     justify-content: center;
+    gap: 0;
     padding-inline: 0;
+    width: 44px;
+    margin-inline: auto;
+  }
+
+  .group,
+  .bottom {
+    justify-items: center;
   }
 
   .groupTitle {

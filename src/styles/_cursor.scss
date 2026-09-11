@@ -1,0 +1,50 @@
+/* Theme cursor icons — CSS only, no hover follower. Data URIs so they work
+ * with any Vite `base` path (including GitHub Pages). */
+:root {
+  --cursor-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M7 4 L25 15.5 L17.2 17.6 L21.4 26.4 L18 28 L13.8 19.2 L7 24.8 Z' fill='%231E272E' stroke='%23F8F2D8' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M9.4 8.4 L9.4 19.6 L13.4 16.4' fill='none' stroke='%237D6BFF' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E") 7 4, auto;
+  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M11 4.5a2 2 0 0 1 4 0v9h.6a2 2 0 0 1 3.9.6v.4a2 2 0 0 1 3.9.8v.6a2 2 0 0 1 3.6 1.2v5.4c0 3.6-2.6 6.6-6.4 6.6h-4.2c-2.4 0-4.5-1.2-5.7-3.1L5.6 19c-.7-1.1-.4-2.5.7-3.1 1-.6 2.3-.4 3 .5l1.7 2.1z' fill='%231E272E' stroke='%23F8F2D8' stroke-width='1.6' stroke-linejoin='round'/%3E%3Ccircle cx='13' cy='9.5' r='1.3' fill='%237D6BFF'/%3E%3C/svg%3E") 12 4, pointer;
+}
+
+@media (pointer: fine) {
+  html,
+  body,
+  * {
+    cursor: var(--cursor-arrow);
+  }
+
+  a,
+  button,
+  summary,
+  label,
+  [role='button'],
+  [role='option'],
+  [role='menuitem'],
+  [role='menuitemradio'],
+  [role='listbox'],
+  [role='combobox'],
+  [role='radio'],
+  [role='tab'],
+  [role='switch'],
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='range'],
+  input[type='submit'],
+  input[type='button'],
+  input[type='file'],
+  canvas {
+    cursor: var(--cursor-pointer);
+  }
+
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='submit']):not([type='button']):not([type='file']),
+  textarea,
+  [contenteditable='true'] {
+    cursor: text;
+  }
+
+  button:disabled,
+  input:disabled,
+  textarea:disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}

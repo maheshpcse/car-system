@@ -194,8 +194,6 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
                     type="button"
                     className={`${styles.label} ${i === selected ? styles.labelActive : ''} ${focused ? styles.labelDim : ''}`}
                     onClick={() => onSelect(i)}
-                    data-cursor="view"
-                    data-cursor-label="Focus"
                   >
                     <span>{vehicle.manufacturer}</span>
                     <strong>{vehicle.model}</strong>

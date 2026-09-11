@@ -20,7 +20,7 @@ export default function ConfiguratorIndexPage() {
         <ul className={styles.grid}>
           {vehicles.map((v, i) => (
             <Reveal as="li" key={v.id} delay={Math.min(i * 0.03, 0.2)}>
-              <Link to={`/configurator/${v.id}`} className={styles.card} data-cursor="view" data-cursor-label="Build">
+              <Link to={`/configurator/${v.id}`} className={styles.card}>
                 <div className={styles.visual}>
                   <VehicleSilhouette profile={v.silhouette} color={v.colors[0].hex} />
                 </div>

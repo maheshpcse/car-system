@@ -76,8 +76,6 @@ export function VehicleCard({ vehicle, mode = 'grid', index = 0 }: VehicleCardPr
         to={`/cars/${vehicle.id}`}
         className={styles.media}
         aria-label={`Explore ${vehicle.manufacturer} ${vehicle.model}`}
-        data-cursor="view"
-        data-cursor-label="Explore"
       >
         <div className={styles.mediaInner} style={{ '--tint': heroColor } as React.CSSProperties}>
           <VehicleSilhouette profile={vehicle.silhouette} color={heroColor} className={styles.silhouette} />

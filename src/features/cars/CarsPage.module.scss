@@ -34,7 +34,7 @@
 .toolbar {
   position: sticky;
   top: calc(var(--navbar-height) + var(--space-3));
-  z-index: var(--z-sticky);
+  z-index: calc(var(--z-navbar) - 1);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -236,6 +236,16 @@
 }
 
 /* Results --------------------------------------------------------------- */
+/* Cards use 3D transforms which create stacking contexts; isolate them
+ * under the sticky toolbar. */
+.resultsBlock {
+  position: relative;
+  z-index: var(--z-base);
+  isolation: isolate;
+  display: grid;
+  gap: var(--space-6);
+}
+
 .results {
   display: grid;
   gap: var(--space-5);

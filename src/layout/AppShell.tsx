@@ -4,7 +4,6 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { usePreferences } from '@/core/preferences/PreferencesProvider'
 import { cx } from '@/core/utils/cx'
 import { GlobalSearch } from '@/features/search/GlobalSearch'
-import { ScrollProgress } from '@/shared/scroll/ScrollProgress'
 import { IconButton } from '@/shared/ui/Button'
 import { PageLoader } from '@/shared/feedback/PageLoader'
 import { Brand } from './Brand'
@@ -50,8 +49,6 @@ export function AppShell() {
         </main>
         <Footer />
       </div>
-
-      <ScrollProgress />
 
       <AnimatePresence>
         {menuOpen && (

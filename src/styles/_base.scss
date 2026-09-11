@@ -29,11 +29,6 @@ body {
     color var(--duration-slow) var(--ease-standard);
 }
 
-body.custom-cursor-active,
-body.custom-cursor-active * {
-  cursor: none !important;
-}
-
 #root {
   isolation: isolate;
   min-height: 100dvh;
@@ -112,22 +107,34 @@ a {
   color: var(--color-primary-contrast);
 }
 
-/* Native scrollbar: slim and theme-aware; the visible progress rail lives in
- * the ScrollProgress component. */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Page scrollbar is hidden (wheel / touch / keyboard still scroll). Inner
+ * panes keep a slim, theme-aware bar. */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border-strong);
-  border-radius: var(--radius-pill);
-}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-pill);
 }
 
 @media (prefers-reduced-motion: reduce) {

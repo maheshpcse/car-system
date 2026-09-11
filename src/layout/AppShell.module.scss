@@ -45,7 +45,7 @@
   background: var(--color-primary);
   color: var(--color-primary-contrast);
   font-weight: var(--weight-medium);
-  z-index: calc(var(--z-cursor) + 1);
+  z-index: var(--z-toast);
   transition: top var(--duration-fast) var(--ease-standard);
 
   &:focus {

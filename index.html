@@ -33,9 +33,175 @@
         var theme = stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', theme);
       } catch (e) {}
+      window.__bootStart = Date.now();
     </script>
+    <style>
+      #boot-loader {
+        --bl-bg: #f8f2d8;
+        --bl-text: #1e272e;
+        --bl-muted: #7a848c;
+        --bl-border: rgba(30, 39, 46, 0.12);
+        --bl-primary: #1400c3;
+        --bl-accent: #ff4e02;
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 22px;
+        background: var(--bl-bg);
+        color: var(--bl-text);
+        font-family: Sora, Instrument Sans, system-ui, sans-serif;
+        transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s;
+      }
+      [data-theme='dark'] #boot-loader {
+        --bl-bg: #1e272e;
+        --bl-text: #f5f6fa;
+        --bl-muted: #8a959d;
+        --bl-border: rgba(255, 255, 255, 0.1);
+        --bl-primary: #7d6bff;
+        --bl-accent: #ff6a2e;
+      }
+      #boot-loader.is-done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #boot-loader::before,
+      #boot-loader::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(70px);
+        pointer-events: none;
+      }
+      #boot-loader::before {
+        width: 42vmax;
+        height: 42vmax;
+        left: -12vmax;
+        top: -14vmax;
+        background: var(--bl-primary);
+        opacity: 0.16;
+      }
+      #boot-loader::after {
+        width: 30vmax;
+        height: 30vmax;
+        right: -8vmax;
+        bottom: -10vmax;
+        background: var(--bl-accent);
+        opacity: 0.12;
+      }
+      .bl-emblem {
+        position: relative;
+        width: 112px;
+        height: 112px;
+        display: grid;
+        place-items: center;
+      }
+      .bl-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, transparent 0 62%, var(--bl-primary) 100%);
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+        mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+        animation: bl-spin 1.4s linear infinite;
+      }
+      .bl-ring--outer {
+        inset: -12px;
+        background: conic-gradient(from 180deg, transparent 0 80%, var(--bl-accent) 100%);
+        opacity: 0.7;
+        animation-duration: 2.6s;
+        animation-direction: reverse;
+      }
+      .bl-mark {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: var(--bl-primary);
+        box-shadow: 0 18px 40px -18px var(--bl-primary);
+        display: grid;
+        place-items: center;
+        animation: bl-breathe 2.4s ease-in-out infinite;
+      }
+      .bl-word {
+        display: flex;
+        gap: 6px;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .bl-word span:last-child {
+        font-weight: 300;
+        color: var(--bl-muted);
+      }
+      .bl-track {
+        width: 160px;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--bl-border);
+        overflow: hidden;
+      }
+      .bl-track i {
+        display: block;
+        width: 38%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--bl-primary), var(--bl-accent));
+        animation: bl-slide 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      .bl-caption {
+        margin: 0;
+        font-family: Instrument Sans, system-ui, sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--bl-muted);
+      }
+      @keyframes bl-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes bl-slide {
+        from {
+          transform: translateX(-110%);
+        }
+        to {
+          transform: translateX(280%);
+        }
+      }
+      @keyframes bl-breathe {
+        50% {
+          transform: scale(1.05);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bl-ring,
+        .bl-mark,
+        .bl-track i {
+          animation-duration: 6s;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="boot-loader" role="status" aria-live="polite" aria-label="Loading Aurora Motors">
+      <div class="bl-emblem">
+        <span class="bl-ring bl-ring--outer"></span>
+        <span class="bl-ring"></span>
+        <span class="bl-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="56" height="56">
+            <path
+              d="M7 19c0-1.6 1-3 3-3.8l3-3.4c.8-.9 1.8-1.4 3-1.4h5c1.5 0 2.8.8 3.5 2l2 3c1.5.5 2.5 1.7 2.5 3.4v1.5c0 .8-.6 1.3-1.4 1.3h-1.4a3 3 0 0 1-6 0h-6a3 3 0 0 1-6 0H7v-2.6z"
+              fill="var(--bl-bg)"
+            />
+          </svg>
+        </span>
+      </div>
+      <div class="bl-word"><span>Aurora</span><span>Motors</span></div>
+      <div class="bl-track"><i></i></div>
+      <p class="bl-caption">Preparing the studio</p>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
