@@ -1,12 +1,8 @@
+import { env } from '@/core/config/environment'
 import { DEMO_PERSONAS } from '@/data/personas'
 import type { Credentials, SignupPayload, User } from '@/models/user'
+import { apiClient, ApiError } from './apiClient'
 
-/**
- * Authentication service abstraction.
- * The demo implementation validates against local personas and simulates
- * latency. Swap `authService` for an HTTP-backed implementation (using
- * `env.apiBaseUrl`) without touching UI code.
- */
 export interface AuthService {
   login(credentials: Credentials): Promise<User>
   signup(payload: SignupPayload): Promise<User>
@@ -48,7 +44,6 @@ export const demoAuthService: AuthService = {
       if (persona.password !== password) throw new AuthError('Incorrect password for this demo account.', 'password')
       return toUser(persona)
     }
-    // Any other well-formed email with a password of 6+ characters is accepted in demo mode.
     if (password.length < 6) throw new AuthError('Password must be at least 6 characters.', 'password')
     return {
       id: `user-${email.toLowerCase()}`,
@@ -96,4 +91,66 @@ export const demoAuthService: AuthService = {
   },
 }
 
-export const authService: AuthService = demoAuthService
+interface AuthSession {
+  user: User
+  accessToken?: string
+}
+
+const mapAuthError = (error: unknown): never => {
+  if (error instanceof ApiError) {
+    if (error.code === 'INVALID_CREDENTIALS') throw new AuthError('Incorrect email or password.', 'form')
+    if (error.code === 'EMAIL_IN_USE') throw new AuthError('This email is already in use.', 'email')
+    throw new AuthError(error.message, 'form')
+  }
+  throw error
+}
+
+export const httpAuthService: AuthService = {
+  async login(credentials) {
+    try {
+      const result = await apiClient.request<AuthSession>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      })
+      if (result.data.accessToken) apiClient.setAccessToken(result.data.accessToken, Boolean(credentials.remember))
+      return result.data.user
+    } catch (error) {
+      return mapAuthError(error)
+    }
+  },
+
+  async signup(payload) {
+    try {
+      const result = await apiClient.request<AuthSession>('/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+      if (result.data.accessToken) apiClient.setAccessToken(result.data.accessToken)
+      return result.data.user
+    } catch (error) {
+      return mapAuthError(error)
+    }
+  },
+
+  async requestPasswordReset(email) {
+    const result = await apiClient.request<{ code?: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+    return { code: result.data.code ?? '' }
+  },
+
+  async verifyResetCode(_email, code) {
+    return code.trim().length >= 6
+  },
+
+  async logout() {
+    try {
+      await apiClient.request('/auth/logout', { method: 'POST' })
+    } finally {
+      apiClient.setAccessToken(null)
+    }
+  },
+}
+
+export const authService: AuthService = env.apiBaseUrl ? httpAuthService : demoAuthService
