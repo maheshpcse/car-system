@@ -63,12 +63,29 @@ Runtime configuration lives in `.env`, `.env.development` and `.env.production` 
 | `VITE_DEMO_MODE`       | Enables the local demo authentication service      |
 | `VITE_REPOSITORY_URL`  | Link shown in the footer                           |
 
-## Deployment (GitHub Pages)
+## Deployment (GitHub Pages + Railway API)
+
+The frontend is a static SPA. GitHub Pages hosts it. The Node API is **not** deployed here — it runs on Railway from [car-system-server](https://github.com/maheshpcse/car-system-server).
+
+### GitHub Pages
 
 `.github/workflows/deploy.yml` builds and publishes `dist/` on every push to `main`. Enable **Settings → Pages → Source: GitHub Actions** once.
 
 - The base path is derived from `GITHUB_REPOSITORY`: project pages are served from `/<repo>/`, user/organisation pages from `/`.
-- `index.html` is copied to `404.html` and a `.nojekyll` file is emitted so deep links work on refresh.
+- `index.html` is copied to `404.html` and `.nojekyll` is written so deep links work on refresh (`public/.nojekyll` is also committed).
+- Production build variables are read from repository **Actions variables** (see `.env.production.example`):
+
+| Variable | Example |
+| --- | --- |
+| `VITE_API_BASE_URL` | `https://<service>.up.railway.app/api/v1` |
+| `VITE_ASSET_BASE_URL` | optional CloudFront origin |
+| `VITE_DEMO_MODE` | `true` |
+
+After the Railway API is live, set `VITE_API_BASE_URL` and re-run **Deploy to GitHub Pages**.
+
+### Railway (API only)
+
+Use the backend repository. Required files there: `railway.json`, `nixpacks.toml`, `Procfile`, `.env.railway.example`.
 
 ## Project structure
 

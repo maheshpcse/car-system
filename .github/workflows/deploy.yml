@@ -34,7 +34,14 @@ jobs:
 
       # `vite.config.ts` derives the base path from GITHUB_REPOSITORY, so project
       # pages (/<repo>/) and user/org pages (<user>.github.io) both work untouched.
+      # Production API URL comes from repository variables (Railway public URL).
       - name: Build
+        env:
+          VITE_APP_ENVIRONMENT: production
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          VITE_ASSET_BASE_URL: ${{ vars.VITE_ASSET_BASE_URL }}
+          VITE_DEMO_MODE: ${{ vars.VITE_DEMO_MODE || 'true' }}
+          VITE_REPOSITORY_URL: ${{ vars.VITE_REPOSITORY_URL || 'https://github.com/maheshpcse/car-system' }}
         run: npm run build
 
       - uses: actions/configure-pages@v5
