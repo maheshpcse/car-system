@@ -87,6 +87,8 @@ After the Railway API is live, set `VITE_API_BASE_URL` and re-run **Deploy to Gi
 
 Use the backend repository. Required files there: `railway.json`, `nixpacks.toml`, `Procfile`, `.env.railway.example`.
 
+First API boot runs `prisma migrate deploy`, which creates the MySQL tables and inserts the same fictional catalogue and demo accounts this UI already uses.
+
 ## Project structure
 
 ```
