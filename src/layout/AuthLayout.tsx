@@ -17,11 +17,11 @@ function AuthVisual() {
     <div className={styles.visual} aria-hidden="true">
       <div className={styles.visualBackdrop} />
       <Suspense fallback={<div className={styles.visualFallback} />}>
-        <AvatarScene mood={mood} focus={focus} />
+        <AvatarScene variant="full" mood={mood} focus={focus} />
       </Suspense>
       <div className={styles.visualCaption}>
         <span className="t-eyebrow">Studio Guide</span>
-        <p>Your guide reacts as you fill in the form — a small, human touch for a digital showroom.</p>
+        <p>A full-body studio host — not a giant head — who reacts as you fill in the form.</p>
       </div>
     </div>
   )

@@ -25,10 +25,21 @@
 }
 
 .emptyPicker {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 96px;
+  align-items: start;
   gap: var(--space-2);
-  align-items: stretch;
-  min-width: 260px;
+  width: min(100%, 540px);
+}
+
+.emptySelect {
+  min-width: 0;
+  width: 100%;
+}
+
+.emptyAdd {
+  height: 40px;
+  min-width: 96px;
 }
 
 .tableWrap {

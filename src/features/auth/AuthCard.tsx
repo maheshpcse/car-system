@@ -39,7 +39,7 @@ export function SocialPlaceholders() {
   )
 }
 
-export function OrDivider({ children = 'or continue with email' }: { children?: ReactNode }) {
+export function OrDivider({ children = 'or continue with your account' }: { children?: ReactNode }) {
   return (
     <div className={styles.divider} role="separator">
       <span>{children}</span>

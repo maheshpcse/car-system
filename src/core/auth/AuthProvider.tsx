@@ -16,7 +16,13 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 const SESSION_KEY = 'session'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => readStorage<User | null>(SESSION_KEY, null))
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = readStorage<User | null>(SESSION_KEY, null)
+    if (stored && !stored.username) {
+      stored.username = stored.email.split('@')[0]
+    }
+    return stored
+  })
 
   const persist = useCallback((next: User | null) => {
     setUser(next)

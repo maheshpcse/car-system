@@ -5,7 +5,7 @@ import { usePreferences } from '@/core/preferences/PreferencesProvider'
 import { cx } from '@/core/utils/cx'
 import { Icon } from '@/shared/icons/Icon'
 import { Brand } from './Brand'
-import { ACCOUNT_NAV, PERSONAL_NAV, PRIMARY_NAV, type NavItem } from './navigation'
+import { useNavigation } from './useNavigation'
 import styles from './Sidebar.module.scss'
 
 interface SidebarProps {
@@ -20,9 +20,10 @@ export function Sidebar({ drawer = false, onNavigate }: SidebarProps) {
   const reduced = useReducedMotion()
   const collapsed = !drawer && sidebarCollapsed
 
+  const groups = useNavigation()
   const counts: Record<string, number> = { '/favorites': favorites.length, '/compare': compare.length }
 
-  const renderItem = (item: NavItem) => {
+  const renderItem = (item: (typeof groups)[number]['items'][number]) => {
     if (item.protected && !isAuthenticated) return null
     const count = counts[item.to]
     return (
@@ -65,15 +66,16 @@ export function Sidebar({ drawer = false, onNavigate }: SidebarProps) {
       )}
 
       <div className={styles.groups}>
-        <ul className={styles.group}>{PRIMARY_NAV.map(renderItem)}</ul>
-        <div className={styles.groupTitle}>
-          <span>Personal</span>
-        </div>
-        <ul className={styles.group}>{PERSONAL_NAV.map(renderItem)}</ul>
-        <div className={styles.groupTitle}>
-          <span>Account</span>
-        </div>
-        <ul className={styles.group}>{ACCOUNT_NAV.map(renderItem)}</ul>
+        {groups.map((group) => (
+          <div key={group.id} className={styles.groupBlock}>
+            {group.label ? (
+              <div className={styles.groupTitle}>
+                <span>{group.label}</span>
+              </div>
+            ) : null}
+            <ul className={styles.group}>{group.items.map(renderItem)}</ul>
+          </div>
+        ))}
       </div>
 
       {!drawer && (
