@@ -165,4 +165,25 @@ export const httpAuthService: AuthService = {
   },
 }
 
-export const authService: AuthService = env.apiBaseUrl ? httpAuthService : demoAuthService
+const withDemoFallback = <T>(action: () => Promise<T>, fallback: () => Promise<T>) =>
+  action().catch((error) => {
+    if (env.demoMode) return fallback()
+    throw error
+  })
+
+/** Uses the HTTP API when configured, and falls back to local demo auth while the backend is catching up. */
+export const authService: AuthService = {
+  login: (credentials) =>
+    apiClient.enabled ? withDemoFallback(() => httpAuthService.login(credentials), () => demoAuthService.login(credentials)) : demoAuthService.login(credentials),
+  signup: (payload) =>
+    apiClient.enabled ? withDemoFallback(() => httpAuthService.signup(payload), () => demoAuthService.signup(payload)) : demoAuthService.signup(payload),
+  requestPasswordReset: (email) =>
+    apiClient.enabled
+      ? withDemoFallback(() => httpAuthService.requestPasswordReset(email), () => demoAuthService.requestPasswordReset(email))
+      : demoAuthService.requestPasswordReset(email),
+  verifyResetCode: (email, code) =>
+    apiClient.enabled
+      ? withDemoFallback(() => httpAuthService.verifyResetCode(email, code), () => demoAuthService.verifyResetCode(email, code))
+      : demoAuthService.verifyResetCode(email, code),
+  logout: () => (apiClient.enabled ? withDemoFallback(() => httpAuthService.logout(), () => demoAuthService.logout()) : demoAuthService.logout()),
+}
