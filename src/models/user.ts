@@ -3,6 +3,7 @@ export type UserRole = 'customer' | 'visitor' | 'advisor' | 'admin'
 export interface User {
   id: string
   name: string
+  username: string
   email: string
   role: UserRole
   title: string
@@ -17,19 +18,21 @@ export interface DemoPersona {
   name: string
   title: string
   description: string
+  username: string
   email: string
   password: string
   avatarSeed: number
 }
 
 export interface Credentials {
-  email: string
+  username: string
   password: string
   remember?: boolean
 }
 
 export interface SignupPayload {
   name: string
+  username: string
   email: string
   password: string
   phone?: string

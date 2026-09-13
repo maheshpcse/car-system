@@ -12,9 +12,9 @@ export interface AuthService {
 }
 
 export class AuthError extends Error {
-  readonly field?: 'email' | 'password' | 'form'
+  readonly field?: 'username' | 'email' | 'password' | 'form'
 
-  constructor(message: string, field?: 'email' | 'password' | 'form') {
+  constructor(message: string, field?: 'username' | 'email' | 'password' | 'form') {
     super(message)
     this.name = 'AuthError'
     this.field = field
@@ -24,9 +24,12 @@ export class AuthError extends Error {
 const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+const USERNAME_RE = /^[a-zA-Z0-9._-]{3,32}$/
+
 const toUser = (persona: (typeof DEMO_PERSONAS)[number]): User => ({
   id: persona.id,
   name: persona.name,
+  username: persona.username,
   email: persona.email,
   role: persona.role,
   title: persona.title,
@@ -36,19 +39,21 @@ const toUser = (persona: (typeof DEMO_PERSONAS)[number]): User => ({
 })
 
 export const demoAuthService: AuthService = {
-  async login({ email, password }) {
+  async login({ username, password }) {
     await wait(700)
-    if (!EMAIL_RE.test(email)) throw new AuthError('Enter a valid email address.', 'email')
-    const persona = DEMO_PERSONAS.find((p) => p.email.toLowerCase() === email.trim().toLowerCase())
+    const handle = username.trim().toLowerCase()
+    if (!USERNAME_RE.test(handle)) throw new AuthError('Enter a valid username.', 'username')
+    const persona = DEMO_PERSONAS.find((p) => p.username.toLowerCase() === handle)
     if (persona) {
       if (persona.password !== password) throw new AuthError('Incorrect password for this demo account.', 'password')
       return toUser(persona)
     }
     if (password.length < 6) throw new AuthError('Password must be at least 6 characters.', 'password')
     return {
-      id: `user-${email.toLowerCase()}`,
-      name: email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-      email,
+      id: `user-${handle}`,
+      name: handle.replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+      username: handle,
+      email: `${handle}@demo.aurora`,
       role: 'customer',
       title: 'Customer',
       avatarSeed: 5,
@@ -59,13 +64,19 @@ export const demoAuthService: AuthService = {
 
   async signup(payload) {
     await wait(900)
+    const handle = payload.username.trim().toLowerCase()
+    if (!USERNAME_RE.test(handle)) throw new AuthError('Enter a valid username.', 'username')
     if (!EMAIL_RE.test(payload.email)) throw new AuthError('Enter a valid email address.', 'email')
+    if (DEMO_PERSONAS.some((p) => p.username.toLowerCase() === handle)) {
+      throw new AuthError('This username is already used by a demo account. Try signing in.', 'username')
+    }
     if (DEMO_PERSONAS.some((p) => p.email === payload.email.toLowerCase())) {
       throw new AuthError('This email is already used by a demo account. Try logging in.', 'email')
     }
     return {
-      id: `user-${payload.email.toLowerCase()}`,
+      id: `user-${handle}`,
       name: payload.name.trim(),
+      username: handle,
       email: payload.email.trim(),
       role: 'customer',
       title: 'Customer',
@@ -98,7 +109,8 @@ interface AuthSession {
 
 const mapAuthError = (error: unknown): never => {
   if (error instanceof ApiError) {
-    if (error.code === 'INVALID_CREDENTIALS') throw new AuthError('Incorrect email or password.', 'form')
+    if (error.code === 'INVALID_CREDENTIALS') throw new AuthError('Incorrect username or password.', 'form')
+    if (error.code === 'USERNAME_IN_USE') throw new AuthError('This username is already in use.', 'username')
     if (error.code === 'EMAIL_IN_USE') throw new AuthError('This email is already in use.', 'email')
     throw new AuthError(error.message, 'form')
   }
@@ -153,4 +165,25 @@ export const httpAuthService: AuthService = {
   },
 }
 
-export const authService: AuthService = env.apiBaseUrl ? httpAuthService : demoAuthService
+const withDemoFallback = <T>(action: () => Promise<T>, fallback: () => Promise<T>) =>
+  action().catch((error) => {
+    if (env.demoMode) return fallback()
+    throw error
+  })
+
+/** Uses the HTTP API when configured, and falls back to local demo auth while the backend is catching up. */
+export const authService: AuthService = {
+  login: (credentials) =>
+    apiClient.enabled ? withDemoFallback(() => httpAuthService.login(credentials), () => demoAuthService.login(credentials)) : demoAuthService.login(credentials),
+  signup: (payload) =>
+    apiClient.enabled ? withDemoFallback(() => httpAuthService.signup(payload), () => demoAuthService.signup(payload)) : demoAuthService.signup(payload),
+  requestPasswordReset: (email) =>
+    apiClient.enabled
+      ? withDemoFallback(() => httpAuthService.requestPasswordReset(email), () => demoAuthService.requestPasswordReset(email))
+      : demoAuthService.requestPasswordReset(email),
+  verifyResetCode: (email, code) =>
+    apiClient.enabled
+      ? withDemoFallback(() => httpAuthService.verifyResetCode(email, code), () => demoAuthService.verifyResetCode(email, code))
+      : demoAuthService.verifyResetCode(email, code),
+  logout: () => (apiClient.enabled ? withDemoFallback(() => httpAuthService.logout(), () => demoAuthService.logout()) : demoAuthService.logout()),
+}

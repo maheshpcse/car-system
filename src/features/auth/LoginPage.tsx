@@ -9,7 +9,7 @@ import { Button, ButtonLink } from '@/shared/ui/Button'
 import { Checkbox, PasswordInput, TextInput } from '@/shared/ui/Field'
 import { AuthCard, OrDivider, SocialPlaceholders } from './AuthCard'
 import { useAvatarFieldHandlers, useAvatarMood } from './avatarMood'
-import { validateEmail, validatePassword } from './validation'
+import { validatePassword, validateUsername } from './validation'
 import styles from './AuthForms.module.scss'
 
 export default function LoginPage() {
@@ -21,29 +21,29 @@ export default function LoginPage() {
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from ?? '/'
 
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
-  const [errors, setErrors] = useState<{ email?: string; password?: string; form?: string }>({})
-  const [touched, setTouched] = useState<{ email?: boolean; password?: boolean }>({})
+  const [errors, setErrors] = useState<{ username?: string; password?: string; form?: string }>({})
+  const [touched, setTouched] = useState<{ username?: boolean; password?: boolean }>({})
   const [loading, setLoading] = useState(false)
 
-  const emailHandlers = useAvatarFieldHandlers('attentive')
+  const usernameHandlers = useAvatarFieldHandlers('attentive')
   const passwordHandlers = useAvatarFieldHandlers('shy')
 
-  const emailError = touched.email ? validateEmail(email) : undefined
+  const usernameError = touched.username ? validateUsername(username) : undefined
   const passwordError = touched.password ? validatePassword(password) : undefined
-  const canSubmit = !validateEmail(email) && !validatePassword(password) && !loading
+  const canSubmit = !validateUsername(username) && !validatePassword(password) && !loading
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setTouched({ email: true, password: true })
-    if (validateEmail(email) || validatePassword(password)) return
+    setTouched({ username: true, password: true })
+    if (validateUsername(username) || validatePassword(password)) return
     setLoading(true)
     setErrors({})
     setMood('thinking')
     try {
-      const user = await login({ email, password, remember })
+      const user = await login({ username, password, remember })
       setMood('happy')
       notify(`Welcome back, ${user.name.split(' ')[0]}`, 'success')
       window.setTimeout(() => navigate(from, { replace: true }), 550)
@@ -76,19 +76,18 @@ export default function LoginPage() {
 
       <form className={styles.form} onSubmit={onSubmit} noValidate>
         <TextInput
-          label="Email"
-          type="email"
-          name="email"
-          autoComplete="email"
-          iconLeft="mail"
-          placeholder="you@example.com"
-          value={email}
-          error={errors.email ?? emailError}
-          onChange={(e) => setEmail(e.target.value)}
-          onFocus={emailHandlers.onFocus}
+          label="Username"
+          name="username"
+          autoComplete="username"
+          iconLeft="user"
+          placeholder="maya"
+          value={username}
+          error={errors.username ?? usernameError}
+          onChange={(e) => setUsername(e.target.value)}
+          onFocus={usernameHandlers.onFocus}
           onBlur={() => {
-            setTouched((t) => ({ ...t, email: true }))
-            emailHandlers.onBlur()
+            setTouched((t) => ({ ...t, username: true }))
+            usernameHandlers.onBlur()
           }}
           required
         />
@@ -129,7 +128,7 @@ export default function LoginPage() {
       </form>
 
       <p className={styles.hint}>
-        <Icon name="info" size={13} /> Demo mode: use <code>maya@demo.aurora</code> / <code>demo1234</code>, or any email with a 6+ character password.
+        <Icon name="info" size={13} /> Demo mode: use <code>maya</code> / <code>demo1234</code>, or any unique username with a 6+ character password.
       </p>
     </AuthCard>
   )

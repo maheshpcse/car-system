@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/core/auth/AuthProvider'
 import { cx } from '@/core/utils/cx'
+import { NotificationPanel } from '@/features/notifications/NotificationPanel'
+import { useNotifications } from '@/features/notifications/NotificationsProvider'
 import { GlobalSearch } from '@/features/search/GlobalSearch'
 import { useToast } from '@/shared/feedback/ToastProvider'
 import { Icon } from '@/shared/icons/Icon'
 import { Avatar } from '@/shared/ui/Avatar'
 import { Button, ButtonLink, IconButton } from '@/shared/ui/Button'
-import { MenuDivider, MenuItem, MenuLabel, Popover } from '@/shared/ui/Popover'
+import { MenuDivider, MenuItem, Popover } from '@/shared/ui/Popover'
 import { useTheme } from '@/theme/ThemeProvider'
 import { Brand } from './Brand'
 import { PAGE_TITLES } from './navigation'
@@ -17,18 +19,13 @@ interface NavbarProps {
   onOpenMenu: () => void
 }
 
-const NOTIFICATIONS = [
-  { id: 1, title: 'Aureon X1 Performance now available', detail: 'New variant added to the configurator.' },
-  { id: 2, title: 'Showroom lighting updated', detail: 'Studio mode now supports dark environments.' },
-  { id: 3, title: 'Your saved build is ready', detail: 'Velora GT · Deep Crimson · Forged 21"' },
-]
-
 export function Navbar({ onOpenMenu }: NavbarProps) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { user, isAuthenticated, logout } = useAuth()
   const { theme, toggle } = useTheme()
   const { notify } = useToast()
+  const { unreadCount } = useNotifications()
   const [scrolled, setScrolled] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
@@ -76,28 +73,20 @@ export function Navbar({ onOpenMenu }: NavbarProps) {
           onClose={() => setNotifOpen(false)}
           width={320}
           anchor={
-            <IconButton
-              icon="bell"
-              label="Notifications"
-              onClick={() => setNotifOpen((v) => !v)}
-              aria-haspopup="menu"
-              aria-expanded={notifOpen}
-              className={styles.bell}
-            />
+            <span className={styles.bell}>
+              <IconButton
+                icon="bell"
+                label="Notifications"
+                onClick={() => setNotifOpen((v) => !v)}
+                aria-haspopup="menu"
+                aria-expanded={notifOpen}
+                className={cx(unreadCount > 0 && styles.bellUnread)}
+              />
+              {unreadCount > 0 && <span className={styles.bellCount}>{unreadCount > 9 ? '9+' : unreadCount}</span>}
+            </span>
           }
         >
-          <MenuLabel>Notifications</MenuLabel>
-          <ul className={styles.notifications}>
-            {NOTIFICATIONS.map((n) => (
-              <li key={n.id} className={styles.notification}>
-                <span className={styles.notificationDot} />
-                <div>
-                  <p className={styles.notificationTitle}>{n.title}</p>
-                  <p className={styles.notificationDetail}>{n.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <NotificationPanel onClose={() => setNotifOpen(false)} />
         </Popover>
 
         {isAuthenticated && user ? (

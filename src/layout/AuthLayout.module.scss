@@ -42,6 +42,7 @@
 .grid {
   flex: 1;
   display: grid;
+  align-items: start;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   gap: var(--space-8);
   padding: 0 var(--gutter) var(--gutter);
@@ -56,8 +57,12 @@
 }
 
 .visual {
-  position: relative;
-  min-height: 560px;
+  position: sticky;
+  top: var(--space-4);
+  align-self: start;
+  width: 100%;
+  height: calc(100dvh - var(--navbar-height) - var(--gutter) - var(--space-4));
+  min-height: 420px;
   border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--color-surface-2);
@@ -69,7 +74,10 @@
   }
 
   @include down($bp-lg) {
-    min-height: 280px;
+    position: relative;
+    top: auto;
+    height: 280px;
+    min-height: 0;
     max-height: 34vh;
   }
 }

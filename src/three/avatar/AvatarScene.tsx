@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { enableContextRecovery } from '@/three/scene/contextRecovery'
 import { Suspense, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
@@ -12,20 +12,21 @@ import styles from './AvatarScene.module.scss'
 interface AvatarSceneProps {
   mood: AvatarMood
   focus: AvatarFocus | null
-  /** Visual variant seed: changes skin / hair / shirt tones. */
   seed?: number
+  /** Full-body studio guide, or a closer portrait crop. */
+  variant?: 'full' | 'portrait'
 }
 
 const PALETTES = [
-  { skin: '#e9c4a4', hair: '#2b2320', shirt: '#1400c3' },
-  { skin: '#8d5a3b', hair: '#1a1412', shirt: '#0984e3' },
-  { skin: '#f1d6c1', hair: '#c98a4b', shirt: '#1e272e' },
-  { skin: '#c68a5c', hair: '#3a2a22', shirt: '#00a29e' },
-  { skin: '#d8a883', hair: '#4b3a33', shirt: '#ba0001' },
+  { skin: '#c68642', hair: '#1b1410', shirt: '#1400c3', pants: '#1e272e' },
+  { skin: '#8d5524', hair: '#2a1c14', shirt: '#0984e3', pants: '#2b3138' },
+  { skin: '#f1c27d', hair: '#6b4423', shirt: '#1e272e', pants: '#3a434b' },
+  { skin: '#d1a3a4', hair: '#3a2a22', shirt: '#00a29e', pants: '#243038' },
+  { skin: '#e0ac69', hair: '#4b3a33', shirt: '#ba0001', pants: '#1b2026' },
 ]
 
 interface MoodTargets {
-  smile: number // -1 sad .. 1 happy
+  smile: number
   mouthOpen: number
   browRaise: number
   browTilt: number
@@ -42,12 +43,22 @@ const MOODS: Record<AvatarMood, MoodTargets> = {
   sad: { smile: -0.8, mouthOpen: 0, browRaise: -0.2, browTilt: -0.4, squint: 0.2, lookOverride: null },
 }
 
-function Face({ mood, focus, seed = 0 }: AvatarSceneProps) {
+function Aim({ target }: { target: [number, number, number] }) {
+  const { camera } = useThree()
+  useEffect(() => {
+    camera.lookAt(target[0], target[1], target[2])
+  }, [camera, target])
+  return null
+}
+
+function Guide({ mood, focus, seed = 0 }: AvatarSceneProps) {
   const reduced = usePrefersReducedMotion()
   const palette = PALETTES[seed % PALETTES.length]
 
+  const figure = useRef<THREE.Group>(null)
   const head = useRef<THREE.Group>(null)
-  const eyes = useRef<THREE.Group>(null)
+  const leftArm = useRef<THREE.Group>(null)
+  const rightArm = useRef<THREE.Group>(null)
   const leftPupil = useRef<THREE.Group>(null)
   const rightPupil = useRef<THREE.Group>(null)
   const leftLid = useRef<THREE.Mesh>(null)
@@ -70,7 +81,7 @@ function Face({ mood, focus, seed = 0 }: AvatarSceneProps) {
     return () => window.removeEventListener('pointermove', onMove)
   }, [])
 
-  const mouthGeo = useMemo(() => new THREE.TorusGeometry(0.16, 0.022, 10, 32, Math.PI * 0.7), [])
+  const mouthGeo = useMemo(() => new THREE.TorusGeometry(0.09, 0.014, 10, 32, Math.PI * 0.7), [])
 
   useFrame(({ clock }, delta) => {
     const t = clock.getElapsedTime()
@@ -84,7 +95,6 @@ function Face({ mood, focus, seed = 0 }: AvatarSceneProps) {
     s.browTilt += (target.browTilt - s.browTilt) * k
     s.squint += (target.squint - s.squint) * k
 
-    // Gaze target: mood override > focused field > pointer (or idle drift)
     const desired = target.lookOverride ?? (focus ? new THREE.Vector2(focus.x, focus.y) : pointer.current)
     if (reduced) desired.set(0, 0)
     look.current.lerp(desired, 1 - Math.exp(-delta * 4))
@@ -92,20 +102,24 @@ function Face({ mood, focus, seed = 0 }: AvatarSceneProps) {
     const ly = THREE.MathUtils.clamp(look.current.y, -1, 1)
 
     if (head.current) {
-      const bob = reduced ? 0 : Math.sin(t * 0.9) * 0.015
-      head.current.rotation.y = lx * 0.32
-      head.current.rotation.x = ly * 0.2 + bob
+      head.current.rotation.y = lx * 0.28
+      head.current.rotation.x = ly * 0.16
       head.current.rotation.z = -lx * 0.04
-      head.current.position.y = 0.3 + (reduced ? 0 : Math.sin(t * 1.3) * 0.01)
+    }
+    if (figure.current && !reduced) {
+      figure.current.position.y = Math.sin(t * 1.2) * 0.012
+    }
+    if (leftArm.current && rightArm.current && !reduced) {
+      leftArm.current.rotation.x = Math.sin(t * 1.1) * 0.06
+      rightArm.current.rotation.x = Math.sin(t * 1.1 + 0.4) * -0.05
     }
     for (const p of [leftPupil.current, rightPupil.current]) {
       if (p) {
-        p.position.x = lx * 0.05
-        p.position.y = -ly * 0.035
+        p.position.x = lx * 0.028
+        p.position.y = -ly * 0.02
       }
     }
 
-    // Blink
     const b = blink.current
     if (!reduced) {
       if (t > b.next) {
@@ -122,110 +136,130 @@ function Face({ mood, focus, seed = 0 }: AvatarSceneProps) {
     for (const lid of [leftLid.current, rightLid.current]) if (lid) lid.scale.y = lidScale
 
     if (leftBrow.current && rightBrow.current) {
-      const base = 0.235
-      leftBrow.current.position.y = base + s.browRaise * 0.035 + s.browTilt * 0.02
-      rightBrow.current.position.y = base + s.browRaise * 0.035 - s.browTilt * 0.02
-      leftBrow.current.rotation.z = 0.12 + s.smile * -0.06 + s.browTilt * 0.25
-      rightBrow.current.rotation.z = -0.12 + s.smile * 0.06 + s.browTilt * 0.1
+      const base = 0.13
+      leftBrow.current.position.y = base + s.browRaise * 0.02 + s.browTilt * 0.012
+      rightBrow.current.position.y = base + s.browRaise * 0.02 - s.browTilt * 0.012
+      leftBrow.current.rotation.z = 0.1 + s.smile * -0.05 + s.browTilt * 0.2
+      rightBrow.current.rotation.z = -0.1 + s.smile * 0.05 + s.browTilt * 0.08
     }
 
     if (mouth.current) {
-      // smile>0: arc at the bottom of the torus curves upward at the ends
       const smile = s.smile
       const rotation = smile >= 0 ? -Math.PI * 0.85 : Math.PI * 0.15
       mouth.current.rotation.z += (rotation - mouth.current.rotation.z) * k
       const curve = Math.abs(smile)
-      mouth.current.scale.set(0.7 + curve * 0.5, 0.15 + curve * 0.85, 1)
-      mouth.current.position.y = -0.22 + (smile >= 0 ? curve * 0.09 : -curve * 0.02)
+      mouth.current.scale.set(0.7 + curve * 0.45, 0.18 + curve * 0.75, 1)
+      mouth.current.position.y = -0.12 + (smile >= 0 ? curve * 0.05 : -curve * 0.015)
     }
     if (mouthInner.current) {
       mouthInner.current.scale.set(1, Math.max(0.001, s.mouthOpen), 1)
-      mouthInner.current.position.y = -0.25
     }
   })
 
   return (
-    <group position={[0, -0.35, 0]}>
-      {/* Bust */}
-      <mesh position={[0, -0.75, 0]} castShadow>
-        <capsuleGeometry args={[0.62, 0.5, 8, 24]} />
-        <meshStandardMaterial color={palette.shirt} roughness={0.75} />
+    <group ref={figure}>
+      {/* Shoes */}
+      {[-1, 1].map((side) => (
+        <mesh key={`shoe-${side}`} position={[side * 0.13, 0.05, 0.06]} castShadow>
+          <boxGeometry args={[0.16, 0.08, 0.28]} />
+          <meshStandardMaterial color="#15191d" roughness={0.7} />
+        </mesh>
+      ))}
+      {/* Legs */}
+      {[-1, 1].map((side) => (
+        <mesh key={`leg-${side}`} position={[side * 0.12, 0.42, 0]} castShadow>
+          <capsuleGeometry args={[0.075, 0.52, 6, 16]} />
+          <meshStandardMaterial color={palette.pants} roughness={0.8} />
+        </mesh>
+      ))}
+      {/* Hips */}
+      <mesh position={[0, 0.78, 0]} castShadow>
+        <boxGeometry args={[0.38, 0.16, 0.2]} />
+        <meshStandardMaterial color={palette.pants} roughness={0.8} />
       </mesh>
-      <mesh position={[0, -0.1, 0]}>
-        <cylinderGeometry args={[0.2, 0.24, 0.35, 24]} />
+      {/* Torso */}
+      <mesh position={[0, 1.18, 0]} castShadow>
+        <capsuleGeometry args={[0.22, 0.42, 8, 20]} />
+        <meshStandardMaterial color={palette.shirt} roughness={0.72} />
+      </mesh>
+      {/* Arms */}
+      {([-1, 1] as const).map((side) => (
+        <group key={`arm-${side}`} ref={side < 0 ? leftArm : rightArm} position={[side * 0.28, 1.34, 0]}>
+          <mesh position={[0, -0.22, 0]} rotation={[0, 0, side * 0.18]} castShadow>
+            <capsuleGeometry args={[0.055, 0.42, 6, 14]} />
+            <meshStandardMaterial color={palette.shirt} roughness={0.72} />
+          </mesh>
+          <mesh position={[side * 0.05, -0.48, 0.02]}>
+            <sphereGeometry args={[0.055, 14, 14]} />
+            <meshStandardMaterial color={palette.skin} roughness={0.7} />
+          </mesh>
+        </group>
+      ))}
+      {/* Neck */}
+      <mesh position={[0, 1.48, 0]}>
+        <cylinderGeometry args={[0.07, 0.08, 0.12, 16]} />
         <meshStandardMaterial color={palette.skin} roughness={0.7} />
       </mesh>
 
-      <group ref={head} position={[0, 0.3, 0]}>
-        {/* Head */}
+      <group ref={head} position={[0, 1.68, 0]}>
         <mesh castShadow>
-          <sphereGeometry args={[0.72, 48, 48]} />
-          <meshStandardMaterial color={palette.skin} roughness={0.68} />
+          <sphereGeometry args={[0.22, 40, 40]} />
+          <meshStandardMaterial color={palette.skin} roughness={0.66} />
         </mesh>
-        {/* Hair cap */}
-        <mesh position={[0, 0.16, -0.06]} rotation={[-0.25, 0, 0]}>
-          <sphereGeometry args={[0.745, 48, 32, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
-          <meshStandardMaterial color={palette.hair} roughness={0.85} />
+        {/* Shorter cropped hair, not a giant cap */}
+        <mesh position={[0, 0.08, -0.02]} rotation={[-0.35, 0, 0]}>
+          <sphereGeometry args={[0.228, 36, 24, 0, Math.PI * 2, 0, Math.PI * 0.48]} />
+          <meshStandardMaterial color={palette.hair} roughness={0.88} />
         </mesh>
-        {/* Ears */}
+        <mesh position={[0.02, 0.1, 0.12]} rotation={[0.2, 0.4, 0.2]}>
+          <boxGeometry args={[0.18, 0.05, 0.08]} />
+          <meshStandardMaterial color={palette.hair} roughness={0.88} />
+        </mesh>
         {[-1, 1].map((side) => (
-          <mesh key={side} position={[side * 0.71, -0.02, 0]}>
-            <sphereGeometry args={[0.11, 20, 20]} />
+          <mesh key={side} position={[side * 0.215, 0, 0]}>
+            <sphereGeometry args={[0.038, 16, 16]} />
             <meshStandardMaterial color={palette.skin} roughness={0.7} />
           </mesh>
         ))}
-
-        {/* Eyes */}
-        <group ref={eyes} position={[0, 0.08, 0.6]}>
+        <group position={[0, 0.03, 0.185]}>
           {[-1, 1].map((side) => (
-            <group key={side} position={[side * 0.24, 0, 0]}>
+            <group key={side} position={[side * 0.07, 0, 0]}>
               <mesh>
-                <sphereGeometry args={[0.105, 28, 28]} />
+                <sphereGeometry args={[0.038, 22, 22]} />
                 <meshStandardMaterial color="#fbfbfb" roughness={0.25} />
               </mesh>
-              <group ref={side < 0 ? leftPupil : rightPupil} position={[0, 0, 0.07]}>
+              <group ref={side < 0 ? leftPupil : rightPupil} position={[0, 0, 0.022]}>
                 <mesh>
-                  <sphereGeometry args={[0.052, 20, 20]} />
-                  <meshStandardMaterial color="#2c4a6e" roughness={0.3} />
+                  <sphereGeometry args={[0.018, 16, 16]} />
+                  <meshStandardMaterial color="#3b2416" roughness={0.3} />
                 </mesh>
-                <mesh position={[0, 0, 0.035]}>
-                  <sphereGeometry args={[0.026, 16, 16]} />
+                <mesh position={[0, 0, 0.012]}>
+                  <sphereGeometry args={[0.009, 12, 12]} />
                   <meshStandardMaterial color="#0d1218" roughness={0.2} />
                 </mesh>
-                <mesh position={[0.02, 0.02, 0.05]}>
-                  <sphereGeometry args={[0.009, 10, 10]} />
-                  <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.6} />
-                </mesh>
               </group>
-              {/* Eyelid: skin-toned shell that scales down to blink */}
-              <mesh ref={side < 0 ? leftLid : rightLid} position={[0, 0.005, 0.005]} scale={[1, 1, 1]}>
-                <sphereGeometry args={[0.118, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
+              <mesh ref={side < 0 ? leftLid : rightLid} position={[0, 0.002, 0.002]}>
+                <sphereGeometry args={[0.042, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
                 <meshStandardMaterial color={palette.skin} roughness={0.7} side={THREE.DoubleSide} />
               </mesh>
             </group>
           ))}
         </group>
-
-        {/* Brows */}
         {[-1, 1].map((side) => (
-          <mesh key={side} ref={side < 0 ? leftBrow : rightBrow} position={[side * 0.24, 0.235, 0.63]} rotation={[0, 0, side * -0.12]}>
-            <capsuleGeometry args={[0.02, 0.16, 4, 8]} />
+          <mesh key={side} ref={side < 0 ? leftBrow : rightBrow} position={[side * 0.07, 0.13, 0.19]} rotation={[0, 0, side * -0.1]}>
+            <capsuleGeometry args={[0.01, 0.07, 4, 8]} />
             <meshStandardMaterial color={palette.hair} roughness={0.9} />
           </mesh>
         ))}
-
-        {/* Nose */}
-        <mesh position={[0, -0.06, 0.7]}>
-          <sphereGeometry args={[0.065, 20, 20]} />
+        <mesh position={[0, -0.02, 0.2]}>
+          <sphereGeometry args={[0.028, 16, 16]} />
           <meshStandardMaterial color={palette.skin} roughness={0.7} />
         </mesh>
-
-        {/* Mouth */}
-        <mesh ref={mouth} geometry={mouthGeo} position={[0, -0.22, 0.66]} rotation={[0, 0, -Math.PI * 0.85]}>
+        <mesh ref={mouth} geometry={mouthGeo} position={[0, -0.12, 0.195]} rotation={[0, 0, -Math.PI * 0.85]}>
           <meshStandardMaterial color="#8c3f3f" roughness={0.6} />
         </mesh>
-        <mesh ref={mouthInner} position={[0, -0.25, 0.655]}>
-          <sphereGeometry args={[0.07, 20, 20]} />
+        <mesh ref={mouthInner} position={[0, -0.13, 0.192]}>
+          <sphereGeometry args={[0.035, 16, 16]} />
           <meshStandardMaterial color="#3b1a1c" roughness={0.9} />
         </mesh>
       </group>
@@ -233,37 +267,50 @@ function Face({ mood, focus, seed = 0 }: AvatarSceneProps) {
   )
 }
 
-function StaticFallback() {
+function StaticFallback({ variant }: { variant: 'full' | 'portrait' }) {
   return (
     <div className={styles.fallback} aria-hidden="true">
-      <svg viewBox="0 0 200 200" width="180" height="180">
-        <circle cx="100" cy="150" r="60" fill="#1400C3" />
-        <circle cx="100" cy="86" r="52" fill="#e9c4a4" />
-        <path d="M48 80a52 52 0 0 1 104 0v-8a52 52 0 0 0-104 0z" fill="#2b2320" />
-        <circle cx="82" cy="86" r="6" fill="#0d1218" />
-        <circle cx="118" cy="86" r="6" fill="#0d1218" />
-        <path d="M84 108q16 12 32 0" stroke="#8c3f3f" strokeWidth="4" fill="none" strokeLinecap="round" />
+      <svg viewBox={variant === 'full' ? '0 0 160 280' : '0 0 160 180'} width={variant === 'full' ? 120 : 140} height={variant === 'full' ? 210 : 150}>
+        {variant === 'full' && (
+          <>
+            <rect x="58" y="210" width="18" height="48" rx="8" fill="#1e272e" />
+            <rect x="84" y="210" width="18" height="48" rx="8" fill="#1e272e" />
+            <rect x="52" y="128" width="56" height="88" rx="20" fill="#1400C3" />
+            <rect x="32" y="136" width="16" height="70" rx="8" fill="#1400C3" />
+            <rect x="112" y="136" width="16" height="70" rx="8" fill="#1400C3" />
+          </>
+        )}
+        <circle cx="80" cy={variant === 'full' ? 88 : 86} r="36" fill="#c68642" />
+        <path d={variant === 'full' ? 'M48 78a34 34 0 0 1 64 6v-10a34 34 0 0 0-64 0z' : 'M48 76a34 34 0 0 1 64 6v-10a34 34 0 0 0-64 0z'} fill="#1b1410" />
+        <circle cx="68" cy={variant === 'full' ? 90 : 88} r="4" fill="#0d1218" />
+        <circle cx="92" cy={variant === 'full' ? 90 : 88} r="4" fill="#0d1218" />
+        <path d={variant === 'full' ? 'M70 104q10 8 20 0' : 'M70 102q10 8 20 0'} stroke="#8c3f3f" strokeWidth="3" fill="none" strokeLinecap="round" />
       </svg>
     </div>
   )
 }
 
-export default function AvatarScene(props: AvatarSceneProps) {
+export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneProps) {
   const webgl = useWebGLSupport()
-  if (!webgl) return <StaticFallback />
+  if (!webgl) return <StaticFallback variant={variant} />
+  const camera =
+    variant === 'full'
+      ? { position: [0.35, 1.02, 5.6] as [number, number, number], fov: 30, lookAt: [0, 0.98, 0] as [number, number, number] }
+      : { position: [0.18, 1.66, 2.15] as [number, number, number], fov: 32, lookAt: [0, 1.66, 0] as [number, number, number] }
   return (
-    <SceneErrorBoundary fallback={<StaticFallback />}>
+    <SceneErrorBoundary fallback={<StaticFallback variant={variant} />}>
       <Canvas
         className={styles.canvas}
         dpr={[1, 1.5]}
         shadows="percentage"
         onCreated={enableContextRecovery}
-        camera={{ position: [0, 0.05, 3.3], fov: 30, near: 0.1, far: 30 }}
+        camera={{ position: camera.position, fov: camera.fov, near: 0.1, far: 30 }}
         gl={{ antialias: true, alpha: true }}
       >
         <Suspense fallback={null}>
+          <Aim target={camera.lookAt} />
           <Studio floorRadius={0} intensity={0.9} />
-          <Face {...props} />
+          <Guide {...props} variant={variant} />
         </Suspense>
       </Canvas>
     </SceneErrorBoundary>

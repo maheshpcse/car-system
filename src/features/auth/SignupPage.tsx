@@ -10,7 +10,7 @@ import { Button } from '@/shared/ui/Button'
 import { Checkbox, PasswordInput, Select, TextInput } from '@/shared/ui/Field'
 import { AuthCard, OrDivider, SocialPlaceholders } from './AuthCard'
 import { useAvatarFieldHandlers, useAvatarMood } from './avatarMood'
-import { passwordStrength, validateEmail, validateName, validatePassword } from './validation'
+import { passwordStrength, validateEmail, validateName, validatePassword, validateUsername } from './validation'
 import styles from './AuthForms.module.scss'
 
 const COUNTRIES = ['Denmark', 'Germany', 'India', 'Netherlands', 'Norway', 'Sweden', 'United Kingdom', 'United States'].map((c) => ({ value: c, label: c }))
@@ -22,7 +22,7 @@ export default function SignupPage() {
   const { setMood } = useAvatarMood()
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', phone: '', country: 'Denmark', terms: false })
+  const [form, setForm] = useState({ name: '', username: '', email: '', password: '', confirm: '', phone: '', country: 'Denmark', terms: false })
   const [touched, setTouched] = useState<Record<string, boolean>>({})
   const [formError, setFormError] = useState<string | undefined>()
   const [loading, setLoading] = useState(false)
@@ -32,6 +32,7 @@ export default function SignupPage() {
 
   const errors = {
     name: validateName(form.name),
+    username: validateUsername(form.username),
     email: validateEmail(form.email),
     password: validatePassword(form.password, 8),
     confirm: form.confirm !== form.password ? 'Passwords do not match.' : undefined,
@@ -48,13 +49,20 @@ export default function SignupPage() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setTouched({ name: true, email: true, password: true, confirm: true, terms: true })
+    setTouched({ name: true, username: true, email: true, password: true, confirm: true, terms: true })
     if (!valid) return
     setLoading(true)
     setFormError(undefined)
     setMood('thinking')
     try {
-      const user = await signup({ name: form.name, email: form.email, password: form.password, phone: form.phone || undefined, country: form.country })
+      const user = await signup({
+        name: form.name,
+        username: form.username,
+        email: form.email,
+        password: form.password,
+        phone: form.phone || undefined,
+        country: form.country,
+      })
       setMood('happy')
       notify(`Welcome, ${user.name.split(' ')[0]}. Your studio is ready.`, 'success')
       window.setTimeout(() => navigate('/', { replace: true }), 550)
@@ -95,6 +103,19 @@ export default function SignupPage() {
           onChange={(e) => set('name')(e.target.value)}
           onFocus={attentive.onFocus}
           onBlur={blur('name', attentive)}
+          required
+        />
+        <TextInput
+          label="Username"
+          name="username"
+          autoComplete="username"
+          iconLeft="user"
+          placeholder="maya"
+          value={form.username}
+          error={show('username')}
+          onChange={(e) => set('username')(e.target.value)}
+          onFocus={attentive.onFocus}
+          onBlur={blur('username', attentive)}
           required
         />
         <TextInput

@@ -41,7 +41,7 @@ export default function ProfilePage() {
           <div className={styles.avatar} aria-hidden="true">
             <AvatarMoodProvider>
               <Suspense fallback={null}>
-                <AvatarScene mood={mood} focus={null} seed={user.avatarSeed} />
+                <AvatarScene variant="portrait" mood={mood} focus={null} seed={user.avatarSeed} />
               </Suspense>
             </AvatarMoodProvider>
           </div>
@@ -49,6 +49,8 @@ export default function ProfilePage() {
             <span className="t-eyebrow">{user.title}</span>
             <h1 className="t-title">{user.name}</h1>
             <p className={styles.meta}>
+              <Icon name="user" size={14} /> {user.username}
+              <span aria-hidden="true">·</span>
               <Icon name="mail" size={14} /> {user.email}
               <span aria-hidden="true">·</span>
               <Icon name="globe" size={14} /> {user.location}
@@ -70,6 +72,7 @@ export default function ProfilePage() {
               <TextInput label="Full name" iconLeft="user" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} onFocus={() => setMood('attentive')} onBlur={() => setMood('idle')} required />
               <TextInput label="Title" iconLeft="sparkle" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} onFocus={() => setMood('attentive')} onBlur={() => setMood('idle')} />
               <TextInput label="Location" iconLeft="globe" value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} onFocus={() => setMood('attentive')} onBlur={() => setMood('idle')} />
+              <TextInput label="Username" iconLeft="user" value={user.username} disabled hint="Username is unique and cannot be changed here." />
               <TextInput label="Email" iconLeft="mail" value={user.email} disabled hint="Email is fixed for demo accounts." />
               <div className={styles.formActions}>
                 <Button type="submit" iconLeft="check">

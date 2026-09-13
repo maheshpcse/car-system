@@ -7,8 +7,8 @@
   gap: var(--space-4);
   height: var(--navbar-height);
   padding-inline: var(--gutter);
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  background: var(--color-background-elevated);
+  border-bottom: 1px solid var(--color-border);
   z-index: var(--z-navbar);
   transition:
     background-color var(--duration-normal) var(--ease-standard),
@@ -104,16 +104,33 @@
 
 .bell {
   position: relative;
-  &::after {
-    content: '';
-    position: absolute;
-    top: 9px;
-    right: 9px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-accent);
-  }
+}
+
+.bellUnread::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.bellCount {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding-inline: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-primary-contrast);
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  line-height: 16px;
+  text-align: center;
 }
 
 .notifications {

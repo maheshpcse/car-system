@@ -20,6 +20,7 @@ export const PERSONAL_NAV: NavItem[] = [
   { to: '/favorites', label: 'Favorites', icon: 'heart' },
   { to: '/compare', label: 'Compare', icon: 'compare' },
   { to: '/configurator', label: 'Configurator', icon: 'palette' },
+  { to: '/notifications', label: 'Notifications', icon: 'bell' },
   { to: '/saved-builds', label: 'Saved Builds', icon: 'bookmark', protected: true },
 ]
 
@@ -39,4 +40,5 @@ export const PAGE_TITLES: Record<string, string> = {
   '/saved-builds': 'Saved Builds',
   '/profile': 'Profile',
   '/settings': 'Settings',
+  '/notifications': 'Notifications',
 }

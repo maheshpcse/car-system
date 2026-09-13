@@ -18,6 +18,7 @@ const ComparePage = lazy(() => import('@/features/compare/ComparePage'))
 const FavoritesPage = lazy(() => import('@/features/favorites/FavoritesPage'))
 const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'))
 const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'))
+const NotificationsPage = lazy(() => import('@/features/notifications/NotificationsPage'))
 const LegalPage = lazy(() => import('@/features/legal/LegalPage'))
 const NotFoundPage = lazy(() => import('@/features/misc/NotFoundPage'))
 
@@ -71,6 +72,7 @@ export function AppRoutes() {
             }
           />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
           <Route path="privacy" element={<LegalPage kind="privacy" />} />
           <Route path="terms" element={<LegalPage kind="terms" />} />
           <Route path="*" element={<NotFoundPage />} />

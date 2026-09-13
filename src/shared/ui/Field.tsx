@@ -2,14 +2,17 @@ import {
   forwardRef,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type ButtonHTMLAttributes,
+  type CSSProperties,
   type InputHTMLAttributes,
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   type TextareaHTMLAttributes,
 } from 'react'
+import { createPortal } from 'react-dom'
 import { Icon, type IconName } from '@/shared/icons/Icon'
 import { cx } from '@/core/utils/cx'
 import styles from './Field.module.scss'
@@ -38,13 +41,11 @@ export function FieldShell({ id, label, hint, error, success, optional, children
         </label>
       )}
       {children}
-      {message && (
-        <p id={`${id}-message`} className={styles.message} role={error ? 'alert' : undefined}>
-          {error && <Icon name="alert" size={13} />}
-          {success && <Icon name="check" size={13} />}
-          {message}
-        </p>
-      )}
+      <p id={`${id}-message`} className={styles.message} role={error ? 'alert' : undefined} aria-hidden={message ? undefined : true}>
+        {error && <Icon name="alert" size={13} />}
+        {success && <Icon name="check" size={13} />}
+        {message ?? '\u00a0'}
+      </p>
     </div>
   )
 }
@@ -180,22 +181,56 @@ export function Select<T extends string>({
   const id = idProp ?? generated
   const listId = `${id}-list`
   const rootRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLUListElement>(null)
   const [open, setOpen] = useState(false)
+  const [menuStyle, setMenuStyle] = useState<CSSProperties>({})
   const selected = options.find((o) => o.value === value) ?? options[0]
+
+  const placeMenu = () => {
+    const trigger = rootRef.current
+    if (!trigger) return
+    const rect = trigger.getBoundingClientRect()
+    const gutter = 12
+    const width = Math.max(rect.width, 320)
+    const left = Math.min(rect.left, window.innerWidth - width - gutter)
+    const spaceBelow = window.innerHeight - rect.bottom - gutter
+    const openUp = spaceBelow < 220 && rect.top > spaceBelow
+    setMenuStyle({
+      position: 'fixed',
+      left: Math.max(gutter, left),
+      minWidth: width,
+      width: 'max-content',
+      maxWidth: 'min(92vw, 560px)',
+      top: openUp ? undefined : rect.bottom + 8,
+      bottom: openUp ? window.innerHeight - rect.top + 8 : undefined,
+    })
+  }
+
+  useLayoutEffect(() => {
+    if (!open) return
+    placeMenu()
+  }, [open, options, value])
 
   useEffect(() => {
     if (!open) return
     const onPointer = (e: PointerEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false)
+      const t = e.target as Node
+      if (rootRef.current?.contains(t) || menuRef.current?.contains(t)) return
+      setOpen(false)
     }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false)
     }
+    const onReposition = () => placeMenu()
     document.addEventListener('pointerdown', onPointer)
     document.addEventListener('keydown', onKey)
+    window.addEventListener('resize', onReposition)
+    window.addEventListener('scroll', onReposition, true)
     return () => {
       document.removeEventListener('pointerdown', onPointer)
       document.removeEventListener('keydown', onKey)
+      window.removeEventListener('resize', onReposition)
+      window.removeEventListener('scroll', onReposition, true)
     }
   }, [open])
 
@@ -252,28 +287,30 @@ export function Select<T extends string>({
           <span className={cx(!selected?.value && styles.selectPlaceholder)}>{selected?.label ?? 'Choose…'}</span>
         </button>
         <Icon name="chevronDown" size={16} className={styles.chevron} />
-        {open && (
-          <ul id={listId} className={styles.selectMenu} role="listbox" aria-labelledby={id}>
-            {options.map((opt) => {
-              const isActive = opt.value === value
-              return (
-                <li key={opt.value} role="presentation">
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={isActive}
-                    disabled={opt.disabled}
-                    className={cx(styles.selectOption, isActive && styles.selectOptionActive)}
-                    onClick={() => pick(opt.value)}
-                  >
-                    <span>{opt.label}</span>
-                    {isActive && <Icon name="check" size={14} />}
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        )}
+        {open &&
+          createPortal(
+            <ul ref={menuRef} id={listId} className={styles.selectMenu} role="listbox" aria-labelledby={id} style={menuStyle}>
+              {options.map((opt) => {
+                const isActive = opt.value === value
+                return (
+                  <li key={opt.value} role="presentation">
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={isActive}
+                      disabled={opt.disabled}
+                      className={cx(styles.selectOption, isActive && styles.selectOptionActive)}
+                      onClick={() => pick(opt.value)}
+                    >
+                      <span>{opt.label}</span>
+                      {isActive && <Icon name="check" size={14} />}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>,
+            document.body,
+          )}
       </div>
     </FieldShell>
   )

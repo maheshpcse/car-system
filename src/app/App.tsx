@@ -1,5 +1,6 @@
 import { AuthProvider } from '@/core/auth/AuthProvider'
 import { PreferencesProvider } from '@/core/preferences/PreferencesProvider'
+import { NotificationsProvider } from '@/features/notifications/NotificationsProvider'
 import { ToastProvider } from '@/shared/feedback/ToastProvider'
 import { ScrollRestoration } from '@/shared/scroll/ScrollRestoration'
 import { ThemeProvider } from '@/theme/ThemeProvider'
@@ -10,10 +11,12 @@ export function App() {
     <ThemeProvider>
       <PreferencesProvider>
         <AuthProvider>
-          <ToastProvider>
-            <ScrollRestoration />
-            <AppRoutes />
-          </ToastProvider>
+          <NotificationsProvider>
+            <ToastProvider>
+              <ScrollRestoration />
+              <AppRoutes />
+            </ToastProvider>
+          </NotificationsProvider>
         </AuthProvider>
       </PreferencesProvider>
     </ThemeProvider>

@@ -100,8 +100,15 @@ export default function ComparePage() {
             action={
               <>
                 <div className={styles.emptyPicker}>
-                  <Select aria-label="Add a vehicle" options={[{ value: '', label: 'Choose a vehicle…' }, ...available.map((v) => ({ value: v.id, label: `${v.manufacturer} ${v.model}` }))]} value={pendingId} onChange={setPendingId} compact />
-                  <Button disabled={!pendingId} onClick={() => { toggleCompare(pendingId); setPendingId('') }}>
+                  <Select
+                    aria-label="Add a vehicle"
+                    wrapperClassName={styles.emptySelect}
+                    options={[{ value: '', label: 'Choose a vehicle…' }, ...available.map((v) => ({ value: v.id, label: `${v.manufacturer} ${v.model}` }))]}
+                    value={pendingId}
+                    onChange={setPendingId}
+                    compact
+                  />
+                  <Button className={styles.emptyAdd} disabled={!pendingId} onClick={() => { toggleCompare(pendingId); setPendingId('') }}>
                     Add
                   </Button>
                 </div>
