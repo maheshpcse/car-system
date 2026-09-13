@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { enableContextRecovery } from '@/three/scene/contextRecovery'
 import { Suspense, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
@@ -41,6 +41,14 @@ const MOODS: Record<AvatarMood, MoodTargets> = {
   happy: { smile: 1, mouthOpen: 0.35, browRaise: 0.5, browTilt: 0, squint: 0.55, lookOverride: null },
   thinking: { smile: 0, mouthOpen: 0, browRaise: 0.6, browTilt: 0.5, squint: 0.1, lookOverride: new THREE.Vector2(0.6, -0.7) },
   sad: { smile: -0.8, mouthOpen: 0, browRaise: -0.2, browTilt: -0.4, squint: 0.2, lookOverride: null },
+}
+
+function Aim({ target }: { target: [number, number, number] }) {
+  const { camera } = useThree()
+  useEffect(() => {
+    camera.lookAt(target[0], target[1], target[2])
+  }, [camera, target])
+  return null
 }
 
 function Guide({ mood, focus, seed = 0 }: AvatarSceneProps) {
@@ -285,7 +293,10 @@ function StaticFallback({ variant }: { variant: 'full' | 'portrait' }) {
 export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneProps) {
   const webgl = useWebGLSupport()
   if (!webgl) return <StaticFallback variant={variant} />
-  const camera = variant === 'full' ? { position: [0.45, 1.15, 4.9] as [number, number, number], fov: 28 } : { position: [0.2, 1.55, 2.05] as [number, number, number], fov: 32 }
+  const camera =
+    variant === 'full'
+      ? { position: [0.35, 1.02, 5.6] as [number, number, number], fov: 30, lookAt: [0, 0.98, 0] as [number, number, number] }
+      : { position: [0.18, 1.66, 2.15] as [number, number, number], fov: 32, lookAt: [0, 1.66, 0] as [number, number, number] }
   return (
     <SceneErrorBoundary fallback={<StaticFallback variant={variant} />}>
       <Canvas
@@ -293,10 +304,11 @@ export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneP
         dpr={[1, 1.5]}
         shadows="percentage"
         onCreated={enableContextRecovery}
-        camera={{ ...camera, near: 0.1, far: 30 }}
+        camera={{ position: camera.position, fov: camera.fov, near: 0.1, far: 30 }}
         gl={{ antialias: true, alpha: true }}
       >
         <Suspense fallback={null}>
+          <Aim target={camera.lookAt} />
           <Studio floorRadius={0} intensity={0.9} />
           <Guide {...props} variant={variant} />
         </Suspense>
