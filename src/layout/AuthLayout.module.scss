@@ -43,7 +43,7 @@
   flex: 1;
   display: grid;
   align-items: start;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.92fr);
   gap: var(--space-8);
   padding: 0 var(--gutter) var(--gutter);
   max-width: 1400px;
@@ -90,6 +90,17 @@
     linear-gradient(180deg, var(--color-surface-2), var(--color-surface-3));
 }
 
+.visual::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(120% 80% at 50% 100%, rgb(0 0 0 / 0.22), transparent 55%),
+    repeating-linear-gradient(180deg, transparent 0 3px, rgb(0 0 0 / 0.035) 3px 4px);
+}
+
 .visualFallback {
   position: absolute;
   inset: 0;
@@ -102,6 +113,7 @@
   bottom: var(--space-7);
   display: grid;
   gap: var(--space-2);
+  z-index: 2;
   max-width: 360px;
 
   p {
