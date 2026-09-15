@@ -32,6 +32,7 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<{ username?: string; email?: string; password?: string; form?: string }>({})
   const [touched, setTouched] = useState<{ username?: boolean; email?: boolean; password?: boolean }>({})
   const [loading, setLoading] = useState(false)
+  const [skipLiveSubmitGate, setSkipLiveSubmitGate] = useState(false)
 
   const identifierHandlers = useAvatarFieldHandlers('attentive')
   const passwordHandlers = useAvatarFieldHandlers('shy')
@@ -40,12 +41,21 @@ export default function LoginPage() {
   const emailError = method === 'email' && touched.email ? validateEmail(email) : undefined
   const passwordError = touched.password ? validatePassword(password) : undefined
   const identifierInvalid = method === 'username' ? Boolean(validateUsername(username)) : Boolean(validateEmail(email))
-  const canSubmit = !identifierInvalid && !validatePassword(password) && !loading
+  const passwordInvalid = Boolean(validatePassword(password))
+  const canSubmit = !loading && (skipLiveSubmitGate || (!identifierInvalid && !passwordInvalid))
+
+  const resetValidationForTabSwitch = () => {
+    setErrors({})
+    setTouched({})
+    setSkipLiveSubmitGate(true)
+    setMood('idle')
+  }
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setSkipLiveSubmitGate(false)
     setTouched({ username: method === 'username', email: method === 'email', password: true })
-    if (identifierInvalid || validatePassword(password)) return
+    if (identifierInvalid || passwordInvalid) return
     setLoading(true)
     setErrors({})
     setMood('thinking')
@@ -91,8 +101,9 @@ export default function LoginPage() {
           label="Sign in with"
           value={method}
           onChange={(next) => {
+            if (next === method) return
             setMethod(next)
-            setErrors((current) => ({ ...current, username: undefined, email: undefined, form: undefined }))
+            resetValidationForTabSwitch()
           }}
           options={[
             { value: 'username', label: 'Username', icon: 'user' },
@@ -109,7 +120,11 @@ export default function LoginPage() {
             placeholder="maya"
             value={username}
             error={errors.username ?? usernameError}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setSkipLiveSubmitGate(false)
+              setUsername(e.target.value)
+              setErrors((current) => ({ ...current, username: undefined, form: undefined }))
+            }}
             onFocus={identifierHandlers.onFocus}
             onBlur={() => {
               setTouched((t) => ({ ...t, username: true }))
@@ -127,7 +142,11 @@ export default function LoginPage() {
             placeholder="you@example.com"
             value={email}
             error={errors.email ?? emailError}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setSkipLiveSubmitGate(false)
+              setEmail(e.target.value)
+              setErrors((current) => ({ ...current, email: undefined, form: undefined }))
+            }}
             onFocus={identifierHandlers.onFocus}
             onBlur={() => {
               setTouched((t) => ({ ...t, email: true }))
@@ -142,7 +161,11 @@ export default function LoginPage() {
           placeholder="Your password"
           value={password}
           error={errors.password ?? passwordError}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setSkipLiveSubmitGate(false)
+            setPassword(e.target.value)
+            setErrors((current) => ({ ...current, password: undefined, form: undefined }))
+          }}
           onFocus={passwordHandlers.onFocus}
           onBlur={() => {
             setTouched((t) => ({ ...t, password: true }))
