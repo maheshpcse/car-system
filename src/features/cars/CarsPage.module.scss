@@ -38,7 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--space-3);
   padding: var(--space-3);
   border-radius: var(--radius-lg);
   background: var(--color-scrim);
@@ -56,30 +56,28 @@
 
 .searchGroup {
   flex: 1;
-  display: flex;
-  align-items: stretch;
+  display: grid;
+  grid-template-columns: 13.75rem minmax(0, 1fr) auto;
+  align-items: center;
   gap: var(--space-2);
   min-width: 0;
 
   @include down($bp-sm) {
-    flex-wrap: wrap;
+    grid-template-columns: 1fr;
   }
 }
 
 .category {
-  flex: 0 0 190px;
-
-  @include down($bp-sm) {
-    flex-basis: 100%;
-  }
+  min-width: 0;
+  width: 100%;
 }
 
 .searchField {
   position: relative;
-  flex: 1;
   display: flex;
   align-items: center;
-  min-width: 160px;
+  min-width: 0;
+  height: 46px;
 }
 
 .searchIcon {
