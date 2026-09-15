@@ -298,7 +298,7 @@ export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneP
   if (!webgl) return <StaticFallback variant={variant} />
   const camera =
     variant === 'full'
-      ? { position: [0.85, 1.18, 3.85] as [number, number, number], fov: 28, lookAt: [-0.15, 1.08, 0.2] as [number, number, number] }
+      ? { position: [1.2, 1.28, 5.55] as [number, number, number], fov: 30, lookAt: [0.22, 1.02, 0.12] as [number, number, number] }
       : { position: [0.18, 1.66, 2.15] as [number, number, number], fov: 32, lookAt: [0, 1.66, 0] as [number, number, number] }
   return (
     <SceneErrorBoundary fallback={<StaticFallback variant={variant} />}>
@@ -314,7 +314,7 @@ export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneP
           <Aim target={camera.lookAt} />
           <Studio floorRadius={variant === 'full' ? 6.5 : 0} intensity={variant === 'full' ? 1 : 0.9} />
           {variant === 'full' && <AuthShowreel reduced={Boolean(reduced)} />}
-          <group position={variant === 'full' ? ([-0.55, 0, 0.55] as [number, number, number]) : [0, 0, 0]} scale={variant === 'full' ? 1.48 : 1}>
+          <group position={variant === 'full' ? ([-0.85, 0, 0.45] as [number, number, number]) : [0, 0, 0]} scale={variant === 'full' ? 1.28 : 1}>
             <Guide {...props} variant={variant} />
           </group>
         </Suspense>

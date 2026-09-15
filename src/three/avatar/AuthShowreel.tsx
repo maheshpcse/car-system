@@ -22,7 +22,7 @@ export function AuthShowreel({ reduced }: { reduced: boolean }) {
 function RoadRing() {
   const geo = useMemo(() => new THREE.RingGeometry(2.15, 2.55, 64), [])
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.35, 0.008, -0.35]} geometry={geo} receiveShadow>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.55, 0.008, -0.15]} geometry={geo} receiveShadow>
       <meshStandardMaterial color="#2a3138" roughness={0.92} metalness={0.05} />
     </mesh>
   )
@@ -33,8 +33,8 @@ function DrivingLoop({ reduced }: { reduced: boolean }) {
   useFrame(({ clock }) => {
     if (!ref.current || reduced) return
     const u = clock.getElapsedTime() * 0.32
-    const x = Math.cos(u) * 2.35 + 0.4
-    const z = Math.sin(u) * 1.55 - 0.55
+    const x = Math.cos(u) * 2.15 + 0.85
+    const z = Math.sin(u) * 1.45 - 0.25
     ref.current.position.set(x, 0, z)
     ref.current.rotation.y = -u + Math.PI / 2
   })
@@ -60,7 +60,7 @@ function ServiceBay({ reduced }: { reduced: boolean }) {
     if (wheel.current) wheel.current.rotation.x = t * 2.2
   })
   return (
-    <group position={[1.55, 0, 0.85]} rotation={[0, -0.55, 0]}>
+    <group position={[1.85, 0, 0.55]} rotation={[0, -0.7, 0]}>
       {[-0.32, 0.32].map((x) => (
         <mesh key={x} position={[x, 0.22, 0.18]}>
           <cylinderGeometry args={[0.035, 0.04, 0.44, 8]} />
@@ -99,11 +99,11 @@ function ShoppingLane({ reduced }: { reduced: boolean }) {
   useFrame(({ clock }) => {
     if (!ref.current || reduced) return
     const t = (Math.sin(clock.getElapsedTime() * 0.35) + 1) * 0.5
-    ref.current.position.x = 1.15 + t * 1.1
-    ref.current.position.z = -1.55 - t * 0.35
+    ref.current.position.x = 1.55 + t * 1.25
+    ref.current.position.z = -1.35 - t * 0.4
   })
   return (
-    <group ref={ref} position={[1.15, 0, -1.55]} rotation={[0, 0.7, 0]} scale={0.3}>
+    <group ref={ref} position={[1.55, 0, -1.35]} rotation={[0, 0.7, 0]} scale={0.32}>
       <ProceduralCar silhouette="coupe" color="#ba0001" finish="metallic" wheelStyle="forged" wheelSpin={reduced ? 0 : 4} />
     </group>
   )
