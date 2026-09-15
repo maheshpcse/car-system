@@ -34,7 +34,7 @@ export default function DemoLoginPage() {
     setLoadingId(persona.id)
     setMood('thinking')
     try {
-      await login({ username: persona.username, password: persona.password, remember: true })
+      await login({ username: persona.username, email: persona.email, password: persona.password, remember: true })
       setMood('happy')
       notify(`Signed in as ${persona.name}`, 'success')
       window.setTimeout(() => navigate(persona.role === 'visitor' ? '/showroom' : '/', { replace: true }), 500)
@@ -90,6 +90,10 @@ export default function DemoLoginPage() {
         <div>
           <span>Username</span>
           <code>{selected.username}</code>
+        </div>
+        <div>
+          <span>Email</span>
+          <code>{selected.email}</code>
         </div>
         <div>
           <span>Password</span>

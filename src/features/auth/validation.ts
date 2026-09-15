@@ -1,14 +1,14 @@
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 export const USERNAME_RE = /^[a-zA-Z0-9._-]{3,32}$/
 
-export const validateUsername = (value: string) => {
-  if (!value.trim()) return 'Username is required.'
+export const validateUsername = (value: string, required = true) => {
+  if (!value.trim()) return required ? 'Username is required.' : undefined
   if (!USERNAME_RE.test(value.trim())) return 'Use 3–32 letters, numbers, dots, hyphens or underscores.'
   return undefined
 }
 
-export const validateEmail = (value: string) => {
-  if (!value.trim()) return 'Email is required.'
+export const validateEmail = (value: string, required = true) => {
+  if (!value.trim()) return required ? 'Email is required.' : undefined
   if (!EMAIL_RE.test(value)) return 'Enter a valid email address.'
   return undefined
 }

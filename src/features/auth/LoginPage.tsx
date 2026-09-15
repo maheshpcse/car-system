@@ -7,10 +7,13 @@ import { useToast } from '@/shared/feedback/ToastProvider'
 import { Icon } from '@/shared/icons/Icon'
 import { Button, ButtonLink } from '@/shared/ui/Button'
 import { Checkbox, PasswordInput, TextInput } from '@/shared/ui/Field'
+import { Segmented } from '@/shared/ui/Segmented'
 import { AuthCard, OrDivider, SocialPlaceholders } from './AuthCard'
 import { useAvatarFieldHandlers, useAvatarMood } from './avatarMood'
-import { validatePassword, validateUsername } from './validation'
+import { validateEmail, validatePassword, validateUsername } from './validation'
 import styles from './AuthForms.module.scss'
+
+type LoginMethod = 'username' | 'email'
 
 export default function LoginPage() {
   useDocumentTitle('Sign in')
@@ -21,29 +24,37 @@ export default function LoginPage() {
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from ?? '/'
 
+  const [method, setMethod] = useState<LoginMethod>('username')
   const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
-  const [errors, setErrors] = useState<{ username?: string; password?: string; form?: string }>({})
-  const [touched, setTouched] = useState<{ username?: boolean; password?: boolean }>({})
+  const [errors, setErrors] = useState<{ username?: string; email?: string; password?: string; form?: string }>({})
+  const [touched, setTouched] = useState<{ username?: boolean; email?: boolean; password?: boolean }>({})
   const [loading, setLoading] = useState(false)
 
-  const usernameHandlers = useAvatarFieldHandlers('attentive')
+  const identifierHandlers = useAvatarFieldHandlers('attentive')
   const passwordHandlers = useAvatarFieldHandlers('shy')
 
-  const usernameError = touched.username ? validateUsername(username) : undefined
+  const usernameError = method === 'username' && touched.username ? validateUsername(username) : undefined
+  const emailError = method === 'email' && touched.email ? validateEmail(email) : undefined
   const passwordError = touched.password ? validatePassword(password) : undefined
-  const canSubmit = !validateUsername(username) && !validatePassword(password) && !loading
+  const identifierInvalid = method === 'username' ? Boolean(validateUsername(username)) : Boolean(validateEmail(email))
+  const canSubmit = !identifierInvalid && !validatePassword(password) && !loading
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setTouched({ username: true, password: true })
-    if (validateUsername(username) || validatePassword(password)) return
+    setTouched({ username: method === 'username', email: method === 'email', password: true })
+    if (identifierInvalid || validatePassword(password)) return
     setLoading(true)
     setErrors({})
     setMood('thinking')
     try {
-      const user = await login({ username, password, remember })
+      const user = await login({
+        ...(method === 'username' ? { username: username.trim() } : { email: email.trim() }),
+        password,
+        remember,
+      })
       setMood('happy')
       notify(`Welcome back, ${user.name.split(' ')[0]}`, 'success')
       window.setTimeout(() => navigate(from, { replace: true }), 550)
@@ -61,7 +72,7 @@ export default function LoginPage() {
     <AuthCard
       eyebrow="Welcome back"
       title="Sign in to your studio"
-      description="Pick up saved builds, favourites and comparisons across devices."
+      description="Use your username or email. Pick up saved builds, favourites and comparisons across devices."
       footer={
         <>
           <span>New here?</span>
@@ -75,22 +86,56 @@ export default function LoginPage() {
       <OrDivider />
 
       <form className={styles.form} onSubmit={onSubmit} noValidate>
-        <TextInput
-          label="Username"
-          name="username"
-          autoComplete="username"
-          iconLeft="user"
-          placeholder="maya"
-          value={username}
-          error={errors.username ?? usernameError}
-          onChange={(e) => setUsername(e.target.value)}
-          onFocus={usernameHandlers.onFocus}
-          onBlur={() => {
-            setTouched((t) => ({ ...t, username: true }))
-            usernameHandlers.onBlur()
+        <Segmented
+          className={styles.loginMethod}
+          label="Sign in with"
+          value={method}
+          onChange={(next) => {
+            setMethod(next)
+            setErrors((current) => ({ ...current, username: undefined, email: undefined, form: undefined }))
           }}
-          required
+          options={[
+            { value: 'username', label: 'Username', icon: 'user' },
+            { value: 'email', label: 'Email', icon: 'mail' },
+          ]}
         />
+
+        {method === 'username' ? (
+          <TextInput
+            label="Username"
+            name="username"
+            autoComplete="username"
+            iconLeft="user"
+            placeholder="maya"
+            value={username}
+            error={errors.username ?? usernameError}
+            onChange={(e) => setUsername(e.target.value)}
+            onFocus={identifierHandlers.onFocus}
+            onBlur={() => {
+              setTouched((t) => ({ ...t, username: true }))
+              identifierHandlers.onBlur()
+            }}
+            required
+          />
+        ) : (
+          <TextInput
+            label="Email"
+            type="email"
+            name="email"
+            autoComplete="email"
+            iconLeft="mail"
+            placeholder="you@example.com"
+            value={email}
+            error={errors.email ?? emailError}
+            onChange={(e) => setEmail(e.target.value)}
+            onFocus={identifierHandlers.onFocus}
+            onBlur={() => {
+              setTouched((t) => ({ ...t, email: true }))
+              identifierHandlers.onBlur()
+            }}
+            required
+          />
+        )}
         <PasswordInput
           label="Password"
           name="password"
@@ -128,7 +173,7 @@ export default function LoginPage() {
       </form>
 
       <p className={styles.hint}>
-        <Icon name="info" size={13} /> Demo mode: use <code>maya</code> / <code>demo1234</code>, or any unique username with a 6+ character password.
+        <Icon name="info" size={13} /> Demo mode: use <code>maya</code> or <code>maya@demo.aurora</code> / <code>demo1234</code>.
       </p>
     </AuthCard>
   )

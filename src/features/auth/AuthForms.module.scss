@@ -11,6 +11,15 @@
   flex-wrap: wrap;
 }
 
+.loginMethod {
+  width: 100%;
+  display: flex;
+
+  button {
+    flex: 1;
+  }
+}
+
 .two {
   display: grid;
   grid-template-columns: 1fr 1fr;
