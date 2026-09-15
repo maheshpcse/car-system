@@ -140,6 +140,7 @@ export default function SignupPage() {
             placeholder="At least 8 characters"
             value={form.password}
             error={show('password')}
+            reserveMessage
             onChange={(e) => set('password')(e.target.value)}
             onFocus={shy.onFocus}
             onBlur={blur('password', shy)}
@@ -153,6 +154,7 @@ export default function SignupPage() {
             value={form.confirm}
             error={show('confirm')}
             success={form.confirm && !errors.confirm ? 'Passwords match' : undefined}
+            reserveMessage
             onChange={(e) => set('confirm')(e.target.value)}
             onFocus={shy.onFocus}
             onBlur={blur('confirm', shy)}

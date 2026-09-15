@@ -28,10 +28,13 @@ interface FieldShellProps {
   optional?: boolean
   children: ReactNode
   className?: string
+  /** Keep a message row even when empty so paired fields stay aligned. */
+  reserveMessage?: boolean
 }
 
-export function FieldShell({ id, label, hint, error, success, optional, children, className }: FieldShellProps) {
+export function FieldShell({ id, label, hint, error, success, optional, children, className, reserveMessage = false }: FieldShellProps) {
   const message = error ?? success ?? hint
+  const showMessage = Boolean(message) || reserveMessage
   return (
     <div className={cx(styles.field, error && styles.hasError, success && styles.hasSuccess, className)}>
       {label && (
@@ -41,11 +44,13 @@ export function FieldShell({ id, label, hint, error, success, optional, children
         </label>
       )}
       {children}
-      <p id={`${id}-message`} className={styles.message} role={error ? 'alert' : undefined} aria-hidden={message ? undefined : true}>
-        {error && <Icon name="alert" size={13} />}
-        {success && <Icon name="check" size={13} />}
-        {message ?? '\u00a0'}
-      </p>
+      {showMessage && (
+        <p id={`${id}-message`} className={styles.message} role={error ? 'alert' : undefined} aria-hidden={message ? undefined : true}>
+          {error && <Icon name="alert" size={13} />}
+          {success && <Icon name="check" size={13} />}
+          {message ?? '\u00a0'}
+        </p>
+      )}
     </div>
   )
 }
@@ -61,16 +66,17 @@ export interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   iconLeft?: IconName
   trailing?: ReactNode
   wrapperClassName?: string
+  reserveMessage?: boolean
 }
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function TextInput(
-  { label, hint, error, success, optional, iconLeft, trailing, id: idProp, className, wrapperClassName, ...rest },
+  { label, hint, error, success, optional, iconLeft, trailing, id: idProp, className, wrapperClassName, reserveMessage, ...rest },
   ref,
 ) {
   const generated = useId()
   const id = idProp ?? generated
   return (
-    <FieldShell id={id} label={label} hint={hint} error={error} success={success} optional={optional} className={wrapperClassName}>
+    <FieldShell id={id} label={label} hint={hint} error={error} success={success} optional={optional} className={wrapperClassName} reserveMessage={reserveMessage}>
       <div className={cx(styles.control, iconLeft && styles.withIcon, Boolean(trailing) && styles.withTrailing)}>
         {iconLeft && <Icon name={iconLeft} size={17} className={styles.icon} />}
         <input
@@ -154,6 +160,7 @@ export interface SelectProps<T extends string = string> {
   iconLeft?: IconName
   compact?: boolean
   wrapperClassName?: string
+  reserveMessage?: boolean
   id?: string
   className?: string
   disabled?: boolean
@@ -173,6 +180,7 @@ export function Select<T extends string>({
   id: idProp,
   className,
   wrapperClassName,
+  reserveMessage,
   disabled,
   name,
   ...rest
@@ -267,7 +275,7 @@ export function Select<T extends string>({
   }
 
   return (
-    <FieldShell id={id} label={label} hint={hint} error={error} className={wrapperClassName}>
+    <FieldShell id={id} label={label} hint={hint} error={error} className={wrapperClassName} reserveMessage={reserveMessage}>
       <div ref={rootRef} className={cx(styles.control, styles.selectControl, iconLeft && styles.withIcon, compact && styles.compact, open && styles.selectOpen)}>
         {iconLeft && <Icon name={iconLeft} size={17} className={styles.icon} />}
         {name && <input type="hidden" name={name} value={value} />}
