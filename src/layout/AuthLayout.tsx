@@ -20,8 +20,8 @@ function AuthVisual() {
         <AvatarScene variant="full" mood={mood} focus={focus} />
       </Suspense>
       <div className={styles.visualCaption}>
-        <span className="t-eyebrow">Studio Guide</span>
-        <p>A full-body studio host — not a giant head — who reacts as you fill in the form.</p>
+        <span className="t-eyebrow">Live studio floor</span>
+        <p>Your host follows the cursor while the floor show loops — driving, servicing and shopping the line-up.</p>
       </div>
     </div>
   )

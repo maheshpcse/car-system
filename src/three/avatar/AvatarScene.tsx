@@ -7,6 +7,7 @@ import { useWebGLSupport } from '@/core/hooks/useWebGL'
 import type { AvatarFocus, AvatarMood } from '@/features/auth/avatarMood'
 import { SceneErrorBoundary } from '@/three/scene/SceneErrorBoundary'
 import { Studio } from '@/three/scene/Studio'
+import { AuthShowreel } from './AuthShowreel'
 import styles from './AvatarScene.module.scss'
 
 interface AvatarSceneProps {
@@ -106,8 +107,9 @@ function Guide({ mood, focus, seed = 0 }: AvatarSceneProps) {
       head.current.rotation.x = ly * 0.16
       head.current.rotation.z = -lx * 0.04
     }
-    if (figure.current && !reduced) {
-      figure.current.position.y = Math.sin(t * 1.2) * 0.012
+    if (figure.current) {
+      figure.current.rotation.y = lx * 0.22
+      if (!reduced) figure.current.position.y = Math.sin(t * 1.2) * 0.012
     }
     if (leftArm.current && rightArm.current && !reduced) {
       leftArm.current.rotation.x = Math.sin(t * 1.1) * 0.06
@@ -292,10 +294,11 @@ function StaticFallback({ variant }: { variant: 'full' | 'portrait' }) {
 
 export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneProps) {
   const webgl = useWebGLSupport()
+  const reduced = usePrefersReducedMotion()
   if (!webgl) return <StaticFallback variant={variant} />
   const camera =
     variant === 'full'
-      ? { position: [0.35, 1.02, 5.6] as [number, number, number], fov: 30, lookAt: [0, 0.98, 0] as [number, number, number] }
+      ? { position: [0.85, 1.18, 3.85] as [number, number, number], fov: 28, lookAt: [-0.15, 1.08, 0.2] as [number, number, number] }
       : { position: [0.18, 1.66, 2.15] as [number, number, number], fov: 32, lookAt: [0, 1.66, 0] as [number, number, number] }
   return (
     <SceneErrorBoundary fallback={<StaticFallback variant={variant} />}>
@@ -304,13 +307,16 @@ export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneP
         dpr={[1, 1.5]}
         shadows="percentage"
         onCreated={enableContextRecovery}
-        camera={{ position: camera.position, fov: camera.fov, near: 0.1, far: 30 }}
+        camera={{ position: camera.position, fov: camera.fov, near: 0.1, far: 40 }}
         gl={{ antialias: true, alpha: true }}
       >
         <Suspense fallback={null}>
           <Aim target={camera.lookAt} />
-          <Studio floorRadius={0} intensity={0.9} />
-          <Guide {...props} variant={variant} />
+          <Studio floorRadius={variant === 'full' ? 6.5 : 0} intensity={variant === 'full' ? 1 : 0.9} />
+          {variant === 'full' && <AuthShowreel reduced={Boolean(reduced)} />}
+          <group position={variant === 'full' ? ([-0.55, 0, 0.55] as [number, number, number]) : [0, 0, 0]} scale={variant === 'full' ? 1.48 : 1}>
+            <Guide {...props} variant={variant} />
+          </group>
         </Suspense>
       </Canvas>
     </SceneErrorBoundary>
