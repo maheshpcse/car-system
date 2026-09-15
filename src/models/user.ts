@@ -25,7 +25,8 @@ export interface DemoPersona {
 }
 
 export interface Credentials {
-  username: string
+  username?: string
+  email?: string
   password: string
   remember?: boolean
 }

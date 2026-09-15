@@ -39,9 +39,34 @@ const toUser = (persona: (typeof DEMO_PERSONAS)[number]): User => ({
 })
 
 export const demoAuthService: AuthService = {
-  async login({ username, password }) {
+  async login({ username, email, password }) {
     await wait(700)
-    const handle = username.trim().toLowerCase()
+    const handle = username?.trim().toLowerCase() ?? ''
+    const mail = email?.trim().toLowerCase() ?? ''
+    if (!handle && !mail) throw new AuthError('Enter a username or email.', 'form')
+
+    if (mail) {
+      if (!EMAIL_RE.test(mail)) throw new AuthError('Enter a valid email address.', 'email')
+      const persona = DEMO_PERSONAS.find((p) => p.email.toLowerCase() === mail)
+      if (persona) {
+        if (persona.password !== password) throw new AuthError('Incorrect password for this demo account.', 'password')
+        return toUser(persona)
+      }
+      if (password.length < 6) throw new AuthError('Password must be at least 6 characters.', 'password')
+      const derived = handle || mail.split('@')[0]
+      return {
+        id: `user-${mail}`,
+        name: derived.replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+        username: derived,
+        email: mail,
+        role: 'customer',
+        title: 'Customer',
+        avatarSeed: 5,
+        joinedAt: new Date().toISOString(),
+        location: 'Remote',
+      }
+    }
+
     if (!USERNAME_RE.test(handle)) throw new AuthError('Enter a valid username.', 'username')
     const persona = DEMO_PERSONAS.find((p) => p.username.toLowerCase() === handle)
     if (persona) {
@@ -109,7 +134,7 @@ interface AuthSession {
 
 const mapAuthError = (error: unknown): never => {
   if (error instanceof ApiError) {
-    if (error.code === 'INVALID_CREDENTIALS') throw new AuthError('Incorrect username or password.', 'form')
+    if (error.code === 'INVALID_CREDENTIALS') throw new AuthError('Incorrect username, email, or password.', 'form')
     if (error.code === 'USERNAME_IN_USE') throw new AuthError('This username is already in use.', 'username')
     if (error.code === 'EMAIL_IN_USE') throw new AuthError('This email is already in use.', 'email')
     throw new AuthError(error.message, 'form')
@@ -122,7 +147,12 @@ export const httpAuthService: AuthService = {
     try {
       const result = await apiClient.request<AuthSession>('/auth/login', {
         method: 'POST',
-        body: JSON.stringify(credentials),
+        body: JSON.stringify({
+          password: credentials.password,
+          remember: credentials.remember,
+          ...(credentials.username?.trim() ? { username: credentials.username.trim() } : {}),
+          ...(credentials.email?.trim() ? { email: credentials.email.trim() } : {}),
+        }),
       })
       if (result.data.accessToken) apiClient.setAccessToken(result.data.accessToken, Boolean(credentials.remember))
       return result.data.user
