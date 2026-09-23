@@ -7,7 +7,6 @@ import { useWebGLSupport } from '@/core/hooks/useWebGL'
 import type { AvatarFocus, AvatarMood } from '@/features/auth/avatarMood'
 import { SceneErrorBoundary } from '@/three/scene/SceneErrorBoundary'
 import { Studio } from '@/three/scene/Studio'
-import { AuthShowreel } from './AuthShowreel'
 import styles from './AvatarScene.module.scss'
 
 interface AvatarSceneProps {
@@ -164,63 +163,63 @@ function Guide({ mood, focus, seed = 0 }: AvatarSceneProps) {
       {[-1, 1].map((side) => (
         <mesh key={`shoe-${side}`} position={[side * 0.13, 0.05, 0.06]} castShadow>
           <boxGeometry args={[0.16, 0.08, 0.28]} />
-          <meshStandardMaterial color="#15191d" roughness={0.7} />
+          <meshBasicMaterial color="#1e272e" wireframe />
         </mesh>
       ))}
       {/* Legs */}
       {[-1, 1].map((side) => (
         <mesh key={`leg-${side}`} position={[side * 0.12, 0.42, 0]} castShadow>
           <capsuleGeometry args={[0.075, 0.52, 6, 16]} />
-          <meshStandardMaterial color={palette.pants} roughness={0.8} />
+          <meshBasicMaterial color={palette.pants} wireframe />
         </mesh>
       ))}
       {/* Hips */}
       <mesh position={[0, 0.78, 0]} castShadow>
         <boxGeometry args={[0.38, 0.16, 0.2]} />
-        <meshStandardMaterial color={palette.pants} roughness={0.8} />
+        <meshBasicMaterial color={palette.pants} wireframe />
       </mesh>
       {/* Torso */}
       <mesh position={[0, 1.18, 0]} castShadow>
         <capsuleGeometry args={[0.22, 0.42, 8, 20]} />
-        <meshStandardMaterial color={palette.shirt} roughness={0.72} />
+        <meshBasicMaterial color={palette.shirt} wireframe />
       </mesh>
       {/* Arms */}
       {([-1, 1] as const).map((side) => (
         <group key={`arm-${side}`} ref={side < 0 ? leftArm : rightArm} position={[side * 0.28, 1.34, 0]}>
           <mesh position={[0, -0.22, 0]} rotation={[0, 0, side * 0.18]} castShadow>
             <capsuleGeometry args={[0.055, 0.42, 6, 14]} />
-            <meshStandardMaterial color={palette.shirt} roughness={0.72} />
+            <meshBasicMaterial color={palette.shirt} wireframe />
           </mesh>
           <mesh position={[side * 0.05, -0.48, 0.02]}>
             <sphereGeometry args={[0.055, 14, 14]} />
-            <meshStandardMaterial color={palette.skin} roughness={0.7} />
+            <meshBasicMaterial color={palette.skin} wireframe />
           </mesh>
         </group>
       ))}
       {/* Neck */}
       <mesh position={[0, 1.48, 0]}>
         <cylinderGeometry args={[0.07, 0.08, 0.12, 16]} />
-        <meshStandardMaterial color={palette.skin} roughness={0.7} />
+        <meshBasicMaterial color={palette.skin} wireframe />
       </mesh>
 
       <group ref={head} position={[0, 1.68, 0]}>
         <mesh castShadow>
-          <sphereGeometry args={[0.22, 40, 40]} />
-          <meshStandardMaterial color={palette.skin} roughness={0.66} />
+          <boxGeometry args={[0.38, 0.4, 0.34]} />
+          <meshBasicMaterial color={palette.skin} wireframe />
         </mesh>
         {/* Shorter cropped hair, not a giant cap */}
         <mesh position={[0, 0.08, -0.02]} rotation={[-0.35, 0, 0]}>
           <sphereGeometry args={[0.228, 36, 24, 0, Math.PI * 2, 0, Math.PI * 0.48]} />
-          <meshStandardMaterial color={palette.hair} roughness={0.88} />
+          <meshBasicMaterial color={palette.hair} wireframe />
         </mesh>
         <mesh position={[0.02, 0.1, 0.12]} rotation={[0.2, 0.4, 0.2]}>
           <boxGeometry args={[0.18, 0.05, 0.08]} />
-          <meshStandardMaterial color={palette.hair} roughness={0.88} />
+          <meshBasicMaterial color={palette.hair} wireframe />
         </mesh>
         {[-1, 1].map((side) => (
           <mesh key={side} position={[side * 0.215, 0, 0]}>
             <sphereGeometry args={[0.038, 16, 16]} />
-            <meshStandardMaterial color={palette.skin} roughness={0.7} />
+            <meshBasicMaterial color={palette.skin} wireframe />
           </mesh>
         ))}
         <group position={[0, 0.03, 0.185]}>
@@ -228,21 +227,21 @@ function Guide({ mood, focus, seed = 0 }: AvatarSceneProps) {
             <group key={side} position={[side * 0.07, 0, 0]}>
               <mesh>
                 <sphereGeometry args={[0.038, 22, 22]} />
-                <meshStandardMaterial color="#fbfbfb" roughness={0.25} />
+                <meshBasicMaterial color="#fbfbfb" wireframe />
               </mesh>
               <group ref={side < 0 ? leftPupil : rightPupil} position={[0, 0, 0.022]}>
                 <mesh>
                   <sphereGeometry args={[0.018, 16, 16]} />
-                  <meshStandardMaterial color="#3b2416" roughness={0.3} />
+                  <meshBasicMaterial color="#3b2416" />
                 </mesh>
                 <mesh position={[0, 0, 0.012]}>
                   <sphereGeometry args={[0.009, 12, 12]} />
-                  <meshStandardMaterial color="#0d1218" roughness={0.2} />
+                  <meshBasicMaterial color="#0d1218" />
                 </mesh>
               </group>
               <mesh ref={side < 0 ? leftLid : rightLid} position={[0, 0.002, 0.002]}>
                 <sphereGeometry args={[0.042, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
-                <meshStandardMaterial color={palette.skin} roughness={0.7} side={THREE.DoubleSide} />
+                <meshBasicMaterial color={palette.skin} wireframe />
               </mesh>
             </group>
           ))}
@@ -250,19 +249,19 @@ function Guide({ mood, focus, seed = 0 }: AvatarSceneProps) {
         {[-1, 1].map((side) => (
           <mesh key={side} ref={side < 0 ? leftBrow : rightBrow} position={[side * 0.07, 0.13, 0.19]} rotation={[0, 0, side * -0.1]}>
             <capsuleGeometry args={[0.01, 0.07, 4, 8]} />
-            <meshStandardMaterial color={palette.hair} roughness={0.9} />
+            <meshBasicMaterial color={palette.hair} wireframe />
           </mesh>
         ))}
         <mesh position={[0, -0.02, 0.2]}>
           <sphereGeometry args={[0.028, 16, 16]} />
-          <meshStandardMaterial color={palette.skin} roughness={0.7} />
+          <meshBasicMaterial color={palette.skin} wireframe />
         </mesh>
         <mesh ref={mouth} geometry={mouthGeo} position={[0, -0.12, 0.195]} rotation={[0, 0, -Math.PI * 0.85]}>
-          <meshStandardMaterial color="#8c3f3f" roughness={0.6} />
+          <meshBasicMaterial color="#8c3f3f" wireframe />
         </mesh>
         <mesh ref={mouthInner} position={[0, -0.13, 0.192]}>
           <sphereGeometry args={[0.035, 16, 16]} />
-          <meshStandardMaterial color="#3b1a1c" roughness={0.9} />
+          <meshBasicMaterial color="#3b1a1c" wireframe />
         </mesh>
       </group>
     </group>
@@ -294,7 +293,6 @@ function StaticFallback({ variant }: { variant: 'full' | 'portrait' }) {
 
 export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneProps) {
   const webgl = useWebGLSupport()
-  const reduced = usePrefersReducedMotion()
   if (!webgl) return <StaticFallback variant={variant} />
   const camera =
     variant === 'full'
@@ -313,8 +311,7 @@ export default function AvatarScene({ variant = 'full', ...props }: AvatarSceneP
         <Suspense fallback={null}>
           <Aim target={camera.lookAt} />
           <Studio floorRadius={variant === 'full' ? 6.5 : 0} intensity={variant === 'full' ? 1 : 0.9} />
-          {variant === 'full' && <AuthShowreel reduced={Boolean(reduced)} />}
-          <group position={variant === 'full' ? ([-0.85, 0, 0.45] as [number, number, number]) : [0, 0, 0]} scale={variant === 'full' ? 1.28 : 1}>
+          <group position={variant === 'full' ? ([-0.2, 0, 0.1] as [number, number, number]) : [0, 0, 0]} scale={variant === 'full' ? 1.2 : 1}>
             <Guide {...props} variant={variant} />
           </group>
         </Suspense>

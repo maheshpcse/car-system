@@ -93,9 +93,9 @@ export function VehicleSilhouette({ profile, color, className, shadow = true, ti
 
       {shadow && <ellipse cx="200" cy="152" rx="170" ry="12" fill={`url(#${id}-shadow)`} />}
 
-      <path d={spec.body} fill={color} />
-      <path d={spec.body} fill={`url(#${id}-paint)`} />
-      <path d={spec.glass} fill={`url(#${id}-glass)`} />
+      <path d={spec.body} fill="none" stroke={color} strokeWidth="2.4" />
+      <path d={spec.body} fill="none" stroke={`url(#${id}-paint)`} strokeWidth="1.1" />
+      <path d={spec.glass} fill="none" stroke={`url(#${id}-glass)`} strokeWidth="1.6" />
 
       {spec.wheels.map((cx) => (
         <g key={cx}>

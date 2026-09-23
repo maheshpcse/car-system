@@ -140,7 +140,6 @@
 
   &:hover {
     opacity: 1;
-    transform: translateY(-2px);
     box-shadow: var(--shadow-md);
   }
 
@@ -167,6 +166,7 @@
 
 .featuredGrid {
   display: grid;
+  align-items: stretch;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-5);
 }
@@ -196,7 +196,6 @@
     opacity: 1;
     border-color: var(--color-border-strong);
     box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
 
     .categoryIcon {
       background: var(--color-primary);

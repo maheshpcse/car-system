@@ -71,11 +71,18 @@ function extrude(shape: THREE.Shape, width: number, bevel = BEVEL) {
   return geometry
 }
 
-const FINISH: Record<VehicleColor['finish'], { metalness: number; roughness: number; clearcoat: number }> = {
-  solid: { metalness: 0.15, roughness: 0.38, clearcoat: 0.6 },
-  metallic: { metalness: 0.75, roughness: 0.28, clearcoat: 1 },
-  pearl: { metalness: 0.45, roughness: 0.2, clearcoat: 1 },
-  matte: { metalness: 0.05, roughness: 0.85, clearcoat: 0 },
+function LineSkin({ geometry, color, opacity = 0.1 }: { geometry: THREE.BufferGeometry; color: string; opacity?: number }) {
+  const edges = useMemo(() => new THREE.EdgesGeometry(geometry, 22), [geometry])
+  return (
+    <group>
+      <mesh geometry={geometry}>
+        <meshBasicMaterial color={color} transparent opacity={opacity} depthWrite={false} />
+      </mesh>
+      <lineSegments geometry={edges}>
+        <lineBasicMaterial color={color} />
+      </lineSegments>
+    </group>
+  )
 }
 
 function Wheel({ radius, style, x, z, spin }: { radius: number; style: WheelOption['style']; x: number; z: number; spin: number }) {
@@ -83,35 +90,21 @@ function Wheel({ radius, style, x, z, spin }: { radius: number; style: WheelOpti
   useFrame((_, delta) => {
     if (group.current && spin) group.current.rotation.z -= spin * delta
   })
-  const spokes = style === 'sport' ? 5 : style === 'forged' ? 7 : 0
+  const spokes = style === 'sport' ? 5 : style === 'forged' ? 7 : 4
   const rimR = radius * (style === 'classic' ? 0.58 : 0.66)
   return (
     <group position={[x, radius, z]}>
-      <mesh rotation={[Math.PI / 2, 0, 0]} castShadow>
-        <cylinderGeometry args={[radius, radius, 0.27, 40]} />
-        <meshStandardMaterial color="#15191d" roughness={0.9} metalness={0} />
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[radius * 0.78, 0.035, 8, 24]} />
+        <meshBasicMaterial color="#8a949c" wireframe />
       </mesh>
       <group ref={group}>
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[rimR, rimR, 0.285, 32]} />
-          <meshStandardMaterial color={style === 'forged' ? '#2b3138' : '#b9bec4'} metalness={0.9} roughness={0.25} />
-        </mesh>
-        {spokes > 0 && (
-          <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, z > 0 ? 0.01 : -0.01]}>
-            <cylinderGeometry args={[rimR * 0.92, rimR * 0.92, 0.02, 32]} />
-            <meshStandardMaterial color="#1b2026" metalness={0.6} roughness={0.5} />
-          </mesh>
-        )}
         {Array.from({ length: spokes }, (_, i) => (
-          <mesh key={i} rotation={[0, 0, (i / spokes) * Math.PI * 2]} position={[0, 0, z > 0 ? 0.15 : -0.15]}>
-            <boxGeometry args={[rimR * 0.16, rimR * 1.7, 0.03]} />
-            <meshStandardMaterial color="#cfd4d9" metalness={0.95} roughness={0.2} />
+          <mesh key={i} rotation={[0, 0, (i / spokes) * Math.PI]}>
+            <boxGeometry args={[rimR * 1.6, 0.02, 0.02]} />
+            <meshBasicMaterial color="#8a949c" />
           </mesh>
         ))}
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[radius * 0.12, radius * 0.12, 0.3, 16]} />
-          <meshStandardMaterial color="#3a434b" metalness={0.8} roughness={0.3} />
-        </mesh>
       </group>
     </group>
   )
@@ -128,19 +121,11 @@ export function ProceduralCar({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
   scale = 1,
-  castShadow = true,
 }: ProceduralCarProps) {
   const p = CAR_PROFILES[silhouette]
   const bodyGeo = useMemo(() => extrude(bodyShape(p), p.width), [p])
   const glassGeo = useMemo(() => extrude(glassShape(p), p.width * 0.9, 0.04), [p])
-  const bodyMat = useRef<THREE.MeshPhysicalMaterial>(null)
-  const target = useMemo(() => new THREE.Color(color), [color])
-  const f = FINISH[finish]
-
-  // Smoothly blend paint colour when the user picks a new one.
-  useFrame((_, delta) => {
-    if (bodyMat.current) bodyMat.current.color.lerp(target, Math.min(1, delta * 6))
-  })
+  void finish
 
   const half = p.length / 2
   const zEdge = p.width / 2 - 0.13
@@ -152,29 +137,12 @@ export function ProceduralCar({
 
   return (
     <group position={position} rotation={rotation} scale={scale}>
-      {/* Body */}
-      <mesh geometry={bodyGeo} castShadow={castShadow} receiveShadow>
-        <meshPhysicalMaterial
-          ref={bodyMat}
-          color={color}
-          metalness={f.metalness}
-          roughness={f.roughness}
-          clearcoat={f.clearcoat}
-          clearcoatRoughness={0.12}
-          envMapIntensity={1.2}
-        />
-      </mesh>
-
-      {/* Glasshouse + roof */}
-      {!interiorMode && (
-        <mesh geometry={glassGeo} castShadow={castShadow}>
-          <meshPhysicalMaterial color="#5b6c78" metalness={0.9} roughness={0.08} transparent opacity={0.55} envMapIntensity={1.6} />
-        </mesh>
-      )}
+      <LineSkin geometry={bodyGeo} color={color} opacity={0.08} />
+      {!interiorMode && <LineSkin geometry={glassGeo} color="#7d8b94" opacity={0.04} />}
       {!p.openTop && !interiorMode && (
-        <mesh position={[(roofStart + roofEnd) / 2, p.roofHeight, 0]} castShadow={castShadow}>
-          <boxGeometry args={[roofLen + 0.05, 0.06, p.width * 0.86]} />
-          <meshPhysicalMaterial color={color} metalness={f.metalness} roughness={f.roughness} clearcoat={f.clearcoat} />
+        <mesh position={[(roofStart + roofEnd) / 2, p.roofHeight, 0]}>
+          <boxGeometry args={[roofLen + 0.05, 0.02, p.width * 0.86]} />
+          <meshBasicMaterial color={color} wireframe />
         </mesh>
       )}
 
@@ -182,7 +150,7 @@ export function ProceduralCar({
       {p.bedStart !== undefined && (
         <mesh position={[(-half + p.bedStart) / 2 + 0.05, p.shoulderRear + 0.005, 0]}>
           <boxGeometry args={[p.bedStart - -half - 0.35, 0.03, p.width - 0.4]} />
-          <meshStandardMaterial color="#1b2026" roughness={0.95} />
+          <meshBasicMaterial color="#5d666d" wireframe />
         </mesh>
       )}
 
@@ -190,17 +158,17 @@ export function ProceduralCar({
       <group>
         <mesh position={[roofEnd + 0.15, seatY + 0.28, 0]}>
           <boxGeometry args={[0.5, 0.22, p.width * 0.78]} />
-          <meshStandardMaterial color="#1b2026" roughness={0.9} />
+          <meshBasicMaterial color="#5d666d" wireframe />
         </mesh>
         {[-0.38, 0.38].map((z) => (
           <group key={z} position={[seatX, seatY, z * (p.width / 1.86)]}>
             <mesh>
               <boxGeometry args={[0.55, 0.16, 0.5]} />
-              <meshStandardMaterial color={interiorAccent} roughness={0.85} />
+              <meshBasicMaterial color={interiorAccent} wireframe />
             </mesh>
             <mesh position={[-0.24, 0.32, 0]} rotation={[0, 0, -0.18]}>
               <boxGeometry args={[0.12, 0.62, 0.5]} />
-              <meshStandardMaterial color={interiorAccent} roughness={0.85} />
+              <meshBasicMaterial color={interiorAccent} wireframe />
             </mesh>
           </group>
         ))}
@@ -208,17 +176,17 @@ export function ProceduralCar({
           <group position={[roofStart + 0.5, seatY, 0]}>
             <mesh>
               <boxGeometry args={[0.55, 0.16, p.width * 0.7]} />
-              <meshStandardMaterial color={interiorAccent} roughness={0.85} />
+              <meshBasicMaterial color={interiorAccent} wireframe />
             </mesh>
             <mesh position={[-0.24, 0.3, 0]} rotation={[0, 0, -0.14]}>
               <boxGeometry args={[0.12, 0.58, p.width * 0.7]} />
-              <meshStandardMaterial color={interiorAccent} roughness={0.85} />
+              <meshBasicMaterial color={interiorAccent} wireframe />
             </mesh>
           </group>
         )}
         <mesh position={[seatX + 0.42, seatY + 0.5, 0.38 * (p.width / 1.86)]} rotation={[0, 0, Math.PI / 2 - 0.5]}>
           <torusGeometry args={[0.17, 0.02, 12, 32]} />
-          <meshStandardMaterial color="#111417" roughness={0.6} />
+          <meshBasicMaterial color="#8a949c" wireframe />
         </mesh>
       </group>
 
@@ -227,15 +195,15 @@ export function ProceduralCar({
         <group key={side}>
           <mesh position={[half - 0.02, p.noseHeight + 0.16, side * (p.width / 2 - 0.36)]}>
             <boxGeometry args={[0.08, 0.1, 0.46]} />
-            <meshStandardMaterial color="#fff6dc" emissive="#fff1c4" emissiveIntensity={1.4} roughness={0.2} />
+            <meshBasicMaterial color="#fff6dc" />
           </mesh>
           <mesh position={[-half + 0.02, p.tailHeight - 0.14, side * (p.width / 2 - 0.36)]}>
             <boxGeometry args={[0.08, 0.1, 0.5]} />
-            <meshStandardMaterial color="#ff4a2a" emissive="#ff2d12" emissiveIntensity={0.9} roughness={0.3} />
+            <meshBasicMaterial color="#ff4a2a" />
           </mesh>
-          <mesh position={[p.cabinEnd - 0.05, p.shoulderFront + 0.08, side * (p.width / 2 + 0.08)]} castShadow={castShadow}>
+          <mesh position={[p.cabinEnd - 0.05, p.shoulderFront + 0.08, side * (p.width / 2 + 0.08)]}>
             <boxGeometry args={[0.18, 0.09, 0.2]} />
-            <meshPhysicalMaterial color={color} metalness={f.metalness} roughness={f.roughness} clearcoat={f.clearcoat} />
+            <meshBasicMaterial color={color} wireframe />
           </mesh>
         </group>
       ))}
@@ -243,19 +211,19 @@ export function ProceduralCar({
       {/* Grille / bumpers / sills */}
       <mesh position={[half - 0.01, p.clearance + 0.16, 0]}>
         <boxGeometry args={[0.06, 0.22, p.width * 0.55]} />
-        <meshStandardMaterial color="#12161a" roughness={0.7} />
+        <meshBasicMaterial color="#5d666d" wireframe />
       </mesh>
       <mesh position={[half - 0.05, p.clearance + 0.03, 0]}>
         <boxGeometry args={[0.2, 0.08, p.width * 0.9]} />
-        <meshStandardMaterial color="#1b2026" roughness={0.8} />
+        <meshBasicMaterial color="#5d666d" wireframe />
       </mesh>
       <mesh position={[-half + 0.05, p.clearance + 0.03, 0]}>
         <boxGeometry args={[0.2, 0.08, p.width * 0.9]} />
-        <meshStandardMaterial color="#1b2026" roughness={0.8} />
+        <meshBasicMaterial color="#5d666d" wireframe />
       </mesh>
       <mesh position={[0, p.clearance - 0.02, 0]}>
         <boxGeometry args={[p.length - 0.6, 0.08, p.width - 0.1]} />
-        <meshStandardMaterial color="#15191d" roughness={0.9} />
+        <meshBasicMaterial color="#5d666d" wireframe />
       </mesh>
 
       {/* Wheels */}

@@ -4,13 +4,14 @@ import { useDocumentTitle } from '@/core/hooks/useDocumentTitle'
 import { studioService } from '@/services/studioService'
 import type { Dealership } from '@/data/studio'
 import { Icon } from '@/shared/icons/Icon'
-import { ButtonLink } from '@/shared/ui/Button'
 import { Card } from '@/shared/ui/Card'
+import buttonStyles from '@/shared/ui/Button.module.scss'
+import { IndiaShowroomMap } from './IndiaShowroomMap'
 import styles from './CollectionPage.module.scss'
 import mapStyles from './LocationsPage.module.scss'
 
 export default function LocationsPage() {
-  useDocumentTitle('Showrooms', 'Studio locations with maps and 3D drive access.')
+  useDocumentTitle('Showrooms', 'Live OpenStreetMap of Rekha Motors studios across India.')
   const [places, setPlaces] = useState<Dealership[]>([])
   const [active, setActive] = useState<string | null>(null)
 
@@ -29,43 +30,40 @@ export default function LocationsPage() {
         <header className={styles.banner}>
           <div className={styles.bannerText}>
             <span className="t-eyebrow">Places</span>
-            <h1 className="t-title">Showrooms & maps</h1>
-            <p className="t-description">Illustrated studio map with live dealership data. Open the 3D floor or take a drive-mode lap from any location.</p>
+            <h1 className="t-title">Showrooms & live maps</h1>
+            <p className="t-description">
+              Real Indian studio addresses on a live Carto / OpenStreetMap — not a Google basemap. Select a city to fly the map and open directions.
+            </p>
           </div>
-          <ButtonLink to="/showroom?mode=drive" iconLeft="road">
-            3D drive view
-          </ButtonLink>
+          {selected && (
+            <a
+              className={`${buttonStyles.button} ${buttonStyles.primary} ${buttonStyles.md}`}
+              href={`https://www.openstreetmap.org/?mlat=${selected.latitude}&mlon=${selected.longitude}#map=16/${selected.latitude}/${selected.longitude}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className={buttonStyles.content}>
+                <Icon name="mapPin" size={17} />
+                Open this address
+              </span>
+            </a>
+          )}
         </header>
 
         <div className={mapStyles.layout}>
-          <div className={mapStyles.map} role="img" aria-label="Illustrated showroom map">
-            <span className={mapStyles.road} />
-            <span className={mapStyles.roadB} />
-            {places.map((place) => (
-              <button
-                key={place.id}
-                type="button"
-                className={`${mapStyles.pin} ${place.id === selected?.id ? mapStyles.pinActive : ''}`}
-                style={{ left: `${place.mapX}%`, top: `${place.mapY}%` }}
-                onClick={() => setActive(place.id)}
-                aria-pressed={place.id === selected?.id}
-              >
-                <Icon name="mapPin" size={16} />
-                <span>{place.city}</span>
-              </button>
-            ))}
-          </div>
+          <IndiaShowroomMap places={places} selected={selected} onSelect={setActive} />
           <ul className={mapStyles.list}>
             {places.map((place) => (
               <li key={place.id}>
-                <Card padding="md" interactive className={place.id === selected?.id ? mapStyles.cardActive : undefined} onClick={() => setActive(place.id)}>
+                <Card padding="md" interactive className={`${mapStyles.placeCard} ${place.id === selected?.id ? mapStyles.cardActive : ''}`} onClick={() => setActive(place.id)}>
                   <h2 className="t-card-title">{place.name}</h2>
                   <p>
-                    {place.address} · {place.region}
+                    {place.address}
                   </p>
                   <p>
-                    {place.phone} · {place.hours}
+                    {place.city}, {place.region} · {place.phone}
                   </p>
+                  <p>{place.hours}</p>
                   <div className={styles.chips}>
                     {place.services.map((service) => (
                       <span key={service} className="badge">

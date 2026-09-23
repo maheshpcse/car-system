@@ -1,0 +1,123 @@
+.root {
+  --look-x: 0;
+  --look-y: 0;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  perspective: 900px;
+}
+
+.stage {
+  width: min(72%, 420px);
+  transform: rotateY(calc(var(--look-x) * 14deg)) rotateX(calc(var(--look-y) * -8deg));
+  transform-style: preserve-3d;
+  transition: transform 80ms linear;
+}
+
+.figure {
+  animation: recede 4.6s ease-in-out infinite;
+}
+
+.root[data-reduced='true'] .figure,
+.root[data-reduced='true'] .stage {
+  animation: none;
+  transition: none;
+  transform: none;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-text-primary);
+  stroke-width: 1.8;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+
+  rect,
+  path,
+  circle {
+    fill: none;
+    stroke: inherit;
+  }
+}
+
+.core {
+  fill: var(--color-primary);
+  stroke: var(--color-primary);
+}
+
+.eye {
+  fill: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  stroke: var(--color-primary);
+}
+
+.pupil {
+  fill: var(--color-primary);
+  stroke: none;
+  transform: translate(calc(var(--look-x) * 3px), calc(var(--look-y) * 2px));
+}
+
+.mouth {
+  stroke: var(--color-primary);
+  stroke-width: 2.2;
+}
+
+.head {
+  transform-origin: 80px 78px;
+  transform: translate(calc(var(--look-x) * 4px), calc(var(--look-y) * 3px));
+}
+
+.armLeft {
+  transform-origin: 54px 122px;
+  animation: sway-left 3.8s ease-in-out infinite;
+}
+
+.armRight {
+  transform-origin: 106px 122px;
+  animation: sway-right 3.8s ease-in-out infinite;
+}
+
+.root[data-mood='thinking'] .head {
+  transform: translate(6px, -2px) rotate(-6deg);
+}
+
+.root[data-mood='shy'] .head {
+  transform: translate(10px, 4px) rotate(8deg);
+}
+
+.root[data-mood='sad'] .pupil {
+  transform: translate(0, 3px);
+}
+
+.root[data-mood='happy'] .core {
+  filter: drop-shadow(0 0 6px var(--color-primary));
+}
+
+@keyframes recede {
+  50% {
+    transform: translateZ(18px) translateY(-4px);
+  }
+}
+
+@keyframes sway-left {
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes sway-right {
+  50% {
+    transform: rotate(-8deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figure,
+  .armLeft,
+  .armRight {
+    animation: none;
+  }
+}

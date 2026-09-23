@@ -30,7 +30,7 @@ export function Footer() {
         </nav>
       </div>
       <div className={styles.legal}>
-        <span>© {new Date().getFullYear()} Aurora Motors. Fictional brand — demo project.</span>
+        <span>© {new Date().getFullYear()} Rekha Motors. Fictional India-focused brand — demo project.</span>
         <span>Every vehicle, brand and specification is illustrative.</span>
       </div>
     </footer>

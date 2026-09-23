@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Aurora Motors — Digital Automotive Studio</title>
+    <title>Rekha Motors — Line Studio for India</title>
     <meta
       name="description"
-      content="Discover, inspect, configure and virtually experience vehicles in an interactive 3D automotive showroom."
+      content="Discover, inspect and configure India-ready vehicles in Rekha Motors’ line-drawn studio."
     />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F8F2D8" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1E272E" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Aurora Motors — Digital Automotive Studio" />
+    <meta property="og:title" content="Rekha Motors — Line Studio for India" />
     <meta
       property="og:description"
-      content="An elegant digital automotive studio where you can discover, inspect, configure and virtually experience cars in 3D."
+      content="An India-focused automotive studio with line-drawn cars, live maps and Rekha showrooms."
     />
     <meta property="og:image" content="./og-image.svg" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -28,7 +28,7 @@
     <script>
       // Apply the persisted (or system) theme before first paint to avoid a flash.
       try {
-        var stored = (localStorage.getItem('aurora.theme') || '').replace(/"/g, '');
+        var stored = (localStorage.getItem('rekha.theme') || localStorage.getItem('aurora.theme') || '').replace(/"/g, '');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         var theme = stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', theme);
@@ -185,20 +185,24 @@
     </style>
   </head>
   <body>
-    <div id="boot-loader" role="status" aria-live="polite" aria-label="Loading Aurora Motors">
+    <div id="boot-loader" role="status" aria-live="polite" aria-label="Loading Rekha Motors">
       <div class="bl-emblem">
         <span class="bl-ring bl-ring--outer"></span>
         <span class="bl-ring"></span>
         <span class="bl-mark" aria-hidden="true">
           <svg viewBox="0 0 32 32" width="56" height="56">
-            <path
-              d="M7 19c0-1.6 1-3 3-3.8l3-3.4c.8-.9 1.8-1.4 3-1.4h5c1.5 0 2.8.8 3.5 2l2 3c1.5.5 2.5 1.7 2.5 3.4v1.5c0 .8-.6 1.3-1.4 1.3h-1.4a3 3 0 0 1-6 0h-6a3 3 0 0 1-6 0H7v-2.6z"
-              fill="var(--bl-bg)"
-            />
+            <g fill="none" stroke="var(--bl-bg)" stroke-width="1.7" stroke-linecap="square">
+              <path d="M6 20h4l3-5h10l3 5h4" />
+              <path d="M10 20v2h12v-2" />
+              <circle cx="11" cy="23" r="2" />
+              <circle cx="21" cy="23" r="2" />
+              <path d="M16 6v8" />
+              <path d="M12 10h8" />
+            </g>
           </svg>
         </span>
       </div>
-      <div class="bl-word"><span>Aurora</span><span>Motors</span></div>
+      <div class="bl-word"><span>Rekha</span><span>Motors</span></div>
       <div class="bl-track"><i></i></div>
       <p class="bl-caption">Preparing the studio</p>
     </div>

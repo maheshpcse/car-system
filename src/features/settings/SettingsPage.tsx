@@ -6,7 +6,7 @@ import { useToast } from '@/shared/feedback/ToastProvider'
 import { Icon, type IconName } from '@/shared/icons/Icon'
 import { Button } from '@/shared/ui/Button'
 import { Card } from '@/shared/ui/Card'
-import { Toggle } from '@/shared/ui/Field'
+import { TextInput, Toggle } from '@/shared/ui/Field'
 import { Segmented } from '@/shared/ui/Segmented'
 import { useTheme, type ThemePreference } from '@/theme/ThemeProvider'
 import styles from './SettingsPage.module.scss'
@@ -20,12 +20,12 @@ const THEMES: { id: ThemePreference; label: string; icon: IconName; description:
 export default function SettingsPage() {
   useDocumentTitle('Settings')
   const { preference, setPreference } = useTheme()
-  const { sidebarCollapsed, setSidebarCollapsed, viewMode, setViewMode, reducedEffects, setReducedEffects, clearRecentSearches, clearCompare } = usePreferences()
+  const { sidebarCollapsed, setSidebarCollapsed, viewMode, setViewMode, reducedEffects, setReducedEffects, clearRecentSearches, clearCompare, emailAlerts, setEmailAlerts } = usePreferences()
   const { notify } = useToast()
 
   const resetLocalData = () => {
     Object.keys(localStorage)
-      .filter((k) => k.startsWith('aurora.'))
+      .filter((k) => k.startsWith('rekha.') || k.startsWith('aurora.'))
       .forEach((k) => localStorage.removeItem(k))
     notify('Local data cleared. Reloading…', 'success')
     window.setTimeout(() => window.location.reload(), 600)
@@ -79,6 +79,58 @@ export default function SettingsPage() {
                   { value: 'list', label: 'List', icon: 'list' },
                 ]}
               />
+            </div>
+          </Card>
+        </section>
+
+        <section className={styles.section} aria-labelledby="alerts">
+          <h2 id="alerts" className="t-subheading">Email alerts</h2>
+          <Card padding="md" className={styles.rows}>
+            <TextInput
+              label="Alert email"
+              type="email"
+              name="alert-email"
+              placeholder="you@example.com"
+              value={emailAlerts.address}
+              onChange={(e) => setEmailAlerts({ ...emailAlerts, address: e.target.value })}
+              hint="Rekha sends car line-up and studio notes to this address in demo mode."
+            />
+            <Toggle
+              label="Car information"
+              description="New vehicles, price changes, used and upcoming listings."
+              checked={emailAlerts.carUpdates}
+              onChange={(e) => setEmailAlerts({ ...emailAlerts, carUpdates: e.target.checked })}
+            />
+            <Toggle
+              label="Studio and site news"
+              description="Showroom hours, brochure drops and product updates."
+              checked={emailAlerts.siteNews}
+              onChange={(e) => setEmailAlerts({ ...emailAlerts, siteNews: e.target.checked })}
+            />
+            <Toggle
+              label="Offers"
+              description="Drive weekends, certified-used campaigns and archive events."
+              checked={emailAlerts.offers}
+              onChange={(e) => setEmailAlerts({ ...emailAlerts, offers: e.target.checked })}
+            />
+            <div className={styles.row}>
+              <div>
+                <span className={styles.rowLabel}>Send a test alert</span>
+                <span className={styles.rowDescription}>Confirms the address without leaving this page.</span>
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  if (!emailAlerts.address.trim()) {
+                    notify('Add an email address first', 'warning')
+                    return
+                  }
+                  notify(`Test alert sent to ${emailAlerts.address}`, 'success')
+                }}
+              >
+                Send test
+              </Button>
             </div>
           </Card>
         </section>

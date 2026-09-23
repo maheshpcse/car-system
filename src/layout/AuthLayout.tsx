@@ -1,7 +1,8 @@
 import { AnimatePresence } from 'framer-motion'
-import { Suspense, lazy } from 'react'
+import { Suspense } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { AvatarMoodProvider, useAvatarMood } from '@/features/auth/avatarMood'
+import { RoboticGuide } from '@/features/auth/RoboticGuide'
 import { Icon } from '@/shared/icons/Icon'
 import { IconButton } from '@/shared/ui/Button'
 import { PageLoader } from '@/shared/feedback/PageLoader'
@@ -9,19 +10,15 @@ import { useTheme } from '@/theme/ThemeProvider'
 import { Brand } from './Brand'
 import styles from './AuthLayout.module.scss'
 
-const AvatarScene = lazy(() => import('@/three/avatar/AvatarScene'))
-
 function AuthVisual() {
   const { mood, focus } = useAvatarMood()
   return (
     <div className={styles.visual} aria-hidden="true">
       <div className={styles.visualBackdrop} />
-      <Suspense fallback={<div className={styles.visualFallback} />}>
-        <AvatarScene variant="full" mood={mood} focus={focus} />
-      </Suspense>
+      <RoboticGuide mood={mood} focus={focus} />
       <div className={styles.visualCaption}>
-        <span className="t-eyebrow">Live studio floor</span>
-        <p>Your host follows the cursor while the floor show loops — driving, servicing and shopping the line-up.</p>
+        <span className="t-eyebrow">Line attendant</span>
+        <p>A 2D robotic host with a slight 3D turn. No cars on this floor — only the Rekha guide following your cursor.</p>
       </div>
     </div>
   )

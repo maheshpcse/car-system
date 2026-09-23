@@ -85,7 +85,7 @@ export interface Vehicle {
   /** km per liter, for combustion engines; null for EVs */
   mileage: number | null
   seats: number
-  /** Starting / ex-showroom price in USD */
+  /** Starting / ex-showroom price in INR */
   price: number
   exShowroomPrice?: number
   onRoadPrice?: number | null

@@ -1,17 +1,17 @@
-const currency = new Intl.NumberFormat('en-US', {
+const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
-  currency: 'USD',
+  currency: 'INR',
   maximumFractionDigits: 0,
 })
 
-const compactCurrency = new Intl.NumberFormat('en-US', {
+const compactCurrency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
-  currency: 'USD',
+  currency: 'INR',
   notation: 'compact',
   maximumFractionDigits: 1,
 })
 
-const number = new Intl.NumberFormat('en-US')
+const number = new Intl.NumberFormat('en-IN')
 
 export const formatPrice = (value: number) => currency.format(value)
 export const formatPriceCompact = (value: number) => compactCurrency.format(value)
@@ -21,7 +21,7 @@ export const formatRange = (km: number) => `${formatNumber(km)} km`
 export const formatAcceleration = (s: number) => `${s.toFixed(1)} s`
 export const formatSpeed = (kmh: number) => `${formatNumber(kmh)} km/h`
 export const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  new Date(iso).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })
 
 export const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t

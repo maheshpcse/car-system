@@ -94,7 +94,6 @@
   @include hover {
     background: var(--color-accent-strong);
     box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
   }
 }
 
@@ -232,7 +231,6 @@
   box-shadow: var(--shadow-sm);
   @include hover {
     box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
   }
 }
 
