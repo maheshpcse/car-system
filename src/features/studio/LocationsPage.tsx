@@ -32,7 +32,7 @@ export default function LocationsPage() {
             <span className="t-eyebrow">Places</span>
             <h1 className="t-title">Showrooms & live maps</h1>
             <p className="t-description">
-              Real Indian studio addresses on a live Carto / OpenStreetMap — not a Google basemap. Select a city to fly the map and open directions.
+              Real Indian studio addresses on a live OpenStreetMap — not a Google basemap. Select a city to fly the map and open the pin.
             </p>
           </div>
           {selected && (
