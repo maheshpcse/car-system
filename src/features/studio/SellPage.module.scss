@@ -1,0 +1,26 @@
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+  gap: var(--space-6);
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form,
+.board {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}

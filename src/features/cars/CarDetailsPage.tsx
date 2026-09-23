@@ -6,7 +6,9 @@ import { usePreferences } from '@/core/preferences/PreferencesProvider'
 import { cx } from '@/core/utils/cx'
 import { formatAcceleration, formatNumber, formatPower, formatPrice, formatRange, formatSpeed } from '@/core/utils/format'
 import { BODY_TYPES, FUEL_TYPES, TRANSMISSIONS, labelFor } from '@/data/categories'
-import { getVehicleById, vehicles } from '@/data/vehicles'
+import { allVehicles, getAnyVehicleById } from '@/data/studio'
+import { vehicleService } from '@/services/vehicleService'
+import type { Vehicle } from '@/models/vehicle'
 import { useToast } from '@/shared/feedback/ToastProvider'
 import { Icon } from '@/shared/icons/Icon'
 import { Button, ButtonLink, IconButton } from '@/shared/ui/Button'
@@ -31,12 +33,22 @@ const SECTIONS = [
 
 export default function CarDetailsPage() {
   const { id } = useParams()
-  const vehicle = getVehicleById(id)
+  const [vehicle, setVehicle] = useState<Vehicle | undefined>(() => getAnyVehicleById(id))
   const { isFavorite, toggleFavorite, isCompared, toggleCompare } = usePreferences()
   const { notify } = useToast()
   const [colorIndex, setColorIndex] = useState(0)
   const [interiorIndex, setInteriorIndex] = useState(0)
   const [active, setActive] = useState('overview')
+
+  useEffect(() => {
+    let activeRequest = true
+    void vehicleService.getById(id).then((next) => {
+      if (activeRequest) setVehicle(next)
+    })
+    return () => {
+      activeRequest = false
+    }
+  }, [id])
 
   useDocumentTitle(vehicle ? `${vehicle.manufacturer} ${vehicle.model}` : 'Vehicle not found', vehicle?.tagline)
 
@@ -63,7 +75,7 @@ export default function CarDetailsPage() {
   }, [vehicle])
 
   const related = useMemo(
-    () => (vehicle ? vehicles.filter((v) => v.id !== vehicle.id && v.category.some((c) => vehicle.category.includes(c))).slice(0, 3) : []),
+    () => (vehicle ? allVehicles.filter((v) => v.id !== vehicle.id && v.category.some((c) => vehicle.category.includes(c))).slice(0, 3) : []),
     [vehicle],
   )
 
@@ -105,7 +117,9 @@ export default function CarDetailsPage() {
             <div className={styles.titleBlock}>
               <div className={styles.badges}>
                 {vehicle.isNew && <span className="badge badge--accent">New</span>}
-                <span className="badge">{vehicle.year}</span>
+                {vehicle.listingKind && vehicle.listingKind !== 'NEW' && <span className="badge">{vehicle.listingKind.toLowerCase()}</span>}
+                {vehicle.certified && <span className="badge badge--teal">Certified</span>}
+                <span className="badge">{vehicle.heritageYear ?? vehicle.year}</span>
                 <span className="badge">{labelFor(FUEL_TYPES, vehicle.fuelType)}</span>
                 <span className="badge">
                   <Icon name="star" size={11} filled /> {vehicle.rating.toFixed(1)}
@@ -119,8 +133,13 @@ export default function CarDetailsPage() {
               </p>
             </div>
             <div className={styles.priceBlock}>
-              <span className="t-eyebrow">Starting at</span>
-              <span className={styles.price}>{formatPrice(vehicle.price)}</span>
+              <span className="t-eyebrow">{vehicle.listingKind === 'USED' || vehicle.listingKind === 'VINTAGE' ? 'Asking' : 'Ex-showroom'}</span>
+              <span className={styles.price}>{formatPrice(vehicle.exShowroomPrice ?? vehicle.price)}</span>
+              {vehicle.onRoadPrice && vehicle.listingKind !== 'USED' && vehicle.listingKind !== 'VINTAGE' ? (
+                <span className={styles.variant}>On-road {formatPrice(vehicle.onRoadPrice)}</span>
+              ) : null}
+              {vehicle.expectedLaunch ? <span className={styles.variant}>Expected {vehicle.expectedLaunch}</span> : null}
+              {vehicle.condition ? <span className={styles.variant}>{vehicle.condition}{vehicle.odometerKm ? ` · ${formatNumber(vehicle.odometerKm)} km` : ''}</span> : null}
               <div className={styles.heroActions}>
                 <ButtonLink to={`/configurator/${vehicle.id}`} iconLeft="palette">
                   Configure
@@ -152,6 +171,25 @@ export default function CarDetailsPage() {
             <SpecCard icon="transmission" label="Transmission" value={labelFor(TRANSMISSIONS, vehicle.transmission)} detail={labelFor(BODY_TYPES, vehicle.bodyType)} />
             <SpecCard icon="seats" label="Seats" value={String(vehicle.seats)} detail={`${formatNumber(vehicle.dimensions.cargoLiters)} L cargo`} />
           </div>
+          <ul className={styles.badges} aria-label="Mechanical">
+            <li className="badge"><Icon name="engine" size={12} /> {formatPower(vehicle.power)}</li>
+            <li className="badge"><Icon name="cog" size={12} /> {formatNumber(vehicle.torque)} Nm</li>
+            <li className="badge"><Icon name="wheel" size={12} /> {vehicle.wheels[0]?.name ?? 'Studio wheels'}</li>
+            <li className="badge"><Icon name="road" size={12} /> {formatSpeed(vehicle.topSpeed)}</li>
+            {vehicle.listingKind === 'NEW' ? (
+              <li>
+                <ButtonLink to={`/brochures/${vehicle.id}`} variant="ghost" size="sm" iconLeft="fileText">
+                  Brochure
+                </ButtonLink>
+              </li>
+            ) : (
+              <li>
+                <ButtonLink to="/sell" variant="ghost" size="sm" iconLeft="certificate">
+                  Sell with studio
+                </ButtonLink>
+              </li>
+            )}
+          </ul>
         </section>
 
         {/* Sticky mini nav ------------------------------------------------- */}
@@ -374,6 +412,31 @@ export default function CarDetailsPage() {
                 </Card>
               ))}
             </div>
+          </Reveal>
+
+          <Reveal as="section" className={styles.section}>
+            <div className={styles.sectionHead}>
+              <span className="t-eyebrow">Pricing</span>
+              <h2 className="t-heading">Ex-showroom and on-road</h2>
+            </div>
+            <dl className={styles.dimensions}>
+              <div>
+                <dt>Ex-showroom</dt>
+                <dd>{formatPrice(vehicle.exShowroomPrice ?? vehicle.price)}</dd>
+              </div>
+              <div>
+                <dt>On-road estimate</dt>
+                <dd>{vehicle.onRoadPrice ? formatPrice(vehicle.onRoadPrice) : 'On request'}</dd>
+              </div>
+              <div>
+                <dt>Registration & duties</dt>
+                <dd>
+                  {vehicle.onRoadPrice
+                    ? formatPrice(vehicle.onRoadPrice - (vehicle.exShowroomPrice ?? vehicle.price))
+                    : 'Included in launch brief'}
+                </dd>
+              </div>
+            </dl>
           </Reveal>
 
           {/* CTAs ---------------------------------------------------------- */}

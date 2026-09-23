@@ -82,6 +82,14 @@ export function VehicleCard({ vehicle, mode = 'grid', index = 0 }: VehicleCardPr
         </div>
         <div className={styles.badges}>
           {vehicle.isNew && <span className="badge badge--accent">New</span>}
+          {vehicle.listingKind === 'USED' && <span className="badge">Used</span>}
+          {vehicle.listingKind === 'UPCOMING' && <span className="badge">Upcoming</span>}
+          {vehicle.listingKind === 'VINTAGE' && <span className="badge">Vintage</span>}
+          {vehicle.certified && (
+            <span className="badge badge--teal">
+              <Icon name="certificate" size={11} /> Certified
+            </span>
+          )}
           {vehicle.fuelType === 'electric' && (
             <span className="badge badge--teal">
               <Icon name="charging" size={11} /> EV
@@ -102,8 +110,8 @@ export function VehicleCard({ vehicle, mode = 'grid', index = 0 }: VehicleCardPr
             <span className={styles.variant}>{vehicle.variant}</span>
           </div>
           <div className={styles.price}>
-            <span className={styles.priceLabel}>From</span>
-            <span className={styles.priceValue}>{formatPrice(vehicle.price)}</span>
+            <span className={styles.priceLabel}>{vehicle.listingKind === 'USED' || vehicle.listingKind === 'VINTAGE' ? 'Asking' : 'Ex-showroom'}</span>
+            <span className={styles.priceValue}>{formatPrice(vehicle.exShowroomPrice ?? vehicle.price)}</span>
           </div>
         </header>
 

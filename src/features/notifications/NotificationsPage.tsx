@@ -22,7 +22,7 @@ export default function NotificationsPage() {
             <span className="t-eyebrow">Inbox</span>
             <h1 className="t-title">Notifications</h1>
             <p className="t-description">
-              {unreadCount > 0 ? `${unreadCount} unread` : 'You are up to date.'} Studio alerts stay in this browser until the API is connected.
+              {unreadCount > 0 ? `${unreadCount} unread` : 'You are up to date.'} Company promotions stay public; personal alerts still require a signed-in inbox.
             </p>
           </div>
           <div className={styles.actions}>

@@ -19,6 +19,13 @@ const FavoritesPage = lazy(() => import('@/features/favorites/FavoritesPage'))
 const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'))
 const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'))
 const NotificationsPage = lazy(() => import('@/features/notifications/NotificationsPage'))
+const UsedCarsPage = lazy(() => import('@/features/studio/CollectionPage').then((m) => ({ default: m.UsedCarsPage })))
+const UpcomingCarsPage = lazy(() => import('@/features/studio/CollectionPage').then((m) => ({ default: m.UpcomingCarsPage })))
+const VintageCarsPage = lazy(() => import('@/features/studio/CollectionPage').then((m) => ({ default: m.VintageCarsPage })))
+const BrochuresPage = lazy(() => import('@/features/studio/BrochuresPage'))
+const BrochureDetailPage = lazy(() => import('@/features/studio/BrochuresPage').then((m) => ({ default: m.BrochureDetailPage })))
+const LocationsPage = lazy(() => import('@/features/studio/LocationsPage'))
+const SellPage = lazy(() => import('@/features/studio/SellPage'))
 const LegalPage = lazy(() => import('@/features/legal/LegalPage'))
 const NotFoundPage = lazy(() => import('@/features/misc/NotFoundPage'))
 
@@ -50,6 +57,13 @@ export function AppRoutes() {
           <Route index element={<HomePage />} />
           <Route path="cars" element={<CarsPage />} />
           <Route path="cars/:id" element={<CarDetailsPage />} />
+          <Route path="used-cars" element={<UsedCarsPage />} />
+          <Route path="upcoming" element={<UpcomingCarsPage />} />
+          <Route path="vintage" element={<VintageCarsPage />} />
+          <Route path="brochures" element={<BrochuresPage />} />
+          <Route path="brochures/:id" element={<BrochureDetailPage />} />
+          <Route path="locations" element={<LocationsPage />} />
+          <Route path="sell" element={<SellPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="configurator" element={<ConfiguratorIndexPage />} />
           <Route path="configurator/:id" element={<ConfiguratorPage />} />

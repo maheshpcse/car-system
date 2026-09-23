@@ -13,7 +13,12 @@ export const PRIMARY_NAV: NavItem[] = [
   { to: '/', label: 'Home', icon: 'home', end: true },
   { to: '/showroom', label: 'Showroom', icon: 'showroom' },
   { to: '/cars', label: 'Explore Cars', icon: 'car' },
+  { to: '/used-cars', label: 'Used Cars', icon: 'history' },
+  { to: '/upcoming', label: 'Upcoming', icon: 'calendar' },
+  { to: '/vintage', label: 'Vintage', icon: 'sparkle' },
   { to: '/categories', label: 'Categories', icon: 'layers' },
+  { to: '/brochures', label: 'Brochures', icon: 'fileText' },
+  { to: '/locations', label: 'Showrooms', icon: 'mapPin' },
 ]
 
 export const PERSONAL_NAV: NavItem[] = [
@@ -33,6 +38,12 @@ export const PAGE_TITLES: Record<string, string> = {
   '/': 'Home',
   '/showroom': 'Virtual Showroom',
   '/cars': 'Explore Cars',
+  '/used-cars': 'Used Cars',
+  '/upcoming': 'Upcoming',
+  '/vintage': 'Vintage',
+  '/brochures': 'Brochures',
+  '/locations': 'Showrooms',
+  '/sell': 'Sell a car',
   '/categories': 'Categories',
   '/favorites': 'Favorites',
   '/compare': 'Compare',

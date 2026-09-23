@@ -1,4 +1,5 @@
-import { PRICE_BOUNDS, getVehicleById, vehicles } from '@/data/vehicles'
+import { getAnyVehicleById, vehiclesByKind } from '@/data/studio'
+import { PRICE_BOUNDS, getVehicleById } from '@/data/vehicles'
 import { applyFilters, sortVehicles } from '@/features/cars/vehiclePipeline'
 import { searchVehicles } from '@/features/search/searchService'
 import type { SortKey, Vehicle, VehicleFilters } from '@/models/vehicle'
@@ -16,7 +17,11 @@ export interface VehicleListResult {
 }
 
 const localSearch = (filters: VehicleFilters, sort: SortKey, page = 1, limit = 12): VehicleListResult => {
-  const items = sortVehicles(applyFilters(searchVehicles(filters.query), filters), sort)
+  const kind = filters.listingKind ?? 'NEW'
+  const pool = filters.query
+    ? searchVehicles(filters.query).filter((vehicle) => (vehicle.listingKind ?? 'NEW') === kind)
+    : vehiclesByKind(kind)
+  const items = sortVehicles(applyFilters(pool, { ...filters, listingKind: kind }), sort)
   const start = (page - 1) * limit
   return {
     items: items.slice(start, start + limit),
@@ -27,7 +32,7 @@ const localSearch = (filters: VehicleFilters, sort: SortKey, page = 1, limit = 1
 
 export const vehicleService = {
   async list(filters: VehicleFilters, sort: SortKey, page = 1, limit = 12): Promise<VehicleListResult> {
-    if (!apiClient.enabled) return { ...localSearch(filters, sort, page, limit), total: vehicles.length }
+    if (!apiClient.enabled) return localSearch(filters, sort, page, limit)
 
     try {
       const params = new URLSearchParams()
@@ -43,6 +48,7 @@ export const vehicleService = {
       if (filters.minRange) params.set('minRange', String(filters.minRange))
       if (filters.minPower) params.set('minPower', String(filters.minPower))
       if (filters.minSeats) params.set('minSeats', String(filters.minSeats))
+      params.set('listingKind', filters.listingKind ?? 'NEW')
       params.set('sort', sort)
       params.set('page', String(page))
       params.set('limit', String(limit))
@@ -53,12 +59,12 @@ export const vehicleService = {
         pagination: result.pagination,
       }
     } catch {
-      return { ...localSearch(filters, sort, page, limit), total: vehicles.length }
+      return localSearch(filters, sort, page, limit)
     }
   },
 
   async getById(id: string | undefined): Promise<Vehicle | undefined> {
-    const local = getVehicleById(id)
+    const local = getAnyVehicleById(id) ?? getVehicleById(id)
     if (!id || !apiClient.enabled) return local
     try {
       const result = await apiClient.request<Vehicle>(`/vehicles/${encodeURIComponent(id)}`)

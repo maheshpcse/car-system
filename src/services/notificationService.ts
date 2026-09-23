@@ -1,3 +1,4 @@
+import { studioService } from './studioService'
 import { apiClient } from './apiClient'
 import type { AppNotification } from '@/models/notification'
 
@@ -47,15 +48,23 @@ const clone = () => local.map((n) => ({ ...n }))
 
 export const notificationService = {
   async list(): Promise<AppNotification[]> {
+    let personal = clone()
     if (apiClient.enabled) {
       try {
         const result = await apiClient.request<AppNotification[]>('/notifications')
-        return result.data
+        personal = result.data
       } catch {
         /* fall through to local demo store */
       }
     }
-    return clone()
+    const promotions = await studioService.promotions()
+    const merged = [...promotions, ...personal]
+    const seen = new Set<string>()
+    return merged.filter((item) => {
+      if (seen.has(item.id)) return false
+      seen.add(item.id)
+      return true
+    })
   },
 
   async markRead(id: string): Promise<AppNotification[]> {
