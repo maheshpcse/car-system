@@ -13,6 +13,7 @@ export const DEFAULT_FILTERS: VehicleFilters = {
   minRange: 0,
   minPower: 0,
   minSeats: 0,
+  listingKind: 'NEW',
 }
 
 export function countActiveFilters(f: VehicleFilters) {
@@ -31,6 +32,7 @@ export function countActiveFilters(f: VehicleFilters) {
 
 export function applyFilters(list: Vehicle[], f: VehicleFilters): Vehicle[] {
   return list.filter((v) => {
+    if (f.listingKind && (v.listingKind ?? 'NEW') !== f.listingKind) return false
     if (f.category !== 'all' && !v.category.includes(f.category)) return false
     if (f.brands.length && !f.brands.includes(v.manufacturer)) return false
     if (f.bodyTypes.length && !f.bodyTypes.includes(v.bodyType)) return false

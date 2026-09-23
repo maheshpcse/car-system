@@ -13,7 +13,7 @@ import { Studio } from '@/three/scene/Studio'
 import { useTheme } from '@/theme/ThemeProvider'
 import styles from './ShowroomScene.module.scss'
 
-export type ShowroomMode = 'explore' | 'focus' | 'interior' | 'compare' | 'specs'
+export type ShowroomMode = 'explore' | 'focus' | 'interior' | 'compare' | 'specs' | 'drive'
 
 interface ShowroomSceneProps {
   vehicles: Vehicle[]
@@ -63,6 +63,13 @@ export function showroomPose(mode: ShowroomMode, vehicles: Vehicle[], selected: 
       const mid = sel.position.clone().add(other.position).multiplyScalar(0.5)
       const cam = mid.clone().add(new THREE.Vector3(0, 4.2, 9.5))
       return { position: cam.toArray() as [number, number, number], target: [mid.x, 0.6, mid.z], minDistance: 4, maxDistance: 18 }
+    }
+    case 'drive': {
+      const cam = sel.position.clone().add(forward.clone().multiplyScalar(-6.4)).add(right.clone().multiplyScalar(0.4))
+      cam.y = 1.35
+      const target = sel.position.clone().add(forward.clone().multiplyScalar(8))
+      target.y = 0.7
+      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 4, maxDistance: 14 }
     }
     case 'explore':
     default:
@@ -152,7 +159,28 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
       <SceneBackground dark={theme === 'dark'} />
       <Suspense fallback={null}>
         <Studio floorRadius={0} intensity={1.05} />
-        <Floor reflective={reflective} />
+        <Floor reflective={reflective && mode !== 'drive'} />
+
+        {mode === 'drive' && (
+          <group>
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 6]} receiveShadow>
+              <planeGeometry args={[8, 48]} />
+              <meshStandardMaterial color={theme === 'dark' ? '#2a3036' : '#6d6a63'} roughness={0.95} />
+            </mesh>
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 6]}>
+              <planeGeometry args={[0.16, 48]} />
+              <meshStandardMaterial color="#f2e38a" emissive="#f2e38a" emissiveIntensity={0.4} />
+            </mesh>
+            <mesh position={[-10, 0.4, 2]}>
+              <boxGeometry args={[14, 0.2, 40]} />
+              <meshStandardMaterial color={theme === 'dark' ? '#1a3a28' : '#7fa36b'} />
+            </mesh>
+            <mesh position={[10, 0.4, 2]}>
+              <boxGeometry args={[14, 0.2, 40]} />
+              <meshStandardMaterial color={theme === 'dark' ? '#1a3a28' : '#7fa36b'} />
+            </mesh>
+          </group>
+        )}
 
         {/* Back wall with a soft light band */}
         <mesh position={[0, 4, -14]}>

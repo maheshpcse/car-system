@@ -1,4 +1,4 @@
-export type NotificationKind = 'info' | 'success' | 'vehicle' | 'system'
+export type NotificationKind = 'info' | 'success' | 'vehicle' | 'system' | 'offer'
 
 export interface AppNotification {
   id: string
@@ -8,4 +8,6 @@ export interface AppNotification {
   read: boolean
   href?: string
   kind?: NotificationKind
+  audience?: string
+  offer?: { label?: string; cta?: string } | null
 }

@@ -30,7 +30,12 @@ export const DEFAULT_NAV: NavGroup[] = [
       { id: 'home', to: '/', label: 'Home', icon: 'home', end: true },
       { id: 'showroom', to: '/showroom', label: 'Showroom', icon: 'showroom' },
       { id: 'cars', to: '/cars', label: 'Explore Cars', icon: 'car' },
+      { id: 'used-cars', to: '/used-cars', label: 'Used Cars', icon: 'history' },
+      { id: 'upcoming', to: '/upcoming', label: 'Upcoming', icon: 'calendar' },
+      { id: 'vintage', to: '/vintage', label: 'Vintage', icon: 'sparkle' },
       { id: 'categories', to: '/categories', label: 'Categories', icon: 'layers' },
+      { id: 'brochures', to: '/brochures', label: 'Brochures', icon: 'fileText' },
+      { id: 'locations', to: '/locations', label: 'Showrooms', icon: 'mapPin' },
     ],
   },
   {

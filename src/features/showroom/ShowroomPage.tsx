@@ -28,6 +28,7 @@ const MODES: { id: ShowroomMode; label: string; icon: IconName; hint: string }[]
   { id: 'interior', label: 'Interior', icon: 'seats', hint: 'Look around from the driver’s seat.' },
   { id: 'compare', label: 'Compare', icon: 'compare', hint: 'Pick a second vehicle from the rail.' },
   { id: 'specs', label: 'Specs', icon: 'info', hint: 'Key figures for the selected vehicle.' },
+  { id: 'drive', label: 'Drive', icon: 'road', hint: 'Ride behind the car on an illustrated studio road.' },
 ]
 
 const LINEUP = vehicles.slice(0, 6)
@@ -44,7 +45,8 @@ export default function ShowroomPage() {
   const initial = Math.max(0, LINEUP.findIndex((v) => v.id === params.get('vehicle')))
   const [selected, setSelected] = useState(initial)
   const [compareWith, setCompareWith] = useState<number | null>(null)
-  const [mode, setMode] = useState<ShowroomMode>(params.get('vehicle') ? 'focus' : 'explore')
+  const initialMode = (params.get('mode') as ShowroomMode | null) ?? (params.get('vehicle') ? 'focus' : 'explore')
+  const [mode, setMode] = useState<ShowroomMode>(MODES.some((item) => item.id === initialMode) ? initialMode : 'explore')
   const [ready, setReady] = useState(false)
   const [railOpen, setRailOpen] = useState(true)
   const [hintVisible, setHintVisible] = useState(true)

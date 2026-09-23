@@ -2,6 +2,7 @@ export type BodyType = 'sedan' | 'suv' | 'coupe' | 'hatchback' | 'wagon' | 'road
 export type FuelType = 'electric' | 'hybrid' | 'petrol' | 'diesel'
 export type Transmission = 'automatic' | 'manual' | 'single-speed' | 'dual-clutch'
 export type VehicleCategory = 'all' | 'electric' | 'performance' | 'luxury' | 'family' | 'adventure' | 'compact'
+export type ListingKind = 'NEW' | 'USED' | 'UPCOMING' | 'VINTAGE'
 
 export interface VehicleColor {
   id: string
@@ -84,8 +85,17 @@ export interface Vehicle {
   /** km per liter, for combustion engines; null for EVs */
   mileage: number | null
   seats: number
-  /** Starting price in USD */
+  /** Starting / ex-showroom price in USD */
   price: number
+  exShowroomPrice?: number
+  onRoadPrice?: number | null
+  listingKind?: ListingKind
+  odometerKm?: number | null
+  previousOwners?: number | null
+  condition?: string | null
+  expectedLaunch?: string | null
+  heritageYear?: number | null
+  certified?: boolean
   rating: number
   isNew?: boolean
   isFeatured?: boolean
@@ -117,6 +127,7 @@ export interface VehicleFilters {
   minRange: number
   minPower: number
   minSeats: number
+  listingKind?: ListingKind
 }
 
 export type SortKey =

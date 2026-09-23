@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { vehicles } from '@/data/vehicles'
 import type { SortKey, Vehicle, VehicleFilters } from '@/models/vehicle'
 import { apiClient } from '@/services/apiClient'
 import { vehicleService } from '@/services/vehicleService'
@@ -11,7 +10,7 @@ export { applyFilters, countActiveFilters, DEFAULT_FILTERS, sortVehicles }
 export function useVehicleQuery(filters: VehicleFilters, sort: SortKey) {
   const [results, setResults] = useState<Vehicle[]>([])
   const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(vehicles.length)
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -20,7 +19,7 @@ export function useVehicleQuery(filters: VehicleFilters, sort: SortKey) {
       const page = await vehicleService.list(filters, sort, 1, 100)
       if (cancelled) return
       setResults(page.items)
-      setTotal(apiClient.enabled ? page.total : vehicles.length)
+      setTotal(page.total)
       setLoading(false)
     }
     const timer = window.setTimeout(() => {

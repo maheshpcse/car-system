@@ -14,7 +14,13 @@ export function Footer() {
         </div>
         <nav className={styles.links} aria-label="Footer">
           <Link to="/cars">Explore</Link>
-          <Link to="/showroom">Showroom</Link>
+          <Link to="/used-cars">Used</Link>
+          <Link to="/upcoming">Upcoming</Link>
+          <Link to="/vintage">Vintage</Link>
+          <Link to="/brochures">Brochures</Link>
+          <Link to="/locations">Showrooms</Link>
+          <Link to="/sell">Sell</Link>
+          <Link to="/showroom">3D floor</Link>
           <Link to="/compare">Compare</Link>
           <Link to="/privacy">Privacy</Link>
           <Link to="/terms">Terms</Link>

@@ -89,9 +89,20 @@ export default function HomePage() {
             <span className="t-eyebrow">Featured vehicles</span>
             <h2 id="featured-title" className="t-heading">Four ways to move.</h2>
           </div>
-          <Link to="/cars" className="link-arrow">
-            View all vehicles <Icon name="arrowRight" size={16} />
-          </Link>
+          <div className={styles.showroomActions}>
+            <Link to="/cars" className="link-arrow">
+              View all vehicles <Icon name="arrowRight" size={16} />
+            </Link>
+            <Link to="/used-cars" className="link-arrow">
+              Used
+            </Link>
+            <Link to="/upcoming" className="link-arrow">
+              Upcoming
+            </Link>
+            <Link to="/vintage" className="link-arrow">
+              Vintage
+            </Link>
+          </div>
         </Reveal>
         <div className={styles.featuredGrid}>
           {featured.map((v, i) => (
@@ -144,7 +155,7 @@ export default function HomePage() {
                 Enter Showroom
               </ButtonLink>
               <ul className={styles.showroomModes}>
-                {['Explore', 'Focus', 'Interior', 'Compare', 'Specs'].map((m) => (
+                {['Explore', 'Focus', 'Interior', 'Compare', 'Specs', 'Drive'].map((m) => (
                   <li key={m}>{m}</li>
                 ))}
               </ul>

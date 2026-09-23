@@ -1,5 +1,5 @@
 import { BODY_TYPES, CATEGORIES, FUEL_TYPES, labelFor } from '@/data/categories'
-import { vehicles } from '@/data/vehicles'
+import { allVehicles as vehicles } from '@/data/studio'
 import type { Vehicle, VehicleCategory } from '@/models/vehicle'
 
 export type Suggestion =
