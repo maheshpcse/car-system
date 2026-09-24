@@ -9,21 +9,31 @@ interface BrandProps {
   to?: string
 }
 
+export function BrandMark({ size = 32 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 32 32" width={size} height={size} aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="currentColor" />
+      <g fill="none" stroke="var(--color-background)" strokeWidth="1.6" strokeLinecap="square">
+        <path d="M6 20h4l3-5h10l3 5h4" />
+        <path d="M10 20v2h12v-2" />
+        <circle cx="11" cy="23" r="2" />
+        <circle cx="21" cy="23" r="2" />
+        <path d="M16 6v8" />
+        <path d="M12 10h8" />
+      </g>
+    </svg>
+  )
+}
+
 export function Brand({ compact, className, to = '/' }: BrandProps) {
   return (
     <Link to={to} className={cx(styles.brand, compact && styles.compact, className)} aria-label={`${env.appName} home`}>
       <span className={styles.mark} aria-hidden="true">
-        <svg viewBox="0 0 32 32" width="32" height="32">
-          <rect width="32" height="32" rx="9" fill="currentColor" />
-          <path
-            d="M7 19c0-1.6 1-3 3-3.8l3-3.4c.8-.9 1.8-1.4 3-1.4h5c1.5 0 2.8.8 3.5 2l2 3c1.5.5 2.5 1.7 2.5 3.4v1.5c0 .8-.6 1.3-1.4 1.3h-1.4a3 3 0 0 1-6 0h-6a3 3 0 0 1-6 0H7v-2.6z"
-            fill="var(--color-background)"
-          />
-        </svg>
+        <BrandMark />
       </span>
       {!compact && (
         <span className={styles.text}>
-          <span className={styles.name}>Aurora</span>
+          <span className={styles.name}>Rekha</span>
           <span className={styles.suffix}>Motors</span>
         </span>
       )}

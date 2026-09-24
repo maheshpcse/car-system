@@ -30,6 +30,16 @@ interface PreferencesContextValue {
 
   reducedEffects: boolean
   setReducedEffects: (value: boolean) => void
+
+  emailAlerts: EmailAlertPrefs
+  setEmailAlerts: (value: EmailAlertPrefs) => void
+}
+
+export interface EmailAlertPrefs {
+  address: string
+  carUpdates: boolean
+  siteNews: boolean
+  offers: boolean
 }
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null)
@@ -42,6 +52,12 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const [recentSearches, setRecentSearches] = useLocalStorage<string[]>('recentSearches', [])
   const [savedBuilds, setSavedBuilds] = useLocalStorage<SavedBuild[]>('savedBuilds', [])
   const [reducedEffects, setReducedEffects] = useLocalStorage<boolean>('reducedEffects', false)
+  const [emailAlerts, setEmailAlerts] = useLocalStorage<EmailAlertPrefs>('emailAlerts', {
+    address: '',
+    carUpdates: true,
+    siteNews: true,
+    offers: false,
+  })
 
   const toggleFavorite = useCallback(
     (id: string) => setFavorites((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id])),
@@ -97,6 +113,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       removeBuild: (id) => setSavedBuilds((list) => list.filter((b) => b.id !== id)),
       reducedEffects,
       setReducedEffects,
+      emailAlerts,
+      setEmailAlerts,
     }),
     [
       favorites,
@@ -116,6 +134,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       setSavedBuilds,
       reducedEffects,
       setReducedEffects,
+      emailAlerts,
+      setEmailAlerts,
     ],
   )
 

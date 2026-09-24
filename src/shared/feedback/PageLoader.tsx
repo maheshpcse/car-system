@@ -25,7 +25,7 @@ export function PageLoader({ label = 'Preparing the studio', fullscreen, classNa
       </div>
       {fullscreen && (
         <div className={styles.word} aria-hidden="true">
-          <span>Aurora</span>
+          <span>Rekha</span>
           <span>Motors</span>
         </div>
       )}

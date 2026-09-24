@@ -1,4 +1,4 @@
-const PREFIX = 'aurora.'
+const PREFIX = 'rekha.'
 
 export const storageKey = (key: string) => `${PREFIX}${key}`
 

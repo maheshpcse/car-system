@@ -24,7 +24,7 @@ const FILTER_STORAGE_KEY = 'carFilters'
 const PAGE_SIZE = 6
 
 export default function CarsPage() {
-  useDocumentTitle('Explore Cars', 'Search, filter and sort the complete Aurora Motors line-up.')
+  useDocumentTitle('Explore Cars', 'Search, filter and sort the Rekha Motors India line-up.')
   const [params, setParams] = useSearchParams()
   const { viewMode, setViewMode, addRecentSearch } = usePreferences()
 

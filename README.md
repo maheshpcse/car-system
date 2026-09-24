@@ -1,6 +1,6 @@
-# Aurora Motors — Digital Automotive Studio
+# Rekha Motors — Line Studio for India
 
-A premium, generic 3D automotive showroom and vehicle exploration web application. Discover, inspect, configure and virtually experience a fictional line-up of vehicles in an interactive, cinematic interface.
+A fictional India-focused automotive studio. Discover, inspect and configure a line-drawn Rekha line-up — live OpenStreetMap showrooms, email alerts, and wireframe cars.
 
 All vehicles, brands and people in this project are fictional. 3D models and avatars are generated procedurally at runtime — no third-party assets are used.
 

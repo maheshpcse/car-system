@@ -1,5 +1,6 @@
 import { AuthProvider } from '@/core/auth/AuthProvider'
 import { PreferencesProvider } from '@/core/preferences/PreferencesProvider'
+import { EmailAlertBridge } from '@/features/notifications/EmailAlertBridge'
 import { NotificationsProvider } from '@/features/notifications/NotificationsProvider'
 import { ToastProvider } from '@/shared/feedback/ToastProvider'
 import { ScrollRestoration } from '@/shared/scroll/ScrollRestoration'
@@ -13,6 +14,7 @@ export function App() {
         <AuthProvider>
           <NotificationsProvider>
             <ToastProvider>
+              <EmailAlertBridge />
               <ScrollRestoration />
               <AppRoutes />
             </ToastProvider>

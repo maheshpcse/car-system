@@ -34,7 +34,7 @@ const MODES: { id: ShowroomMode; label: string; icon: IconName; hint: string }[]
 const LINEUP = vehicles.slice(0, 6)
 
 export default function ShowroomPage() {
-  useDocumentTitle('Virtual Showroom', 'Walk the Aurora Motors showroom floor in 3D.')
+  useDocumentTitle('Virtual Showroom', 'Walk the Rekha Motors line studio in a slight-3D wireframe floor.')
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
   const webgl = useWebGLSupport()

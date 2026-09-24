@@ -25,7 +25,7 @@ export const env: Environment = {
   assetBaseUrl: import.meta.env.VITE_ASSET_BASE_URL ?? import.meta.env.BASE_URL,
   demoMode: truthy(import.meta.env.VITE_DEMO_MODE, true),
   basePath: import.meta.env.BASE_URL,
-  appName: 'Aurora Motors',
+  appName: 'Rekha Motors',
   repositoryUrl: import.meta.env.VITE_REPOSITORY_URL ?? 'https://github.com/maheshpcse/car-system',
 }
 
