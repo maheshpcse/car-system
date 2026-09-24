@@ -260,10 +260,14 @@ export function ProceduralCar({
         </group>
       ))}
 
-      {/* Grille / bumpers / sills */}
+      {/* Grille / bumpers / sills — compact Indian-market face */}
       <mesh position={[half - 0.01, p.clearance + 0.16, 0]}>
         <boxGeometry args={[0.06, 0.22, p.width * 0.55]} />
         <meshStandardMaterial color="#12161a" roughness={0.7} />
+      </mesh>
+      <mesh position={[half - 0.04, p.clearance + 0.28, 0]}>
+        <boxGeometry args={[0.04, 0.04, p.width * 0.62]} />
+        <meshStandardMaterial color="#c5c8cc" metalness={0.85} roughness={0.25} />
       </mesh>
       <mesh position={[half - 0.05, p.clearance + 0.03, 0]}>
         <boxGeometry args={[0.2, 0.08, p.width * 0.9]} />
@@ -277,6 +281,48 @@ export function ProceduralCar({
         <boxGeometry args={[p.length - 0.6, 0.08, p.width - 0.1]} />
         <meshStandardMaterial color="#15191d" roughness={0.9} />
       </mesh>
+      {[-1, 1].map((side) => (
+        <mesh key={`clad-${side}`} position={[0, p.clearance + 0.12, side * (p.width / 2 - 0.02)]}>
+          <boxGeometry args={[p.length * 0.62, 0.16, 0.05]} />
+          <meshStandardMaterial color="#1a1e22" roughness={0.92} />
+        </mesh>
+      ))}
+      {[-1, 1].map((side) => (
+        <mesh key={`belt-${side}`} position={[0.1, p.shoulderFront - 0.04, side * (p.width / 2 - 0.01)]}>
+          <boxGeometry args={[p.length * 0.42, 0.025, 0.03]} />
+          <meshStandardMaterial color="#d7dbe0" metalness={0.8} roughness={0.28} />
+        </mesh>
+      ))}
+      <mesh position={[half + 0.02, p.clearance + 0.18, 0]}>
+        <boxGeometry args={[0.02, 0.12, 0.34]} />
+        <meshStandardMaterial color="#f4f1e6" roughness={0.7} />
+      </mesh>
+      <mesh position={[-half - 0.02, p.clearance + 0.2, 0]}>
+        <boxGeometry args={[0.02, 0.14, 0.36]} />
+        <meshStandardMaterial color="#f2c94c" roughness={0.55} />
+      </mesh>
+      {(silhouette === 'suv' || silhouette === 'wagon' || silhouette === 'pickup') && !interiorMode && (
+        <>
+          {[-1, 1].map((side) => (
+            <mesh key={`rail-${side}`} position={[(roofStart + roofEnd) / 2, p.roofHeight + 0.05, side * (p.width * 0.32)]}>
+              <boxGeometry args={[roofLen * 0.78, 0.03, 0.04]} />
+              <meshStandardMaterial color="#2a3138" metalness={0.55} roughness={0.4} />
+            </mesh>
+          ))}
+        </>
+      )}
+      {!p.openTop && (
+        <mesh position={[roofStart + 0.2, p.roofHeight + 0.04, 0]}>
+          <boxGeometry args={[0.12, 0.1, 0.06]} />
+          <meshStandardMaterial color="#1b2026" roughness={0.5} />
+        </mesh>
+      )}
+      {[-1, 1].map((side) => (
+        <mesh key={`fog-${side}`} position={[half - 0.08, p.clearance + 0.14, side * (p.width / 2 - 0.28)]}>
+          <boxGeometry args={[0.06, 0.07, 0.14]} />
+          <meshStandardMaterial color="#fff4d2" emissive="#ffe7a8" emissiveIntensity={0.7} roughness={0.25} />
+        </mesh>
+      ))}
 
       {/* Wheels */}
       {p.axles.map((x) =>

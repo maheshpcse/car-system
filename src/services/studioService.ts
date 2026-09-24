@@ -20,14 +20,6 @@ let localListings = MARKETPLACE_SEED.map((item) => ({ ...item }))
 
 export const studioService = {
   async promotions(): Promise<AppNotification[]> {
-    if (apiClient.enabled) {
-      try {
-        const result = await apiClient.request<AppNotification[]>('/studio/promotions')
-        return result.data
-      } catch {
-        /* local */
-      }
-    }
     return PROMOTIONS.map((item) => ({ ...item }))
   },
 
