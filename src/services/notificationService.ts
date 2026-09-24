@@ -49,7 +49,7 @@ const clone = () => local.map((n) => ({ ...n }))
 export const notificationService = {
   async list(): Promise<AppNotification[]> {
     let personal = clone()
-    if (apiClient.enabled) {
+    if (apiClient.enabled && apiClient.getAccessToken()) {
       try {
         const result = await apiClient.request<AppNotification[]>('/notifications')
         personal = result.data
