@@ -20,7 +20,7 @@ const color = (id: string, name: string, hex: string, finish: VehicleColor['fini
 const PALETTE = {
   ivory: color('ivory', 'Studio Ivory', '#EDE6D2', 'solid'),
   graphite: color('graphite', 'Graphite Grey', '#4A5057', 'metallic', 900),
-  indigo: color('indigo', 'Rekha Indigo', '#1C1A8A', 'metallic', 1400),
+  indigo: color('indigo', 'Aurora Indigo', '#0066B1', 'metallic', 1400),
   ember: color('ember', 'Ember Orange', '#E8551B', 'pearl', 1800),
   crimson: color('crimson', 'Deep Crimson', '#8D1418', 'metallic', 1400),
   midnight: color('midnight', 'Midnight Slate', '#1E272E', 'solid'),
@@ -67,13 +67,13 @@ const pick = <T extends { id: string }>(source: T[], ...ids: string[]) =>
 export const vehicles: Vehicle[] = [
   {
     id: 'aureon-x1',
-    manufacturer: 'Rekha',
+    manufacturer: 'Aurora',
     model: 'Sutra',
     variant: 'Long Range AWD',
     year: 2026,
     tagline: 'Quiet power for NH and ghat roads.',
     description:
-      'The Rekha Sutra is a long-range Indian executive EV — monsoon-ready sealing, a high-clearance air setup, and a cabin sized for five plus a week of luggage on the Mumbai–Pune expressway.',
+      'The Aurora Sutra is a long-range Indian executive EV — monsoon-ready sealing, a high-clearance air setup, and a cabin sized for five plus a week of luggage on the Mumbai–Pune expressway.',
     category: ['electric', 'luxury', 'family'],
     bodyType: 'sedan',
     fuelType: 'electric',
@@ -302,13 +302,13 @@ export const vehicles: Vehicle[] = [
   },
   {
     id: 'solace-ev',
-    manufacturer: 'Rekha',
+    manufacturer: 'Aurora',
     model: 'Nivas',
     variant: 'City Crossover',
     year: 2025,
     tagline: 'Calm energy for everyday India.',
     description:
-      'Rekha Nivas is an approachable compact electric crossover with lounge seating, Indian charging maps and a price that belongs in this market.',
+      'Aurora Nivas is an approachable compact electric crossover with lounge seating, Indian charging maps and a price that belongs in this market.',
     category: ['electric', 'compact', 'family'],
     bodyType: 'crossover',
     fuelType: 'electric',
@@ -380,13 +380,13 @@ export const vehicles: Vehicle[] = [
   },
   {
     id: 'aureon-v9',
-    manufacturer: 'Rekha',
+    manufacturer: 'Aurora',
     model: 'V9',
     variant: 'Executive Sedan',
     year: 2024,
     tagline: 'First-class, four doors, chauffeur-ready.',
     description:
-      'The flagship Rekha V9 focuses on rear-seat comfort for Indian executive miles — reclining seats, ANC, and a partition-ready cabin.',
+      'The flagship Aurora V9 focuses on rear-seat comfort for Indian executive miles — reclining seats, ANC, and a partition-ready cabin.',
     category: ['luxury', 'electric'],
     bodyType: 'sedan',
     fuelType: 'electric',

@@ -9,7 +9,7 @@ import { VehicleSilhouette } from '@/shared/vehicle/VehicleSilhouette'
 import styles from './CategoriesPage.module.scss'
 
 export default function CategoriesPage() {
-  useDocumentTitle('Categories', 'Browse the Rekha Motors line-up by how you drive.')
+  useDocumentTitle('Categories', 'Browse the Aurora Motors line-up by how you drive.')
   const categories = CATEGORIES.filter((c) => c.id !== 'all')
 
   return (
