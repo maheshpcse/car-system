@@ -8,7 +8,7 @@ interface AvatarProps {
   className?: string
 }
 
-const HUES = ['#0066B1', '#6BB4E8', '#003D73', '#111417', '#FFFFFF', '#00CEC9']
+const HUES = ['#1400C3', '#0984E3', '#00CEC9', '#FF4E02', '#BA0001', '#5E7C55']
 
 /** Minimal initials avatar; the 3D avatar is used on auth/profile pages. */
 export function Avatar({ name, seed = 0, size = 34, className }: AvatarProps) {

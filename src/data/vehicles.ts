@@ -20,7 +20,7 @@ const color = (id: string, name: string, hex: string, finish: VehicleColor['fini
 const PALETTE = {
   ivory: color('ivory', 'Studio Ivory', '#EDE6D2', 'solid'),
   graphite: color('graphite', 'Graphite Grey', '#4A5057', 'metallic', 900),
-  indigo: color('indigo', 'Aurora Indigo', '#0066B1', 'metallic', 1400),
+  indigo: color('indigo', 'Aurora Indigo', '#1400C3', 'metallic', 1400),
   ember: color('ember', 'Ember Orange', '#E8551B', 'pearl', 1800),
   crimson: color('crimson', 'Deep Crimson', '#8D1418', 'metallic', 1400),
   midnight: color('midnight', 'Midnight Slate', '#1E272E', 'solid'),

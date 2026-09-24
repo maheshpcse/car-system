@@ -18,11 +18,11 @@ interface AvatarSceneProps {
 }
 
 const PALETTES = [
-  { skin: '#d4a574', hair: '#0d1218', shirt: '#0066b1', pants: '#111417', accent: '#ffffff' },
-  { skin: '#8d5524', hair: '#1a1410', shirt: '#003d73', pants: '#1b2026', accent: '#6bb4e8' },
-  { skin: '#f0c090', hair: '#2a1c14', shirt: '#111417', pants: '#003d73', accent: '#0066b1' },
-  { skin: '#c68642', hair: '#3a2a22', shirt: '#0066b1', pants: '#0d1218', accent: '#ffffff' },
-  { skin: '#e0ac69', hair: '#4b3a33', shirt: '#1b2026', pants: '#111417', accent: '#6bb4e8' },
+  { skin: '#d4a574', hair: '#0d1218', shirt: '#1400c3', pants: '#111417', accent: '#f8f2d8' },
+  { skin: '#8d5524', hair: '#1a1410', shirt: '#0f0094', pants: '#1b2026', accent: '#7d6bff' },
+  { skin: '#f0c090', hair: '#2a1c14', shirt: '#111417', pants: '#1400c3', accent: '#0984e3' },
+  { skin: '#c68642', hair: '#3a2a22', shirt: '#1400c3', pants: '#0d1218', accent: '#f8f2d8' },
+  { skin: '#e0ac69', hair: '#4b3a33', shirt: '#1b2026', pants: '#111417', accent: '#7d6bff' },
 ]
 
 interface MoodTargets {
@@ -273,9 +273,9 @@ function StaticFallback({ variant }: { variant: 'full' | 'portrait' }) {
           <>
             <rect x="58" y="210" width="18" height="48" rx="8" fill="#1e272e" />
             <rect x="84" y="210" width="18" height="48" rx="8" fill="#1e272e" />
-            <rect x="52" y="128" width="56" height="88" rx="20" fill="#0066B1" />
-            <rect x="32" y="136" width="16" height="70" rx="8" fill="#0066B1" />
-            <rect x="112" y="136" width="16" height="70" rx="8" fill="#0066B1" />
+            <rect x="52" y="128" width="56" height="88" rx="20" fill="#1400C3" />
+            <rect x="32" y="136" width="16" height="70" rx="8" fill="#1400C3" />
+            <rect x="112" y="136" width="16" height="70" rx="8" fill="#1400C3" />
           </>
         )}
         <circle cx="80" cy={variant === 'full' ? 88 : 86} r="36" fill="#c68642" />
