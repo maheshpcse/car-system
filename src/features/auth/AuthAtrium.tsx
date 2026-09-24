@@ -122,29 +122,31 @@ export function AuthAtrium() {
       <div className={styles.beam} />
       <div className={styles.stage}>
         <div className={styles.word}>
-          <span className={styles.sizer}>AURORA</span>
-          <svg className={styles.wordSvg} viewBox="0 0 860 200">
-          {LETTERS.map((d, i) => (
-            <path
-              key={d}
-              ref={(el) => {
-                paths.current[i] = el
-              }}
-              d={d}
-              className={styles.letter}
-            />
-          ))}
-          {!reduced && (
-            <g ref={car} className={styles.carRide}>
-              <g transform="translate(-22 -8)">
-                <path d="M3 14h7l5-8h18l6 8h5v5H3z" fill="currentColor" />
-                <circle cx="13" cy="20" r="3.6" fill="#1e272e" />
-                <circle cx="37" cy="20" r="3.6" fill="#1e272e" />
-                <path d="M16 8h14l3 5H13z" fill="#f8f2d8" opacity="0.5" />
-              </g>
-            </g>
-          )}
-          </svg>
+          <div className={styles.mark}>
+            <span className={styles.wordmark}>AURORA</span>
+            <svg className={styles.wordSvg} viewBox="0 0 860 200" preserveAspectRatio="xMidYMid meet">
+              {LETTERS.map((d, i) => (
+                <path
+                  key={d}
+                  ref={(el) => {
+                    paths.current[i] = el
+                  }}
+                  d={d}
+                  className={styles.letter}
+                />
+              ))}
+              {!reduced && (
+                <g ref={car} className={styles.carRide}>
+                  <g transform="translate(-22 -8)">
+                    <path d="M3 14h7l5-8h18l6 8h5v5H3z" fill="currentColor" />
+                    <circle cx="13" cy="20" r="3.6" fill="#1e272e" />
+                    <circle cx="37" cy="20" r="3.6" fill="#1e272e" />
+                    <path d="M16 8h14l3 5H13z" fill="#f8f2d8" opacity="0.5" />
+                  </g>
+                </g>
+              )}
+            </svg>
+          </div>
           <em className={styles.kicker}>STUDIO</em>
         </div>
       </div>
