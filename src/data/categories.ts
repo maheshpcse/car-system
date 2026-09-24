@@ -9,7 +9,7 @@ export interface CategoryMeta {
 }
 
 export const CATEGORIES: CategoryMeta[] = [
-  { id: 'all', label: 'All Vehicles', description: 'The complete Rekha line-up for India', icon: 'car' },
+  { id: 'all', label: 'All Vehicles', description: 'The complete Aurora line-up', icon: 'car' },
   { id: 'electric', label: 'Electric', description: 'Zero-emission drivetrains', icon: 'charging' },
   { id: 'performance', label: 'Performance', description: 'Built for the driver', icon: 'speed' },
   { id: 'luxury', label: 'Luxury', description: 'First-class comfort', icon: 'sparkle' },

@@ -11,7 +11,7 @@ import styles from './CollectionPage.module.scss'
 import mapStyles from './LocationsPage.module.scss'
 
 export default function LocationsPage() {
-  useDocumentTitle('Showrooms', 'Live OpenStreetMap of Rekha Motors studios across India.')
+  useDocumentTitle('Showrooms', 'Live OpenStreetMap of Aurora Motors studios across India.')
   const [places, setPlaces] = useState<Dealership[]>([])
   const [active, setActive] = useState<string | null>(null)
 
@@ -32,7 +32,7 @@ export default function LocationsPage() {
             <span className="t-eyebrow">Places</span>
             <h1 className="t-title">Showrooms & live maps</h1>
             <p className="t-description">
-              Real Indian studio addresses on a live OpenStreetMap — not a Google basemap. Select a city to fly the map and open the pin.
+              Real Indian studio addresses on a live OpenStreetMap. The map stays full width with a fixed height so the page does not grow with the list.
             </p>
           </div>
           {selected && (
@@ -50,32 +50,29 @@ export default function LocationsPage() {
           )}
         </header>
 
-        <div className={mapStyles.layout}>
-          <IndiaShowroomMap places={places} selected={selected} onSelect={setActive} />
-          <ul className={mapStyles.list}>
-            {places.map((place) => (
-              <li key={place.id}>
-                <Card padding="md" interactive className={`${mapStyles.placeCard} ${place.id === selected?.id ? mapStyles.cardActive : ''}`} onClick={() => setActive(place.id)}>
-                  <h2 className="t-card-title">{place.name}</h2>
-                  <p>
-                    {place.address}
-                  </p>
-                  <p>
-                    {place.city}, {place.region} · {place.phone}
-                  </p>
-                  <p>{place.hours}</p>
-                  <div className={styles.chips}>
-                    {place.services.map((service) => (
-                      <span key={service} className="badge">
-                        {service}
-                      </span>
-                    ))}
-                  </div>
-                </Card>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <IndiaShowroomMap places={places} selected={selected} onSelect={setActive} />
+
+        <ul className={mapStyles.list}>
+          {places.map((place) => (
+            <li key={place.id}>
+              <Card padding="md" interactive className={`${mapStyles.placeCard} ${place.id === selected?.id ? mapStyles.cardActive : ''}`} onClick={() => setActive(place.id)}>
+                <h2 className="t-card-title">{place.name}</h2>
+                <p>{place.address}</p>
+                <p>
+                  {place.city}, {place.region} · {place.phone}
+                </p>
+                <p>{place.hours}</p>
+                <div className={styles.chips}>
+                  {place.services.map((service) => (
+                    <span key={service} className="badge">
+                      {service}
+                    </span>
+                  ))}
+                </div>
+              </Card>
+            </li>
+          ))}
+        </ul>
       </div>
     </PageTransition>
   )

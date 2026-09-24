@@ -72,7 +72,7 @@ export const EXTRA_VEHICLES: Vehicle[] = [
     year: 2023,
     variant: 'Certified Long Range',
     tagline: 'A studio favourite, already broken in.',
-    description: 'One-owner Rekha Sutra with a full service history, ceramic coating and remaining dual-motor warranty.',
+    description: 'One-owner Aurora Sutra with a full service history, ceramic coating and remaining dual-motor warranty.',
     price: 3899000,
     odometerKm: 28400,
     previousOwners: 1,
@@ -285,14 +285,14 @@ export const allVehicles: Vehicle[] = [
 ]
 
 export const DEALERSHIPS: Dealership[] = [
-  { id: 'dl-harbour', slug: 'bkc-line', name: 'Rekha Line BKC', city: 'Mumbai', region: 'Maharashtra', address: 'One BKC, G Block, Bandra Kurla Complex, Bandra East, Mumbai 400051', latitude: 19.0669, longitude: 72.8697, mapX: 22, mapY: 38, phone: '+91 22 6240 1800', hours: 'Mon–Sat 10:00–20:00', services: ['New', 'Used', 'Configurator', 'Service'] },
-  { id: 'dl-ridge', slug: 'aerocity-line', name: 'Rekha Aerocity', city: 'New Delhi', region: 'Delhi', address: 'Worldmark 1, Aerocity, New Delhi 110037', latitude: 28.5504, longitude: 77.122, mapX: 48, mapY: 18, phone: '+91 11 4119 0104', hours: 'Tue–Sun 10:00–20:00', services: ['Vintage', 'Restoration', 'Test drive'] },
-  { id: 'dl-plaza', slug: 'whitefield-house', name: 'Rekha Whitefield', city: 'Bengaluru', region: 'Karnataka', address: 'Prestige Shantiniketan, ITPL Main Road, Whitefield, Bengaluru 560048', latitude: 12.9922, longitude: 77.7289, mapX: 58, mapY: 42, phone: '+91 80 4680 5300', hours: 'Daily 10:00–21:00', services: ['New', 'Upcoming previews', 'Brochures'] },
-  { id: 'dl-orchard', slug: 'hitec-yard', name: 'Rekha HITEC', city: 'Hyderabad', region: 'Telangana', address: 'Raheja Mindspace, HITEC City, Hyderabad 500081', latitude: 17.4435, longitude: 78.3772, mapX: 36, mapY: 62, phone: '+91 40 4030 0909', hours: 'Mon–Sat 10:00–20:00', services: ['Used', 'Marketplace intake', 'Service'] },
-  { id: 'dl-lakes', slug: 'cathedral-line', name: 'Rekha Cathedral', city: 'Chennai', region: 'Tamil Nadu', address: '10 Cathedral Road, Gopalapuram, Chennai 600086', latitude: 13.0475, longitude: 80.2588, mapX: 18, mapY: 72, phone: '+91 44 4592 0101', hours: 'Wed–Sun 10:00–19:00', services: ['New', 'Family test drives'] },
-  { id: 'dl-dune', slug: 'baner-outpost', name: 'Rekha Baner', city: 'Pune', region: 'Maharashtra', address: 'ICC Trade Tower, Senapati Bapat Road, Pune 411016', latitude: 18.5308, longitude: 73.829, mapX: 78, mapY: 68, phone: '+91 20 6764 4400', hours: 'Thu–Mon 11:00–20:00', services: ['Adventure', 'Used', 'Charging'] },
-  { id: 'dl-harbour-east', slug: 'sg-highway', name: 'Rekha SG Highway', city: 'Ahmedabad', region: 'Gujarat', address: 'Iscon Centre, SG Highway, Ahmedabad 380015', latitude: 23.0276, longitude: 72.508, mapX: 82, mapY: 28, phone: '+91 79 4890 4400', hours: 'Mon–Sat 10:00–20:00', services: ['New', 'Electric', 'Home charger'] },
-  { id: 'dl-archive', slug: 'camac-archive', name: 'Rekha Camac Archive', city: 'Kolkata', region: 'West Bengal', address: '22 Camac Street, Elgin, Kolkata 700016', latitude: 22.5448, longitude: 88.3516, mapX: 64, mapY: 80, phone: '+91 33 4007 6600', hours: 'Fri–Sun 11:00–18:00', services: ['Vintage', 'Selling', 'Authentication'] },
+  { id: 'dl-harbour', slug: 'bkc-line', name: 'Aurora Line BKC', city: 'Mumbai', region: 'Maharashtra', address: 'One BKC, G Block, Bandra Kurla Complex, Bandra East, Mumbai 400051', latitude: 19.0669, longitude: 72.8697, mapX: 22, mapY: 38, phone: '+91 22 6240 1800', hours: 'Mon–Sat 10:00–20:00', services: ['New', 'Used', 'Configurator', 'Service'] },
+  { id: 'dl-ridge', slug: 'aerocity-line', name: 'Aurora Aerocity', city: 'New Delhi', region: 'Delhi', address: 'Worldmark 1, Aerocity, New Delhi 110037', latitude: 28.5504, longitude: 77.122, mapX: 48, mapY: 18, phone: '+91 11 4119 0104', hours: 'Tue–Sun 10:00–20:00', services: ['Vintage', 'Restoration', 'Test drive'] },
+  { id: 'dl-plaza', slug: 'whitefield-house', name: 'Aurora Whitefield', city: 'Bengaluru', region: 'Karnataka', address: 'Prestige Shantiniketan, ITPL Main Road, Whitefield, Bengaluru 560048', latitude: 12.9922, longitude: 77.7289, mapX: 58, mapY: 42, phone: '+91 80 4680 5300', hours: 'Daily 10:00–21:00', services: ['New', 'Upcoming previews', 'Brochures'] },
+  { id: 'dl-orchard', slug: 'hitec-yard', name: 'Aurora HITEC', city: 'Hyderabad', region: 'Telangana', address: 'Raheja Mindspace, HITEC City, Hyderabad 500081', latitude: 17.4435, longitude: 78.3772, mapX: 36, mapY: 62, phone: '+91 40 4030 0909', hours: 'Mon–Sat 10:00–20:00', services: ['Used', 'Marketplace intake', 'Service'] },
+  { id: 'dl-lakes', slug: 'cathedral-line', name: 'Aurora Cathedral', city: 'Chennai', region: 'Tamil Nadu', address: '10 Cathedral Road, Gopalapuram, Chennai 600086', latitude: 13.0475, longitude: 80.2588, mapX: 18, mapY: 72, phone: '+91 44 4592 0101', hours: 'Wed–Sun 10:00–19:00', services: ['New', 'Family test drives'] },
+  { id: 'dl-dune', slug: 'baner-outpost', name: 'Aurora Baner', city: 'Pune', region: 'Maharashtra', address: 'ICC Trade Tower, Senapati Bapat Road, Pune 411016', latitude: 18.5308, longitude: 73.829, mapX: 78, mapY: 68, phone: '+91 20 6764 4400', hours: 'Thu–Mon 11:00–20:00', services: ['Adventure', 'Used', 'Charging'] },
+  { id: 'dl-harbour-east', slug: 'sg-highway', name: 'Aurora SG Highway', city: 'Ahmedabad', region: 'Gujarat', address: 'Iscon Centre, SG Highway, Ahmedabad 380015', latitude: 23.0276, longitude: 72.508, mapX: 82, mapY: 28, phone: '+91 79 4890 4400', hours: 'Mon–Sat 10:00–20:00', services: ['New', 'Electric', 'Home charger'] },
+  { id: 'dl-archive', slug: 'camac-archive', name: 'Aurora Camac Archive', city: 'Kolkata', region: 'West Bengal', address: '22 Camac Street, Elgin, Kolkata 700016', latitude: 22.5448, longitude: 88.3516, mapX: 64, mapY: 80, phone: '+91 33 4007 6600', hours: 'Fri–Sun 11:00–18:00', services: ['Vintage', 'Selling', 'Authentication'] },
 ]
 
 export const BROCHURES: Brochure[] = [
@@ -300,7 +300,7 @@ export const BROCHURES: Brochure[] = [
     id: 'br-aureon-x1',
     slug: 'aureon-x1',
     vehicleId: 'aureon-x1',
-    title: 'Rekha Sutra',
+    title: 'Aurora Sutra',
     subtitle: 'Quiet power for long horizons — every variant, finish and cabin.',
     heroHex: '#1C1A8A',
     sections: [
@@ -347,9 +347,9 @@ export const BROCHURES: Brochure[] = [
 ]
 
 export const PROMOTIONS: AppNotification[] = [
-  { id: 'promo-spring-drive', title: 'Spring drive weekend', detail: 'Complimentary 3D drive sessions at Rekha Line BKC this Saturday.', createdAt: new Date(Date.now() - 90 * 60 * 1000).toISOString(), read: false, href: '/locations', kind: 'offer', audience: 'PUBLIC', offer: { label: 'Book a bay', cta: '/showroom?mode=drive' } },
+  { id: 'promo-spring-drive', title: 'Spring drive weekend', detail: 'Complimentary 3D drive sessions at Aurora Line BKC this Saturday.', createdAt: new Date(Date.now() - 90 * 60 * 1000).toISOString(), read: false, href: '/locations', kind: 'offer', audience: 'PUBLIC', offer: { label: 'Book a bay', cta: '/showroom?mode=drive' } },
   { id: 'promo-used-cert', title: 'Certified used, studio inspected', detail: 'Every certified listing includes a 120-point check and remaining manufacturer warranty.', createdAt: new Date(Date.now() - 240 * 60 * 1000).toISOString(), read: false, href: '/used-cars', kind: 'offer', audience: 'PUBLIC', offer: { label: 'Browse used', cta: '/used-cars' } },
-  { id: 'promo-upcoming', title: 'Rekha Sutra S preview nights', detail: 'Reserve a place for the first public walkaround of the 2027 Rekha Sutra S.', createdAt: new Date(Date.now() - 800 * 60 * 1000).toISOString(), read: false, href: '/upcoming', kind: 'vehicle', audience: 'PUBLIC' },
+  { id: 'promo-upcoming', title: 'Aurora Sutra S preview nights', detail: 'Reserve a place for the first public walkaround of the 2027 Aurora Sutra S.', createdAt: new Date(Date.now() - 800 * 60 * 1000).toISOString(), read: false, href: '/upcoming', kind: 'vehicle', audience: 'PUBLIC' },
   { id: 'promo-brochure', title: 'New digital brochures', detail: 'Large-format brochures now include every variant, finish and mechanical diagram.', createdAt: new Date(Date.now() - 1400 * 60 * 1000).toISOString(), read: false, href: '/brochures', kind: 'info', audience: 'PUBLIC' },
   { id: 'promo-vintage', title: 'Heritage week at the Archive', detail: 'Four restored cars on the floor — and a private selling desk for consignments.', createdAt: new Date(Date.now() - 2100 * 60 * 1000).toISOString(), read: false, href: '/vintage', kind: 'offer', audience: 'PUBLIC' },
   { id: 'promo-onroad', title: 'On-road prices, shown plainly', detail: 'Ex-showroom and on-road figures are now listed on every new vehicle page.', createdAt: new Date(Date.now() - 3200 * 60 * 1000).toISOString(), read: true, href: '/cars', kind: 'info', audience: 'PUBLIC' },
@@ -357,7 +357,7 @@ export const PROMOTIONS: AppNotification[] = [
 
 export const MARKETPLACE_SEED: MarketplaceListing[] = [
   { id: 'ml-1', title: '1974 Deccan Berlinetta', year: 1974, askingPrice: 14200000, odometerKm: 41200, condition: 'Concours', city: 'Kolkata', notes: 'Matching numbers, tool roll, recent mechanical restoration.', contactName: 'Archive desk', vehicleId: 'vintage-velora-berlinetta', createdAt: new Date(Date.now() - 86400000).toISOString() },
-  { id: 'ml-2', title: '2023 Rekha Sutra · certified', year: 2023, askingPrice: 3799000, odometerKm: 28400, condition: 'Certified pre-owned', city: 'Mumbai', notes: 'One owner, ceramic coat, remaining dual-motor warranty.', contactName: 'Rekha Line BKC', vehicleId: 'used-aureon-x1', createdAt: new Date(Date.now() - 172800000).toISOString() },
+  { id: 'ml-2', title: '2023 Aurora Sutra · certified', year: 2023, askingPrice: 3799000, odometerKm: 28400, condition: 'Certified pre-owned', city: 'Mumbai', notes: 'One owner, ceramic coat, remaining dual-motor warranty.', contactName: 'Aurora Line BKC', vehicleId: 'used-aureon-x1', createdAt: new Date(Date.now() - 172800000).toISOString() },
 ]
 
 export const getAnyVehicleById = (id: string | undefined) => allVehicles.find((vehicle) => vehicle.id === id)

@@ -1,8 +1,8 @@
 /* ---------------------------------------------------------------------------
  * Semantic color tokens
  *
- * Brand palette:  #1400C3  #F8F2D8  #FF4E02  #BA0001  #E8ECD1
- * Tech palette:   #0984E3  #1E272E  #00CEC9  #F5F6FA
+ * Brand palette:  BMW blue #0066B1 / #003D73 / #6BB4E8, ivory, black
+ * Tech palette:   #1E272E  #00CEC9  #F5F6FA
  *
  * Bright brand colors are reserved for CTAs, selected controls, active
  * navigation, highlights, badges and status feedback.
@@ -12,13 +12,13 @@
 [data-theme='light'] {
   color-scheme: light;
 
-  --color-primary: #1400c3;
-  --color-primary-strong: #0f0094;
-  --color-primary-soft: rgba(20, 0, 195, 0.08);
-  --color-primary-contrast: #f8f2d8;
+  --color-primary: #0066b1;
+  --color-primary-strong: #003d73;
+  --color-primary-soft: rgba(0, 102, 177, 0.1);
+  --color-primary-contrast: #ffffff;
 
-  --color-secondary: #0984e3;
-  --color-secondary-soft: rgba(9, 132, 227, 0.1);
+  --color-secondary: #6bb4e8;
+  --color-secondary-soft: rgba(107, 180, 232, 0.16);
 
   --color-accent: #ff4e02;
   --color-accent-strong: #e14300;
@@ -52,7 +52,7 @@
   --color-border-strong: rgba(30, 39, 46, 0.24);
   --color-hover: rgba(30, 39, 46, 0.05);
   --color-active: rgba(30, 39, 46, 0.09);
-  --color-focus: #0984e3;
+  --color-focus: #0066b1;
   --color-overlay: rgba(30, 39, 46, 0.45);
   --color-scrim: rgba(248, 242, 216, 0.72);
 
@@ -73,13 +73,13 @@
 [data-theme='dark'] {
   color-scheme: dark;
 
-  --color-primary: #7d6bff;
-  --color-primary-strong: #9a8cff;
-  --color-primary-soft: rgba(125, 107, 255, 0.14);
-  --color-primary-contrast: #0f0a3a;
+  --color-primary: #6bb4e8;
+  --color-primary-strong: #8ec8f0;
+  --color-primary-soft: rgba(107, 180, 232, 0.16);
+  --color-primary-contrast: #041c2c;
 
-  --color-secondary: #3ea0f0;
-  --color-secondary-soft: rgba(62, 160, 240, 0.14);
+  --color-secondary: #0066b1;
+  --color-secondary-soft: rgba(0, 102, 177, 0.22);
 
   --color-accent: #ff6a2c;
   --color-accent-strong: #ff8352;
@@ -113,7 +113,7 @@
   --color-border-strong: rgba(245, 246, 250, 0.18);
   --color-hover: rgba(245, 246, 250, 0.05);
   --color-active: rgba(245, 246, 250, 0.09);
-  --color-focus: #00cec9;
+  --color-focus: #6bb4e8;
   --color-overlay: rgba(5, 8, 11, 0.6);
   --color-scrim: rgba(18, 24, 29, 0.72);
 
