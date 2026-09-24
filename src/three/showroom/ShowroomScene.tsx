@@ -9,7 +9,6 @@ import type { Vehicle } from '@/models/vehicle'
 import { CAR_PROFILES } from '@/three/car/carProfiles'
 import { RealisticCar } from '@/three/car/RealisticCar'
 import { CameraRig, type CameraPose } from '@/three/scene/CameraRig'
-import { Studio } from '@/three/scene/Studio'
 import { useTheme } from '@/theme/ThemeProvider'
 import { ShowroomHall } from './ShowroomHall'
 import styles from './ShowroomScene.module.scss'
@@ -26,14 +25,16 @@ interface ShowroomSceneProps {
   onInteract?: () => void
 }
 
-const RADIUS = 5.8
+const COLS = 3
+const GAP_X = 18
+const GAP_Z = 20
 
-export function placementFor(index: number, count: number) {
-  const spread = Math.min(Math.PI * 0.82, count * 0.4)
-  const angle = -spread / 2 + (count === 1 ? spread / 2 : (index / (count - 1)) * spread)
-  const position = new THREE.Vector3(Math.sin(angle) * RADIUS, 0, -Math.cos(angle) * RADIUS + RADIUS * 0.28)
-  const rotationY = -angle * 0.28 + Math.PI * 0.08
-  return { position, rotationY }
+export function placementFor(index: number, _count: number) {
+  const col = index % COLS
+  const row = Math.floor(index / COLS)
+  const x = (col - (COLS - 1) / 2) * GAP_X
+  const z = 8 - row * GAP_Z
+  return { position: new THREE.Vector3(x, 0, z), rotationY: -Math.PI / 2 }
 }
 
 export function showroomPose(mode: ShowroomMode, vehicles: Vehicle[], selected: number, compareWith: number | null): CameraPose {
@@ -46,10 +47,10 @@ export function showroomPose(mode: ShowroomMode, vehicles: Vehicle[], selected: 
   switch (mode) {
     case 'focus':
     case 'specs': {
-      const cam = sel.position.clone().add(forward.clone().multiplyScalar(4.4)).add(right.clone().multiplyScalar(3.6))
-      cam.y = 1.45
+      const cam = sel.position.clone().add(forward.clone().multiplyScalar(6.2)).add(right.clone().multiplyScalar(4.2))
+      cam.y = 1.7
       const target = sel.position.clone().setY(p.roofHeight * 0.42)
-      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 2.8, maxDistance: 9 }
+      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 4, maxDistance: 14 }
     }
     case 'interior': {
       const cam = sel.position.clone().add(forward.clone().multiplyScalar(p.cabinEnd - p.windshieldRun - 0.35)).add(right.clone().multiplyScalar(0.38))
@@ -61,28 +62,28 @@ export function showroomPose(mode: ShowroomMode, vehicles: Vehicle[], selected: 
     case 'compare': {
       const other = placementFor(compareWith ?? selected, count)
       const mid = sel.position.clone().add(other.position).multiplyScalar(0.5)
-      const cam = mid.clone().add(new THREE.Vector3(0, 2.6, 7.4))
-      return { position: cam.toArray() as [number, number, number], target: [mid.x, 0.55, mid.z], minDistance: 3.5, maxDistance: 12 }
+      const cam = mid.clone().add(new THREE.Vector3(0, 6.5, 16))
+      return { position: cam.toArray() as [number, number, number], target: [mid.x, 0.6, mid.z], minDistance: 8, maxDistance: 28 }
     }
     case 'drive': {
-      const cam = sel.position.clone().add(forward.clone().multiplyScalar(-5.2)).add(right.clone().multiplyScalar(0.35))
-      cam.y = 1.2
-      const target = sel.position.clone().add(forward.clone().multiplyScalar(6))
+      const cam = sel.position.clone().add(forward.clone().multiplyScalar(-7)).add(right.clone().multiplyScalar(0.4))
+      cam.y = 1.25
+      const target = sel.position.clone().add(forward.clone().multiplyScalar(8))
       target.y = 0.65
-      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 3.5, maxDistance: 11 }
+      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 5, maxDistance: 16 }
     }
     case 'explore':
     default:
-      return { position: [0, 2.05, 9.4], target: [0, 0.62, -1.1], minDistance: 4, maxDistance: 14 }
+      return { position: [0, 11, 34], target: [0, 0.4, -2], minDistance: 12, maxDistance: 52 }
   }
 }
 
 function SceneBackground({ dark }: { dark: boolean }) {
   const scene = useThree((s) => s.scene)
   useEffect(() => {
-    const tone = dark ? '#12181d' : '#e8e1cc'
+    const tone = dark ? '#12181d' : '#efe6d4'
     scene.background = new THREE.Color(tone)
-    scene.fog = new THREE.Fog(tone, 16, 34)
+    scene.fog = new THREE.Fog(tone, 28, 78)
   }, [scene, dark])
   return null
 }
@@ -92,17 +93,17 @@ function Podium({ radius, active }: { radius: number; active: boolean }) {
   const dark = theme === 'dark'
   return (
     <group>
-      <mesh position={[0, 0.05, 0]} receiveShadow castShadow>
-        <cylinderGeometry args={[radius, radius + 0.12, 0.1, 64]} />
-        <meshStandardMaterial color={dark ? '#252f38' : '#e7dfc8'} roughness={0.55} metalness={0.12} />
+      <mesh position={[0, 0.04, 0]} receiveShadow>
+        <cylinderGeometry args={[radius, radius + 0.1, 0.08, 48]} />
+        <meshStandardMaterial color={dark ? '#252f38' : '#e4dcc8'} roughness={0.6} />
       </mesh>
-      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[radius - 0.07, radius, 96]} />
+      <mesh position={[0, 0.09, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[radius - 0.08, radius, 64]} />
         <meshStandardMaterial
           color={active ? '#1400c3' : dark ? '#3a4650' : '#d4cbb4'}
           emissive={active ? '#7d6bff' : '#000000'}
-          emissiveIntensity={active ? 0.55 : 0}
-          roughness={0.35}
+          emissiveIntensity={active ? 0.45 : 0}
+          roughness={0.4}
         />
       </mesh>
     </group>
@@ -115,13 +116,12 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
   const { reducedEffects } = usePreferences()
   const { theme } = useTheme()
   const pose = useMemo(() => showroomPose(mode, vehicles, selected, compareWith), [mode, vehicles, selected, compareWith])
-  const reflective = !isMobile && !reducedEffects
 
   return (
     <Canvas
-      shadows="percentage"
-      dpr={isMobile || reducedEffects ? [1, 1.25] : [1, 1.6]}
-      camera={{ position: pose.position, fov: 34, near: 0.05, far: 80 }}
+      shadows={!isMobile}
+      dpr={isMobile || reducedEffects ? [1, 1.15] : [1, 1.4]}
+      camera={{ position: pose.position, fov: 36, near: 0.08, far: 140 }}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
       onCreated={(state) => {
         enableContextRecovery(state)
@@ -131,8 +131,7 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
     >
       <SceneBackground dark={theme === 'dark'} />
       <Suspense fallback={null}>
-        <Studio floorRadius={0} intensity={0.72} />
-        <ShowroomHall reflective={reflective} />
+        <ShowroomHall reflective={false} />
 
         {vehicles.map((vehicle, i) => {
           const { position, rotationY } = placementFor(i, vehicles.length)
@@ -140,9 +139,9 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
           const focused = mode !== 'explore' && !active
           return (
             <group key={vehicle.id} position={position.toArray()} rotation={[0, rotationY, 0]}>
-              <Podium radius={2.7} active={i === selected} />
+              <Podium radius={2.5} active={i === selected} />
               <group
-                position={[0, 0.1, 0]}
+                position={[0, 0.08, 0]}
                 onClick={(e) => {
                   e.stopPropagation()
                   onSelect(i)
@@ -159,7 +158,7 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
                 />
               </group>
               {mode === 'explore' && (
-                <Html position={[0, CAR_PROFILES[vehicle.silhouette].roofHeight + 0.75, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'auto' }}>
+                <Html position={[0, CAR_PROFILES[vehicle.silhouette].roofHeight + 0.7, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'auto' }}>
                   <button
                     type="button"
                     className={`${styles.label} ${i === selected ? styles.labelActive : ''} ${focused ? styles.labelDim : ''}`}
@@ -176,10 +175,10 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
 
         <CameraRig
           pose={pose}
-          parallax={mode === 'explore' && !reduced && !isMobile ? 0.45 : 0}
+          parallax={mode === 'explore' && !reduced && !isMobile ? 0.25 : 0}
           enableZoom
-          minPolarAngle={mode === 'interior' ? 0.6 : 0.35}
-          maxPolarAngle={mode === 'interior' ? Math.PI - 0.6 : Math.PI / 2 - 0.12}
+          minPolarAngle={mode === 'interior' ? 0.6 : 0.28}
+          maxPolarAngle={mode === 'interior' ? Math.PI - 0.6 : Math.PI / 2 - 0.08}
           onInteract={onInteract}
         />
       </Suspense>

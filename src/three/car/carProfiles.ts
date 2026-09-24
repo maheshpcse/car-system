@@ -33,9 +33,9 @@ export interface CarProfile {
 
 export const CAR_PROFILES: Record<Vehicle['silhouette'], CarProfile> = {
   sedan: {
-    length: 4.7,
-    width: 1.86,
-    clearance: 0.34,
+    length: 4.55,
+    width: 1.78,
+    clearance: 0.38,
     shoulderRear: 0.98,
     shoulderFront: 0.9,
     noseHeight: 0.62,
@@ -49,9 +49,9 @@ export const CAR_PROFILES: Record<Vehicle['silhouette'], CarProfile> = {
     axles: [-1.45, 1.4],
   },
   suv: {
-    length: 4.85,
-    width: 1.95,
-    clearance: 0.42,
+    length: 4.55,
+    width: 1.82,
+    clearance: 0.48,
     shoulderRear: 1.16,
     shoulderFront: 1.05,
     noseHeight: 0.72,
@@ -81,9 +81,9 @@ export const CAR_PROFILES: Record<Vehicle['silhouette'], CarProfile> = {
     axles: [-1.35, 1.45],
   },
   hatch: {
-    length: 4.15,
-    width: 1.78,
-    clearance: 0.33,
+    length: 3.95,
+    width: 1.72,
+    clearance: 0.4,
     shoulderRear: 0.98,
     shoulderFront: 0.9,
     noseHeight: 0.62,

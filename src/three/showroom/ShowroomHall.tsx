@@ -1,181 +1,136 @@
-import { MeshReflectorMaterial } from '@react-three/drei'
 import { useTheme } from '@/theme/ThemeProvider'
 
-const HALL = {
-  width: 32,
-  depth: 26,
-  height: 6.35,
-  wall: 0.32,
+export const HALL = {
+  width: 78,
+  depth: 62,
+  height: 8.2,
+  wall: 0.4,
 }
 
 interface ShowroomHallProps {
   reflective: boolean
 }
 
-function WindowBay({ x, z, rotateY, dark }: { x: number; z: number; rotateY: number; dark: boolean }) {
+function Pendant({ x, z, dark }: { x: number; z: number; dark: boolean }) {
   return (
-    <group position={[x, 2.55, z]} rotation={[0, rotateY, 0]}>
-      <mesh position={[0, 1.55, 0]} castShadow>
-        <boxGeometry args={[5.4, 0.22, 0.18]} />
-        <meshStandardMaterial color={dark ? '#2a333c' : '#d8d0bc'} roughness={0.7} />
-      </mesh>
-      <mesh position={[0, -1.15, 0]} receiveShadow>
-        <boxGeometry args={[5.4, 0.18, 0.2]} />
-        <meshStandardMaterial color={dark ? '#1b2228' : '#c4bba4'} roughness={0.65} />
-      </mesh>
+    <group position={[x, HALL.height - 0.2, z]}>
       <mesh>
-        <planeGeometry args={[5.1, 2.4]} />
-        <meshPhysicalMaterial
-          color={dark ? '#8fb4d8' : '#d7e7f5'}
-          transparent
-          opacity={0.28}
-          roughness={0.05}
-          metalness={0.08}
-          transmission={0.55}
-          thickness={0.08}
-        />
+        <cylinderGeometry args={[0.04, 0.04, 1.1, 8]} />
+        <meshStandardMaterial color={dark ? '#2a333c' : '#6d5a3c'} />
       </mesh>
-      <mesh position={[0, 0, 0.04]}>
-        <boxGeometry args={[0.08, 2.4, 0.06]} />
-        <meshStandardMaterial color={dark ? '#3a4550' : '#eee6d2'} metalness={0.4} roughness={0.35} />
+      <mesh position={[0, -0.7, 0]}>
+        <cylinderGeometry args={[0.55, 0.7, 0.18, 24]} />
+        <meshStandardMaterial color="#f4ead2" emissive="#ffe7b0" emissiveIntensity={dark ? 1.4 : 0.7} />
       </mesh>
-    </group>
-  )
-}
-
-function CoveLight({ position, length, intensity }: { position: [number, number, number]; length: number; intensity: number }) {
-  return (
-    <group position={position}>
-      <mesh>
-        <boxGeometry args={[length, 0.06, 0.42]} />
-        <meshStandardMaterial color="#f7f3e8" emissive="#fff6df" emissiveIntensity={intensity} />
-      </mesh>
+      <pointLight position={[0, -0.85, 0]} intensity={dark ? 18 : 12} distance={16} color="#fff1cc" />
     </group>
   )
 }
 
 /**
- * Enclosed showroom: plaster walls, clerestory glass, polished stone floor,
- * timber soffits and ceiling coves. Cars sit inside this volume.
+ * Large dealership hall: marble bays, teak desk, jali screens, hanging lamps.
  */
-export function ShowroomHall({ reflective }: ShowroomHallProps) {
+export function ShowroomHall({ reflective: _reflective }: ShowroomHallProps) {
   const { theme } = useTheme()
   const dark = theme === 'dark'
   const { width: W, depth: D, height: H, wall: T } = HALL
-  const plaster = dark ? '#1d252d' : '#efe8d4'
-  const stone = dark ? '#141b21' : '#cfc6ae'
-  const timber = dark ? '#2a2118' : '#8d6b48'
-  const trim = dark ? '#2f3943' : '#d7cfbb'
-  const ceiling = dark ? '#161c22' : '#f4efe2'
+  const plaster = dark ? '#1a222a' : '#f3ebe0'
+  const marble = dark ? '#1c242c' : '#e8e0d0'
+  const teak = dark ? '#3a2a1c' : '#8b5a2b'
+  const jali = dark ? '#2a333c' : '#c9bba4'
 
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[W, D]} />
-        {reflective ? (
-          <MeshReflectorMaterial
-            blur={[300, 80]}
-            resolution={512}
-            mixBlur={0.85}
-            mixStrength={dark ? 14 : 5}
-            roughness={0.78}
-            depthScale={0.9}
-            minDepthThreshold={0.35}
-            maxDepthThreshold={1.2}
-            color={dark ? '#171e24' : '#d8d0ba'}
-            metalness={0.18}
-            mirror={0}
-          />
-        ) : (
-          <meshStandardMaterial color={dark ? '#161d23' : '#d8d0ba'} roughness={0.92} />
-        )}
+        <meshStandardMaterial color={marble} roughness={0.72} metalness={0.08} />
       </mesh>
 
-      <mesh position={[0, 0.015, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.2, 1.15, 64]} />
-        <meshStandardMaterial color={dark ? '#2a333c' : '#c2b89f'} roughness={0.7} />
-      </mesh>
+      {[-1, 0, 1].map((gx) =>
+        [-1, 0, 1].map((gz) => (
+          <mesh key={`${gx}-${gz}`} rotation={[-Math.PI / 2, 0, 0]} position={[gx * 18, 0.01, gz * 16]} receiveShadow>
+            <circleGeometry args={[3.4, 48]} />
+            <meshStandardMaterial color={dark ? '#242c34' : '#ddd4c2'} roughness={0.78} />
+          </mesh>
+        )),
+      )}
 
-      {/* North / south walls with window bays */}
-      <mesh position={[0, H / 2, -D / 2]} receiveShadow castShadow>
+      <mesh position={[0, H / 2, -D / 2]} receiveShadow>
         <boxGeometry args={[W + T, H, T]} />
-        <meshStandardMaterial color={plaster} roughness={0.92} />
+        <meshStandardMaterial color={plaster} roughness={0.94} />
       </mesh>
       <mesh position={[0, H / 2, D / 2]} receiveShadow>
         <boxGeometry args={[W + T, H, T]} />
-        <meshStandardMaterial color={plaster} roughness={0.92} />
+        <meshStandardMaterial color={plaster} roughness={0.94} />
       </mesh>
-      <mesh position={[-W / 2, H / 2, 0]} receiveShadow castShadow>
+      <mesh position={[-W / 2, H / 2, 0]} receiveShadow>
         <boxGeometry args={[T, H, D]} />
-        <meshStandardMaterial color={plaster} roughness={0.92} />
+        <meshStandardMaterial color={plaster} roughness={0.94} />
       </mesh>
       <mesh position={[W / 2, H / 2, 0]} receiveShadow>
         <boxGeometry args={[T, H, D]} />
-        <meshStandardMaterial color={plaster} roughness={0.92} />
+        <meshStandardMaterial color={plaster} roughness={0.94} />
       </mesh>
-
       <mesh position={[0, H, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <planeGeometry args={[W, D]} />
-        <meshStandardMaterial color={ceiling} roughness={0.95} />
+        <meshStandardMaterial color={dark ? '#141a20' : '#f7f1e6'} roughness={0.96} />
       </mesh>
 
-      <mesh position={[0, 0.18, -D / 2 + 0.28]} castShadow>
-        <boxGeometry args={[W - 1.2, 0.36, 0.42]} />
-        <meshStandardMaterial color={stone} roughness={0.7} />
-      </mesh>
-      <mesh position={[0, 3.15, -D / 2 + 0.22]}>
-        <boxGeometry args={[10.5, 0.08, 0.12]} />
-        <meshStandardMaterial color="#ffffff" emissive="#fff4dc" emissiveIntensity={dark ? 1.8 : 0.9} />
-      </mesh>
-      <mesh position={[0, 4.55, -D / 2 + 0.18]}>
-        <planeGeometry args={[9.2, 1.4]} />
-        <meshStandardMaterial color={dark ? '#0e1318' : '#1400c3'} roughness={0.55} />
-      </mesh>
-
-      {[-8.4, 0, 8.4].map((z) => (
-        <WindowBay key={`e-${z}`} x={W / 2 - 0.18} z={z} rotateY={-Math.PI / 2} dark={dark} />
-      ))}
-      {[-8.4, 0, 8.4].map((z) => (
-        <WindowBay key={`w-${z}`} x={-W / 2 + 0.18} z={z} rotateY={Math.PI / 2} dark={dark} />
-      ))}
-
-      {[-10, -3.4, 3.4, 10].map((x) => (
-        <group key={x}>
-          <mesh position={[x, H / 2, -D / 2 + 2.1]} castShadow>
-            <boxGeometry args={[0.42, H, 0.42]} />
-            <meshStandardMaterial color={trim} roughness={0.55} metalness={0.08} />
-          </mesh>
-          <mesh position={[x, H / 2, D / 2 - 2.1]} castShadow>
-            <boxGeometry args={[0.42, H, 0.42]} />
-            <meshStandardMaterial color={trim} roughness={0.55} metalness={0.08} />
-          </mesh>
+      {[-24, -8, 8, 24].map((z) => (
+        <group key={`win-${z}`}>
+          {[-1, 1].map((side) => (
+            <mesh key={side} position={[side * (W / 2 - 0.22), 3.4, z]}>
+              <planeGeometry args={[0.08, 3.6]} />
+              <meshPhysicalMaterial
+                color={dark ? '#8fb4d8' : '#dceaf6'}
+                transparent
+                opacity={0.32}
+                roughness={0.06}
+                metalness={0.05}
+              />
+            </mesh>
+          ))}
         </group>
       ))}
 
-      <mesh position={[0, H - 0.22, 0]}>
-        <boxGeometry args={[W - 2.4, 0.16, 1.1]} />
-        <meshStandardMaterial color={timber} roughness={0.55} />
+      <mesh position={[0, 1.05, -D / 2 + 2.4]} castShadow>
+        <boxGeometry args={[7.2, 1.05, 1.8]} />
+        <meshStandardMaterial color={teak} roughness={0.55} />
+      </mesh>
+      <mesh position={[0, 4.6, -D / 2 + 0.28]}>
+        <boxGeometry args={[16, 1.6, 0.08]} />
+        <meshStandardMaterial color={dark ? '#0e1318' : '#1400c3'} roughness={0.5} />
       </mesh>
 
-      <CoveLight position={[0, H - 0.12, -4.2]} length={18} intensity={dark ? 1.1 : 0.7} />
-      <CoveLight position={[0, H - 0.12, 2.4]} length={18} intensity={dark ? 0.9 : 0.55} />
-      <CoveLight position={[-8.5, H - 0.12, -0.6]} length={8} intensity={dark ? 0.7 : 0.4} />
-      <CoveLight position={[8.5, H - 0.12, -0.6]} length={8} intensity={dark ? 0.7 : 0.4} />
+      {[-18, 0, 18].map((x) =>
+        [8, -12].map((z) => <Pendant key={`${x}-${z}`} x={x} z={z} dark={dark} />),
+      )}
 
-      {[-1, 1].map((side) => (
-        <mesh key={side} position={[side * 13.2, 0.22, 0]} receiveShadow>
-          <boxGeometry args={[1.6, 0.44, 14]} />
-          <meshStandardMaterial color={stone} roughness={0.8} />
+      {[-28, 28].map((x) => (
+        <group key={`jali-${x}`} position={[x, 2.4, -8]}>
+          {[-2, -1, 0, 1, 2].map((c) =>
+            [0, 1, 2].map((r) => (
+              <mesh key={`${c}-${r}`} position={[c * 0.42, r * 0.55, 0]}>
+                <boxGeometry args={[0.18, 0.32, 0.08]} />
+                <meshStandardMaterial color={jali} roughness={0.7} />
+              </mesh>
+            )),
+          )}
+        </group>
+      ))}
+
+      {[-32, 32].map((x) => (
+        <mesh key={`planter-${x}`} position={[x, 0.45, 18]}>
+          <cylinderGeometry args={[0.7, 0.8, 0.9, 16]} />
+          <meshStandardMaterial color={teak} roughness={0.7} />
         </mesh>
       ))}
 
-      <ambientLight intensity={dark ? 0.18 : 0.32} />
-      <spotLight
-        position={[0, H - 0.4, 0]}
-        angle={1.05}
-        penumbra={0.55}
-        intensity={dark ? 38 : 28}
-        distance={22}
+      <ambientLight intensity={dark ? 0.22 : 0.4} />
+      <hemisphereLight args={[dark ? '#4a5a6a' : '#fff6e8', dark ? '#1a2228' : '#cfc4ae', dark ? 0.45 : 0.7]} />
+      <directionalLight
+        position={[8, 14, 10]}
+        intensity={dark ? 0.7 : 1.05}
         castShadow
         shadow-mapSize={[1024, 1024]}
         color={dark ? '#d7e6ff' : '#fff6e4'}

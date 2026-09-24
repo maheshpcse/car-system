@@ -64,13 +64,6 @@ export const vehicleService = {
   },
 
   async getById(id: string | undefined): Promise<Vehicle | undefined> {
-    const local = getAnyVehicleById(id) ?? getVehicleById(id)
-    if (!id || !apiClient.enabled) return local
-    try {
-      const result = await apiClient.request<Vehicle>(`/vehicles/${encodeURIComponent(id)}`)
-      return result.data
-    } catch {
-      return local
-    }
+    return getAnyVehicleById(id) ?? getVehicleById(id)
   },
 }

@@ -27,6 +27,9 @@ interface SuccessEnvelope<T> {
 
 const TOKEN_KEY = 'accessToken'
 
+/** After a 5xx from Railway, stay on local catalogue so the console is not spammed. */
+let remoteHealthy = true
+
 const readToken = () => {
   try {
     return sessionStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(TOKEN_KEY)
@@ -36,7 +39,9 @@ const readToken = () => {
 }
 
 export const apiClient = {
-  enabled: Boolean(env.apiBaseUrl),
+  get enabled() {
+    return Boolean(env.apiBaseUrl) && remoteHealthy
+  },
 
   getAccessToken: readToken,
 
@@ -84,6 +89,8 @@ export const apiClient = {
       | SuccessEnvelope<T>
       | { success: false; error?: { message?: string; code?: string } }
       | null
+
+    if (response.status >= 500) remoteHealthy = false
 
     if (!response.ok || !payload || payload.success !== true) {
       const errorPayload = payload && 'error' in payload ? payload.error : undefined
