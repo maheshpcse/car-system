@@ -48,11 +48,15 @@ export default function ShowroomPage() {
   const initialMode = (params.get('mode') as ShowroomMode | null) ?? (params.get('vehicle') ? 'focus' : 'explore')
   const [mode, setMode] = useState<ShowroomMode>(MODES.some((item) => item.id === initialMode) ? initialMode : 'explore')
   const [ready, setReady] = useState(false)
+  const [entered, setEntered] = useState(false)
   const [railOpen, setRailOpen] = useState(true)
   const [hintVisible, setHintVisible] = useState(true)
+  const [paintId, setPaintId] = useState<string | null>(null)
+  const [panels, setPanels] = useState({ doors: false, hood: false, boot: false })
 
   const vehicle = LINEUP[selected]
   const other = compareWith !== null ? LINEUP[compareWith] : null
+  const paint = vehicle.colors.find((c) => c.id === paintId) ?? vehicle.colors[0]
 
   useEffect(() => {
     setParams(
@@ -94,6 +98,8 @@ export default function ShowroomPage() {
         return
       }
       setSelected(index)
+      setPaintId(null)
+      setPanels({ doors: false, hood: false, boot: false })
       if (mode === 'explore') setMode('focus')
     },
     [mode, selected],
@@ -142,7 +148,18 @@ export default function ShowroomPage() {
         }
       >
         <Suspense fallback={null}>
-          <ShowroomScene vehicles={LINEUP} selected={selected} compareWith={mode === 'compare' ? compareWith : null} mode={mode} onSelect={select} onReady={() => setReady(true)} onInteract={() => setHintVisible(false)} />
+          <ShowroomScene
+            vehicles={LINEUP}
+            selected={selected}
+            compareWith={mode === 'compare' ? compareWith : null}
+            mode={mode}
+            entered={entered}
+            paintHex={paint.hex}
+            panels={panels}
+            onSelect={select}
+            onReady={() => setReady(true)}
+            onInteract={() => setHintVisible(false)}
+          />
         </Suspense>
       </SceneErrorBoundary>
 
@@ -154,8 +171,25 @@ export default function ShowroomPage() {
             <div className={styles.loadingBar}>
               <span />
             </div>
-            <span>Preparing the showroom floor…</span>
+            <span>Preparing the hall…</span>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {ready && !entered && (
+          <motion.button
+            type="button"
+            className={styles.enter}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setEntered(true)}
+          >
+            <span className="t-eyebrow">Aurora Motors</span>
+            <strong>Enter the showroom</strong>
+            <span>Glass doors open onto a dark hall of Indian-line cars.</span>
+          </motion.button>
         )}
       </AnimatePresence>
 
@@ -279,6 +313,32 @@ export default function ShowroomPage() {
               Full comparison <Icon name="arrowUpRight" size={14} />
             </Link>
           </motion.section>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {entered && (mode === 'focus' || mode === 'specs') && (
+          <motion.div className={styles.customize} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <div className={styles.swatches} role="listbox" aria-label="Paint">
+              {vehicle.colors.map((color) => (
+                <button
+                  key={color.id}
+                  type="button"
+                  className={cx(styles.swatch, paint.id === color.id && styles.swatchActive)}
+                  style={{ background: color.hex }}
+                  aria-label={color.name}
+                  onClick={() => setPaintId(color.id)}
+                />
+              ))}
+            </div>
+            <div className={styles.panelToggles}>
+              {(['doors', 'hood', 'boot'] as const).map((key) => (
+                <button key={key} type="button" className={cx(styles.panelBtn, panels[key] && styles.panelBtnOn)} onClick={() => setPanels((p) => ({ ...p, [key]: !p[key] }))}>
+                  {key === 'doors' ? 'Doors' : key === 'hood' ? 'Bonnet' : 'Boot'}
+                </button>
+              ))}
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
