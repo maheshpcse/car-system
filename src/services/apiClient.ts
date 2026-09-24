@@ -76,7 +76,7 @@ export const apiClient = {
     }
 
     if (response.status === 401 && retry && !path.startsWith('/auth/')) {
-      const refreshed = await this.refresh()
+      const refreshed = Boolean(readToken()) && (await this.refresh())
       if (refreshed) return this.request<T>(path, init, false)
     }
 
@@ -93,6 +93,7 @@ export const apiClient = {
   },
 
   async refresh() {
+    if (!readToken()) return false
     try {
       const result = await this.request<{ accessToken: string }>('/auth/refresh', { method: 'POST' }, false)
       this.setAccessToken(result.data.accessToken)

@@ -19,14 +19,23 @@ export interface Environment {
 const truthy = (value: string | undefined, fallback: boolean) =>
   value === undefined ? fallback : value === 'true' || value === '1'
 
+/** Empty `.env` values are still strings; treat them as unset. */
+const present = (value: string | undefined) => {
+  const trimmed = value?.trim()
+  return trimmed ? trimmed : undefined
+}
+
 export const env: Environment = {
-  appEnvironment: (import.meta.env.VITE_APP_ENVIRONMENT as AppEnvironment) ?? (import.meta.env.PROD ? 'production' : 'development'),
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL ?? '',
-  assetBaseUrl: import.meta.env.VITE_ASSET_BASE_URL ?? import.meta.env.BASE_URL,
+  appEnvironment: (present(import.meta.env.VITE_APP_ENVIRONMENT) as AppEnvironment | undefined) ?? (import.meta.env.PROD ? 'production' : 'development'),
+  apiBaseUrl: present(import.meta.env.VITE_API_BASE_URL) ?? '',
+  assetBaseUrl: present(import.meta.env.VITE_ASSET_BASE_URL) ?? import.meta.env.BASE_URL,
   demoMode: truthy(import.meta.env.VITE_DEMO_MODE, true),
   basePath: import.meta.env.BASE_URL,
   appName: 'Aurora Motors',
-  repositoryUrl: import.meta.env.VITE_REPOSITORY_URL ?? 'https://github.com/maheshpcse/car-system',
+  repositoryUrl: present(import.meta.env.VITE_REPOSITORY_URL) ?? 'https://github.com/maheshpcse/car-system',
 }
 
-export const assetUrl = (path: string) => `${env.assetBaseUrl.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
+export const assetUrl = (path: string) => {
+  const base = env.assetBaseUrl || env.basePath || '/'
+  return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
+}
