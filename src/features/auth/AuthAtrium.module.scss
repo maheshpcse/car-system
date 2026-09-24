@@ -78,9 +78,30 @@
   justify-items: center;
 }
 
+.word {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  font-family: var(--font-display);
+}
+
+.sizer {
+  font-size: clamp(3.2rem, 8vw, 5.6rem);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.18em;
+  line-height: 0.9;
+  white-space: nowrap;
+  visibility: hidden;
+}
+
 .wordSvg {
-  width: min(88%, 720px);
-  height: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 132%;
+  height: 160%;
+  transform: translate(-50%, -58%);
   overflow: visible;
 }
 
@@ -97,8 +118,8 @@
 
 .letter {
   fill: none;
-  stroke: color-mix(in srgb, var(--color-primary) 42%, transparent);
-  stroke-width: 7;
+  stroke: color-mix(in srgb, var(--color-primary) 55%, transparent);
+  stroke-width: 14;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
