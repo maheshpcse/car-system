@@ -12,7 +12,7 @@ import { useTheme, type ThemePreference } from '@/theme/ThemeProvider'
 import styles from './SettingsPage.module.scss'
 
 const THEMES: { id: ThemePreference; label: string; icon: IconName; description: string }[] = [
-  { id: 'light', label: 'Light', icon: 'sun', description: 'Warm ivory surfaces with BMW blue highlights.' },
+  { id: 'light', label: 'Light', icon: 'sun', description: 'Warm ivory surfaces and deep indigo accents.' },
   { id: 'dark', label: 'Dark', icon: 'moon', description: 'Slate backgrounds with softened lighting in 3D scenes.' },
   { id: 'system', label: 'System', icon: 'monitor', description: 'Follow your operating system preference.' },
 ]

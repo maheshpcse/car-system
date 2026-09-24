@@ -1,4 +1,4 @@
-import { Html, MeshReflectorMaterial } from '@react-three/drei'
+import { Html } from '@react-three/drei'
 import { enableContextRecovery } from '@/three/scene/contextRecovery'
 import { Canvas, useThree } from '@react-three/fiber'
 import { Suspense, useEffect, useMemo } from 'react'
@@ -7,10 +7,11 @@ import { useIsMobile, usePrefersReducedMotion } from '@/core/hooks/useMediaQuery
 import { usePreferences } from '@/core/preferences/PreferencesProvider'
 import type { Vehicle } from '@/models/vehicle'
 import { CAR_PROFILES } from '@/three/car/carProfiles'
-import { ProceduralCar } from '@/three/car/ProceduralCar'
+import { RealisticCar } from '@/three/car/RealisticCar'
 import { CameraRig, type CameraPose } from '@/three/scene/CameraRig'
 import { Studio } from '@/three/scene/Studio'
 import { useTheme } from '@/theme/ThemeProvider'
+import { ShowroomHall } from './ShowroomHall'
 import styles from './ShowroomScene.module.scss'
 
 export type ShowroomMode = 'explore' | 'focus' | 'interior' | 'compare' | 'specs' | 'drive'
@@ -25,14 +26,13 @@ interface ShowroomSceneProps {
   onInteract?: () => void
 }
 
-const RADIUS = 7.5
+const RADIUS = 5.8
 
 export function placementFor(index: number, count: number) {
-  const spread = Math.min(Math.PI * 0.95, count * 0.42)
+  const spread = Math.min(Math.PI * 0.82, count * 0.4)
   const angle = -spread / 2 + (count === 1 ? spread / 2 : (index / (count - 1)) * spread)
-  const position = new THREE.Vector3(Math.sin(angle) * RADIUS, 0, -Math.cos(angle) * RADIUS + RADIUS * 0.55)
-  // Cars face slightly towards the centre aisle.
-  const rotationY = -angle * 0.35 + Math.PI * 0.1
+  const position = new THREE.Vector3(Math.sin(angle) * RADIUS, 0, -Math.cos(angle) * RADIUS + RADIUS * 0.28)
+  const rotationY = -angle * 0.28 + Math.PI * 0.08
   return { position, rotationY }
 }
 
@@ -46,10 +46,10 @@ export function showroomPose(mode: ShowroomMode, vehicles: Vehicle[], selected: 
   switch (mode) {
     case 'focus':
     case 'specs': {
-      const cam = sel.position.clone().add(forward.clone().multiplyScalar(5.2)).add(right.clone().multiplyScalar(4.6))
-      cam.y = 1.7
-      const target = sel.position.clone().setY(p.roofHeight * 0.45)
-      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 3, maxDistance: 10 }
+      const cam = sel.position.clone().add(forward.clone().multiplyScalar(4.4)).add(right.clone().multiplyScalar(3.6))
+      cam.y = 1.45
+      const target = sel.position.clone().setY(p.roofHeight * 0.42)
+      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 2.8, maxDistance: 9 }
     }
     case 'interior': {
       const cam = sel.position.clone().add(forward.clone().multiplyScalar(p.cabinEnd - p.windshieldRun - 0.35)).add(right.clone().multiplyScalar(0.38))
@@ -61,28 +61,28 @@ export function showroomPose(mode: ShowroomMode, vehicles: Vehicle[], selected: 
     case 'compare': {
       const other = placementFor(compareWith ?? selected, count)
       const mid = sel.position.clone().add(other.position).multiplyScalar(0.5)
-      const cam = mid.clone().add(new THREE.Vector3(0, 4.2, 9.5))
-      return { position: cam.toArray() as [number, number, number], target: [mid.x, 0.6, mid.z], minDistance: 4, maxDistance: 18 }
+      const cam = mid.clone().add(new THREE.Vector3(0, 2.6, 7.4))
+      return { position: cam.toArray() as [number, number, number], target: [mid.x, 0.55, mid.z], minDistance: 3.5, maxDistance: 12 }
     }
     case 'drive': {
-      const cam = sel.position.clone().add(forward.clone().multiplyScalar(-6.4)).add(right.clone().multiplyScalar(0.4))
-      cam.y = 1.35
-      const target = sel.position.clone().add(forward.clone().multiplyScalar(8))
-      target.y = 0.7
-      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 4, maxDistance: 14 }
+      const cam = sel.position.clone().add(forward.clone().multiplyScalar(-5.2)).add(right.clone().multiplyScalar(0.35))
+      cam.y = 1.2
+      const target = sel.position.clone().add(forward.clone().multiplyScalar(6))
+      target.y = 0.65
+      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 3.5, maxDistance: 11 }
     }
     case 'explore':
     default:
-      return { position: [0, 5.5, 17], target: [0, 0.4, 1], minDistance: 6, maxDistance: 26 }
+      return { position: [0, 2.05, 9.4], target: [0, 0.62, -1.1], minDistance: 4, maxDistance: 14 }
   }
 }
 
 function SceneBackground({ dark }: { dark: boolean }) {
   const scene = useThree((s) => s.scene)
   useEffect(() => {
-    const tone = dark ? '#0f1519' : '#efe9d6'
+    const tone = dark ? '#12181d' : '#e8e1cc'
     scene.background = new THREE.Color(tone)
-    scene.fog = new THREE.Fog(tone, 22, 60)
+    scene.fog = new THREE.Fog(tone, 16, 34)
   }, [scene, dark])
   return null
 }
@@ -92,47 +92,20 @@ function Podium({ radius, active }: { radius: number; active: boolean }) {
   const dark = theme === 'dark'
   return (
     <group>
-      <mesh position={[0, 0.06, 0]} receiveShadow castShadow>
-        <cylinderGeometry args={[radius, radius + 0.15, 0.12, 64]} />
-        <meshStandardMaterial color={dark ? '#252f38' : '#efe9d6'} roughness={0.6} metalness={0.1} />
+      <mesh position={[0, 0.05, 0]} receiveShadow castShadow>
+        <cylinderGeometry args={[radius, radius + 0.12, 0.1, 64]} />
+        <meshStandardMaterial color={dark ? '#252f38' : '#e7dfc8'} roughness={0.55} metalness={0.12} />
       </mesh>
-      <mesh position={[0, 0.125, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[radius - 0.08, radius, 96]} />
+      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[radius - 0.07, radius, 96]} />
         <meshStandardMaterial
-          color={active ? '#7d6bff' : dark ? '#3a4650' : '#d9d2bb'}
-          emissive={active ? '#5a48ff' : '#000000'}
-          emissiveIntensity={active ? 0.9 : 0}
-          roughness={0.4}
+          color={active ? '#1400c3' : dark ? '#3a4650' : '#d4cbb4'}
+          emissive={active ? '#7d6bff' : '#000000'}
+          emissiveIntensity={active ? 0.55 : 0}
+          roughness={0.35}
         />
       </mesh>
     </group>
-  )
-}
-
-function Floor({ reflective }: { reflective: boolean }) {
-  const { theme } = useTheme()
-  const dark = theme === 'dark'
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.002, 0]} receiveShadow>
-      <planeGeometry args={[70, 70]} />
-      {reflective ? (
-        <MeshReflectorMaterial
-          blur={[400, 120]}
-          resolution={512}
-          mixBlur={1}
-          mixStrength={dark ? 18 : 6}
-          roughness={0.85}
-          depthScale={1.1}
-          minDepthThreshold={0.4}
-          maxDepthThreshold={1.3}
-          color={dark ? '#141b21' : '#ddd6c0'}
-          metalness={0.2}
-          mirror={0}
-        />
-      ) : (
-        <meshStandardMaterial color={dark ? '#161d23' : '#e0d9c4'} roughness={0.95} />
-      )}
-    </mesh>
   )
 }
 
@@ -148,7 +121,7 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
     <Canvas
       shadows="percentage"
       dpr={isMobile || reducedEffects ? [1, 1.25] : [1, 1.6]}
-      camera={{ position: pose.position, fov: 34, near: 0.05, far: 120 }}
+      camera={{ position: pose.position, fov: 34, near: 0.05, far: 80 }}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
       onCreated={(state) => {
         enableContextRecovery(state)
@@ -158,39 +131,8 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
     >
       <SceneBackground dark={theme === 'dark'} />
       <Suspense fallback={null}>
-        <Studio floorRadius={0} intensity={1.05} />
-        <Floor reflective={reflective && mode !== 'drive'} />
-
-        {mode === 'drive' && (
-          <group>
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 6]} receiveShadow>
-              <planeGeometry args={[8, 48]} />
-              <meshStandardMaterial color={theme === 'dark' ? '#2a3036' : '#6d6a63'} roughness={0.95} />
-            </mesh>
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 6]}>
-              <planeGeometry args={[0.16, 48]} />
-              <meshStandardMaterial color="#f2e38a" emissive="#f2e38a" emissiveIntensity={0.4} />
-            </mesh>
-            <mesh position={[-10, 0.4, 2]}>
-              <boxGeometry args={[14, 0.2, 40]} />
-              <meshStandardMaterial color={theme === 'dark' ? '#1a3a28' : '#7fa36b'} />
-            </mesh>
-            <mesh position={[10, 0.4, 2]}>
-              <boxGeometry args={[14, 0.2, 40]} />
-              <meshStandardMaterial color={theme === 'dark' ? '#1a3a28' : '#7fa36b'} />
-            </mesh>
-          </group>
-        )}
-
-        {/* Back wall with a soft light band */}
-        <mesh position={[0, 4, -14]}>
-          <planeGeometry args={[70, 12]} />
-          <meshStandardMaterial color={theme === 'dark' ? '#131a20' : '#e8e1cb'} roughness={1} />
-        </mesh>
-        <mesh position={[0, 3.2, -13.9]}>
-          <planeGeometry args={[26, 0.12]} />
-          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={theme === 'dark' ? 1.6 : 0.8} />
-        </mesh>
+        <Studio floorRadius={0} intensity={0.72} />
+        <ShowroomHall reflective={reflective} />
 
         {vehicles.map((vehicle, i) => {
           const { position, rotationY } = placementFor(i, vehicles.length)
@@ -198,15 +140,15 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
           const focused = mode !== 'explore' && !active
           return (
             <group key={vehicle.id} position={position.toArray()} rotation={[0, rotationY, 0]}>
-              <Podium radius={3.1} active={i === selected} />
+              <Podium radius={2.7} active={i === selected} />
               <group
-                position={[0, 0.12, 0]}
+                position={[0, 0.1, 0]}
                 onClick={(e) => {
                   e.stopPropagation()
                   onSelect(i)
                 }}
               >
-                <ProceduralCar
+                <RealisticCar
                   silhouette={vehicle.silhouette}
                   color={vehicle.colors[0].hex}
                   finish={vehicle.colors[0].finish}
@@ -217,7 +159,7 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
                 />
               </group>
               {mode === 'explore' && (
-                <Html position={[0, CAR_PROFILES[vehicle.silhouette].roofHeight + 0.9, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'auto' }}>
+                <Html position={[0, CAR_PROFILES[vehicle.silhouette].roofHeight + 0.75, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'auto' }}>
                   <button
                     type="button"
                     className={`${styles.label} ${i === selected ? styles.labelActive : ''} ${focused ? styles.labelDim : ''}`}
@@ -234,10 +176,10 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
 
         <CameraRig
           pose={pose}
-          parallax={mode === 'explore' && !reduced && !isMobile ? 0.9 : 0}
+          parallax={mode === 'explore' && !reduced && !isMobile ? 0.45 : 0}
           enableZoom
-          minPolarAngle={mode === 'interior' ? 0.6 : 0.25}
-          maxPolarAngle={mode === 'interior' ? Math.PI - 0.6 : Math.PI / 2 - 0.05}
+          minPolarAngle={mode === 'interior' ? 0.6 : 0.35}
+          maxPolarAngle={mode === 'interior' ? Math.PI - 0.6 : Math.PI / 2 - 0.12}
           onInteract={onInteract}
         />
       </Suspense>

@@ -229,7 +229,7 @@ export function ProceduralCar({
           ))}
           <mesh>
             <cylinderGeometry args={[0.035, 0.035, 0.03, 12]} />
-            <meshStandardMaterial color="#0066b1" roughness={0.3} metalness={0.5} />
+            <meshStandardMaterial color="#1400c3" roughness={0.3} metalness={0.5} />
           </mesh>
         </group>
         <mesh position={[roofEnd + 0.05, seatY + 0.42, 0]} rotation={[0.28, 0, 0]}>
@@ -238,7 +238,7 @@ export function ProceduralCar({
         </mesh>
         <mesh position={[roofEnd + 0.02, seatY + 0.46, 0]} rotation={[0.28, 0, 0]}>
           <boxGeometry args={[0.28, 0.012, p.width * 0.42]} />
-          <meshStandardMaterial color="#6bb4e8" emissive="#0066b1" emissiveIntensity={0.25} roughness={0.2} />
+          <meshStandardMaterial color="#7d6bff" emissive="#1400c3" emissiveIntensity={0.25} roughness={0.2} />
         </mesh>
       </group>
 

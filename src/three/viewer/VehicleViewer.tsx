@@ -12,7 +12,7 @@ import { Icon } from '@/shared/icons/Icon'
 import { IconButton } from '@/shared/ui/Button'
 import { VehicleSilhouette } from '@/shared/vehicle/VehicleSilhouette'
 import { CAR_PROFILES } from '@/three/car/carProfiles'
-import { ProceduralCar } from '@/three/car/ProceduralCar'
+import { RealisticCar } from '@/three/car/RealisticCar'
 import { CameraRig } from '@/three/scene/CameraRig'
 import { SceneErrorBoundary } from '@/three/scene/SceneErrorBoundary'
 import { Studio } from '@/three/scene/Studio'
@@ -147,7 +147,7 @@ export function VehicleViewer({
         >
           <Suspense fallback={null}>
             <Studio floorRadius={variant === 'hero' ? 0 : 8} shadowOpacity={variant === 'hero' ? 0.5 : 0.6} />
-            <ProceduralCar
+            <RealisticCar
               silhouette={vehicle.silhouette}
               color={paint.hex}
               finish={paint.finish}
