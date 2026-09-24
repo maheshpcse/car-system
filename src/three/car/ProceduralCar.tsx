@@ -144,8 +144,13 @@ export function ProceduralCar({
   const bodyGeo = useMemo(() => extrude(bodyShape(p), p.width), [p])
   const glassGeo = useMemo(() => extrude(glassShape(p), p.width * 0.9, 0.04), [p])
   const bodyMat = useRef<THREE.MeshPhysicalMaterial>(null)
-  const target = useMemo(() => new THREE.Color(color), [color])
+  const target = useMemo(() => {
+    const c = new THREE.Color(color)
+    if (dimmed) c.multiplyScalar(0.68)
+    return c
+  }, [color, dimmed])
   const f = FINISH[finish]
+  const paintRough = dimmed ? Math.min(0.55, f.roughness + 0.12) : f.roughness
 
   // Smoothly blend paint colour when the user picks a new one.
   useFrame((_, delta) => {
@@ -170,19 +175,24 @@ export function ProceduralCar({
           ref={bodyMat}
           color={color}
           metalness={f.metalness}
-          roughness={f.roughness}
+          roughness={paintRough}
           clearcoat={f.clearcoat}
-          clearcoatRoughness={0.12}
-          envMapIntensity={dimmed ? 0.35 : 1.2}
-          opacity={dimmed ? 0.42 : 1}
-          transparent={dimmed}
+          clearcoatRoughness={0.18}
+          envMapIntensity={dimmed ? 0.55 : 1.15}
         />
       </mesh>
 
       {/* Glasshouse + roof */}
       {!interiorMode && (
         <mesh geometry={glassGeo} castShadow={castShadow}>
-          <meshPhysicalMaterial color="#5b6c78" metalness={0.9} roughness={0.08} transparent opacity={0.55} envMapIntensity={1.6} />
+          <meshPhysicalMaterial
+            color="#8aa0b0"
+            metalness={0.45}
+            roughness={0.12}
+            transparent
+            opacity={dimmed ? 0.62 : 0.72}
+            envMapIntensity={1.1}
+          />
         </mesh>
       )}
       {!p.openTop && !interiorMode && (

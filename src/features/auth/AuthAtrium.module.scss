@@ -74,41 +74,25 @@
   position: absolute;
   inset: 0;
   display: grid;
-  place-items: center;
-}
-
-.word {
-  position: relative;
-  z-index: 1;
-  display: grid;
+  place-content: center;
   justify-items: center;
-  gap: 0.2em;
-  font-family: var(--font-display);
-  pointer-events: none;
-
-  span {
-    font-size: clamp(3.2rem, 8vw, 5.6rem);
-    font-weight: var(--weight-semibold);
-    letter-spacing: 0.18em;
-    color: var(--color-text-primary);
-    line-height: 0.9;
-  }
-
-  em {
-    font-style: normal;
-    font-size: 0.82rem;
-    letter-spacing: 0.42em;
-    text-transform: uppercase;
-    color: var(--color-primary);
-    font-weight: var(--weight-medium);
-  }
 }
 
 .wordSvg {
-  position: absolute;
   width: min(88%, 720px);
   height: auto;
   overflow: visible;
+}
+
+.kicker {
+  margin-top: 2.4rem;
+  font-style: normal;
+  font-size: 0.82rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  font-weight: var(--weight-medium);
+  font-family: var(--font-display);
 }
 
 .letter {

@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react'
-import { copyFileSync, existsSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, type Plugin } from 'vite'
 
@@ -25,10 +25,40 @@ function resolveBase(): string {
 }
 
 /**
- * GitHub Pages serves `404.html` for unknown paths. Copying the SPA entry file
- * there lets deep links such as `/cars/aureon-x1` resolve on refresh. `.nojekyll`
- * prevents Jekyll from ignoring underscore-prefixed asset folders.
+ * Static copies of index.html so GitHub Pages returns 200 for known routes
+ * (e.g. /login) instead of serving 404.html with HTTP 404. Deep links such as
+ * /cars/aureon-x1 still use 404.html. `.nojekyll` keeps asset folders intact.
  */
+const SPA_ROUTES = [
+  'login',
+  'signup',
+  'forgot-password',
+  'demo-login',
+  'showroom',
+  'cars',
+  'used-cars',
+  'upcoming',
+  'vintage',
+  'brochures',
+  'locations',
+  'sell',
+  'categories',
+  'configurator',
+  'compare',
+  'favorites',
+  'saved-builds',
+  'profile',
+  'settings',
+  'notifications',
+  'privacy',
+  'terms',
+]
+
+function writeSpaCopy(index: string, dest: string) {
+  mkdirSync(dirname(dest), { recursive: true })
+  copyFileSync(index, dest)
+}
+
 function spaFallback(): Plugin {
   let outDir = 'dist'
   return {
@@ -37,11 +67,13 @@ function spaFallback(): Plugin {
     configResolved(config) {
       outDir = resolve(config.root, config.build.outDir)
     },
-    closeBundle() {
+    writeBundle() {
       const index = resolve(outDir, 'index.html')
-      if (existsSync(index)) {
-        copyFileSync(index, resolve(outDir, '404.html'))
-        writeFileSync(resolve(outDir, '.nojekyll'), '')
+      if (!existsSync(index)) return
+      copyFileSync(index, resolve(outDir, '404.html'))
+      writeFileSync(resolve(outDir, '.nojekyll'), '')
+      for (const route of SPA_ROUTES) {
+        writeSpaCopy(index, resolve(outDir, route, 'index.html'))
       }
     },
   }

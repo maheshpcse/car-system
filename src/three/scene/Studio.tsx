@@ -1,5 +1,6 @@
 import { ContactShadows } from '@react-three/drei'
 import { useTheme } from '@/theme/ThemeProvider'
+import { StudioEnvironment } from './StudioEnvironment'
 
 interface StudioProps {
   floorRadius?: number
@@ -14,22 +15,24 @@ interface StudioProps {
 export function Studio({ floorRadius = 9, shadowOpacity = 0.55, intensity = 1 }: StudioProps) {
   const { theme } = useTheme()
   const dark = theme === 'dark'
-  const floor = dark ? '#1a2229' : '#e4decb'
-  const key = dark ? 0.55 : 0.9
+  const floor = dark ? '#2a333c' : '#e4decb'
+  const key = dark ? 1.15 : 0.9
 
   return (
     <>
-      <ambientLight intensity={(dark ? 0.32 : 0.5) * intensity} />
-      <hemisphereLight args={[dark ? '#4a5a6a' : '#fff6e8', dark ? '#1a2228' : '#cfc4ae', 0.55 * intensity]} />
+      <StudioEnvironment intensity={dark ? 1 : 0.75} />
+      <ambientLight intensity={(dark ? 0.58 : 0.5) * intensity} />
+      <hemisphereLight args={[dark ? '#e8f0ff' : '#fff6e8', dark ? '#3a3330' : '#cfc4ae', (dark ? 0.75 : 0.55) * intensity]} />
       <directionalLight
         position={[6, 8, 4]}
         intensity={key * intensity * 1.5}
         castShadow
         shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0004}
-        color={dark ? '#cfe3ff' : '#fff5e6'}
+        color={dark ? '#fff4dc' : '#fff5e6'}
       />
-      <directionalLight position={[-6, 4, -5]} intensity={0.4 * intensity} color={dark ? '#7dd8d4' : '#dfe8ff'} />
+      <directionalLight position={[-6, 4, -5]} intensity={(dark ? 0.85 : 0.4) * intensity} color={dark ? '#9ec8ff' : '#dfe8ff'} />
+      <directionalLight position={[0, 2.4, 7]} intensity={(dark ? 0.55 : 0.28) * intensity} color="#ffffff" />
 
       {floorRadius > 0 && (
         <>

@@ -9,6 +9,7 @@ import type { Vehicle } from '@/models/vehicle'
 import { CAR_PROFILES } from '@/three/car/carProfiles'
 import { RealisticCar } from '@/three/car/RealisticCar'
 import { CameraRig, type CameraPose } from '@/three/scene/CameraRig'
+import { StudioEnvironment } from '@/three/scene/StudioEnvironment'
 import { ShowroomHall } from './ShowroomHall'
 import styles from './ShowroomScene.module.scss'
 
@@ -85,8 +86,8 @@ export function showroomPose(
 function SceneBackground() {
   const scene = useThree((s) => s.scene)
   useEffect(() => {
-    scene.background = new THREE.Color('#080b0e')
-    scene.fog = new THREE.Fog('#080b0e', 14, 28)
+    scene.background = new THREE.Color('#1c242c')
+    scene.fog = new THREE.Fog('#1c242c', 22, 42)
   }, [scene])
   return null
 }
@@ -100,7 +101,7 @@ function Podium({ radius, active, spinning }: { radius: number; active: boolean;
     <group>
       <mesh position={[0, 0.05, 0]} receiveShadow>
         <cylinderGeometry args={[radius, radius + 0.12, 0.1, 48]} />
-        <meshStandardMaterial color="#1a2026" roughness={0.45} metalness={0.25} />
+        <meshStandardMaterial color="#4a545e" roughness={0.4} metalness={0.22} />
       </mesh>
       <mesh ref={ring} position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[radius - 0.08, radius, 64]} />
@@ -167,12 +168,12 @@ function Bay({
           wheelStyle={vehicle.wheels[0]?.style}
           interiorAccent={vehicle.interiors[0]?.accent}
           interiorMode={mode === 'interior' && index === selected}
-          detail={index === selected && focused ? 'high' : 'low'}
+          detail="high"
           openDoors={index === selected && panels.doors}
           openHood={index === selected && panels.hood}
           openBoot={index === selected && panels.boot}
           dimmed={dimmed}
-          castShadow={index === selected}
+          castShadow
         />
       </group>
       {mode === 'explore' && (
@@ -219,6 +220,7 @@ export function ShowroomScene({
     >
       <SceneBackground />
       <Suspense fallback={null}>
+        <StudioEnvironment intensity={1.05} />
         <ShowroomHall doorsOpen={entered} />
         <Podium radius={2.6} active={mode === 'focus' || mode === 'specs'} spinning={mode === 'focus'} />
 
