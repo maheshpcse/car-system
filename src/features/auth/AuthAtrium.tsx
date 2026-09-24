@@ -56,10 +56,6 @@ export function AuthAtrium() {
       <div className={styles.diamond} />
       <div className={styles.beam} />
       <div className={styles.stage}>
-        <div className={styles.word}>
-          <span>AURORA</span>
-          <em>STUDIO</em>
-        </div>
         <svg className={styles.wordSvg} viewBox="0 0 860 200">
           {LETTERS.map((d, i) => (
             <path
@@ -82,6 +78,7 @@ export function AuthAtrium() {
             </g>
           )}
         </svg>
+        <em className={styles.kicker}>STUDIO</em>
       </div>
       <ul className={styles.stats}>
         <li>
