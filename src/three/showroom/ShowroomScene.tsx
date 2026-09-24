@@ -1,7 +1,7 @@
 import { Html } from '@react-three/drei'
 import { enableContextRecovery } from '@/three/scene/contextRecovery'
-import { Canvas, useThree } from '@react-three/fiber'
-import { Suspense, useEffect, useMemo } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Suspense, useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useIsMobile, usePrefersReducedMotion } from '@/core/hooks/useMediaQuery'
 import { usePreferences } from '@/core/preferences/PreferencesProvider'
@@ -9,119 +9,207 @@ import type { Vehicle } from '@/models/vehicle'
 import { CAR_PROFILES } from '@/three/car/carProfiles'
 import { RealisticCar } from '@/three/car/RealisticCar'
 import { CameraRig, type CameraPose } from '@/three/scene/CameraRig'
-import { useTheme } from '@/theme/ThemeProvider'
 import { ShowroomHall } from './ShowroomHall'
 import styles from './ShowroomScene.module.scss'
 
 export type ShowroomMode = 'explore' | 'focus' | 'interior' | 'compare' | 'specs' | 'drive'
+
+export interface ShowroomPanels {
+  doors: boolean
+  hood: boolean
+  boot: boolean
+}
 
 interface ShowroomSceneProps {
   vehicles: Vehicle[]
   selected: number
   compareWith: number | null
   mode: ShowroomMode
+  entered: boolean
+  paintHex?: string
+  panels: ShowroomPanels
   onSelect: (index: number) => void
   onReady: () => void
   onInteract?: () => void
 }
 
-const COLS = 3
-const GAP_X = 18
-const GAP_Z = 20
+const SLOTS = [0, 1, 2, 3, 4, 5].map((index) => {
+  const side = index < 3 ? -1 : 1
+  const row = index % 3
+  return {
+    position: new THREE.Vector3(side * 5.6, 0, 3.2 - row * 3.4),
+    rotationY: side === -1 ? Math.PI / 2 : -Math.PI / 2,
+  }
+})
 
-export function placementFor(index: number, _count: number) {
-  const col = index % COLS
-  const row = Math.floor(index / COLS)
-  const x = (col - (COLS - 1) / 2) * GAP_X
-  const z = 8 - row * GAP_Z
-  return { position: new THREE.Vector3(x, 0, z), rotationY: -Math.PI / 2 }
+export function placementFor(index: number) {
+  return SLOTS[index] ?? SLOTS[0]
 }
 
-export function showroomPose(mode: ShowroomMode, vehicles: Vehicle[], selected: number, compareWith: number | null): CameraPose {
-  const count = vehicles.length
-  const sel = placementFor(selected, count)
+export function showroomPose(
+  mode: ShowroomMode,
+  vehicles: Vehicle[],
+  selected: number,
+  compareWith: number | null,
+  entered: boolean,
+): CameraPose {
   const p = CAR_PROFILES[vehicles[selected]?.silhouette ?? 'sedan']
-  const forward = new THREE.Vector3(Math.cos(sel.rotationY), 0, -Math.sin(sel.rotationY))
-  const right = new THREE.Vector3(-forward.z, 0, forward.x)
-
+  if (!entered) {
+    return { position: [0, 1.55, 14.6], target: [0, 1.35, 10.6], minDistance: 2, maxDistance: 4 }
+  }
   switch (mode) {
     case 'focus':
-    case 'specs': {
-      const cam = sel.position.clone().add(forward.clone().multiplyScalar(6.2)).add(right.clone().multiplyScalar(4.2))
-      cam.y = 1.7
-      const target = sel.position.clone().setY(p.roofHeight * 0.42)
-      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 4, maxDistance: 14 }
-    }
-    case 'interior': {
-      const cam = sel.position.clone().add(forward.clone().multiplyScalar(p.cabinEnd - p.windshieldRun - 0.35)).add(right.clone().multiplyScalar(0.38))
-      cam.y = p.roofHeight - 0.22
-      const target = sel.position.clone().add(forward.clone().multiplyScalar(p.cabinEnd + 3))
-      target.y = p.roofHeight * 0.55
-      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 0.05, maxDistance: 0.3 }
-    }
+    case 'specs':
+      return { position: [4.4, 1.55, 4.6], target: [0, 0.55, 0], minDistance: 3.2, maxDistance: 8 }
+    case 'interior':
+      return {
+        position: [p.cabinEnd - p.windshieldRun - 0.35, p.roofHeight - 0.22, 0.38],
+        target: [p.cabinEnd + 3, p.roofHeight * 0.55, 0.15],
+        minDistance: 0.05,
+        maxDistance: 0.3,
+      }
     case 'compare': {
-      const other = placementFor(compareWith ?? selected, count)
-      const mid = sel.position.clone().add(other.position).multiplyScalar(0.5)
-      const cam = mid.clone().add(new THREE.Vector3(0, 6.5, 16))
-      return { position: cam.toArray() as [number, number, number], target: [mid.x, 0.6, mid.z], minDistance: 8, maxDistance: 28 }
+      const a = placementFor(selected).position
+      const b = placementFor(compareWith ?? selected).position
+      const mid = a.clone().add(b).multiplyScalar(0.5)
+      return { position: [mid.x, 3.4, mid.z + 9], target: [mid.x, 0.5, mid.z], minDistance: 6, maxDistance: 16 }
     }
-    case 'drive': {
-      const cam = sel.position.clone().add(forward.clone().multiplyScalar(-7)).add(right.clone().multiplyScalar(0.4))
-      cam.y = 1.25
-      const target = sel.position.clone().add(forward.clone().multiplyScalar(8))
-      target.y = 0.65
-      return { position: cam.toArray() as [number, number, number], target: target.toArray() as [number, number, number], minDistance: 5, maxDistance: 16 }
-    }
+    case 'drive':
+      return { position: [-6.2, 1.25, 0.4], target: [6, 0.65, 0], minDistance: 4, maxDistance: 12 }
     case 'explore':
     default:
-      return { position: [0, 11, 34], target: [0, 0.4, -2], minDistance: 12, maxDistance: 52 }
+      return { position: [0, 2.35, 11.2], target: [0, 0.55, 0], minDistance: 6, maxDistance: 15 }
   }
 }
 
-function SceneBackground({ dark }: { dark: boolean }) {
+function SceneBackground() {
   const scene = useThree((s) => s.scene)
   useEffect(() => {
-    const tone = dark ? '#12181d' : '#efe6d4'
-    scene.background = new THREE.Color(tone)
-    scene.fog = new THREE.Fog(tone, 28, 78)
-  }, [scene, dark])
+    scene.background = new THREE.Color('#080b0e')
+    scene.fog = new THREE.Fog('#080b0e', 14, 28)
+  }, [scene])
   return null
 }
 
-function Podium({ radius, active }: { radius: number; active: boolean }) {
-  const { theme } = useTheme()
-  const dark = theme === 'dark'
+function Podium({ radius, active, spinning }: { radius: number; active: boolean; spinning?: boolean }) {
+  const ring = useRef<THREE.Mesh>(null)
+  useFrame((_, dt) => {
+    if (spinning && ring.current) ring.current.rotation.z += dt * 0.35
+  })
   return (
     <group>
-      <mesh position={[0, 0.04, 0]} receiveShadow>
-        <cylinderGeometry args={[radius, radius + 0.1, 0.08, 48]} />
-        <meshStandardMaterial color={dark ? '#252f38' : '#e4dcc8'} roughness={0.6} />
+      <mesh position={[0, 0.05, 0]} receiveShadow>
+        <cylinderGeometry args={[radius, radius + 0.12, 0.1, 48]} />
+        <meshStandardMaterial color="#1a2026" roughness={0.45} metalness={0.25} />
       </mesh>
-      <mesh position={[0, 0.09, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh ref={ring} position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[radius - 0.08, radius, 64]} />
         <meshStandardMaterial
-          color={active ? '#1400c3' : dark ? '#3a4650' : '#d4cbb4'}
-          emissive={active ? '#7d6bff' : '#000000'}
-          emissiveIntensity={active ? 0.45 : 0}
-          roughness={0.4}
+          color={active ? '#ff3b2e' : '#2a333c'}
+          emissive={active ? '#ff3b2e' : '#000000'}
+          emissiveIntensity={active ? 0.7 : 0}
+          roughness={0.35}
         />
       </mesh>
     </group>
   )
 }
 
-export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect, onReady, onInteract }: ShowroomSceneProps) {
+function Bay({
+  vehicle,
+  index,
+  selected,
+  mode,
+  paintHex,
+  panels,
+  onSelect,
+}: {
+  vehicle: Vehicle
+  index: number
+  selected: number
+  mode: ShowroomMode
+  paintHex?: string
+  panels: ShowroomPanels
+  onSelect: (index: number) => void
+}) {
+  const group = useRef<THREE.Group>(null)
+  const slot = placementFor(index)
+  const focused = mode === 'focus' || mode === 'specs' || mode === 'interior' || mode === 'drive'
+  const onStage = focused && index === selected
+  const dest = useMemo(() => (onStage ? new THREE.Vector3(0, 0.1, 0) : slot.position.clone().setY(0.08)), [onStage, slot.position])
+  const destYaw = onStage ? -Math.PI / 2 : slot.rotationY
+  const yaw = useRef(slot.rotationY)
+
+  useFrame((_, dt) => {
+    if (!group.current) return
+    group.current.position.lerp(dest, 1 - Math.exp(-dt * 3.2))
+    yaw.current = THREE.MathUtils.damp(yaw.current, destYaw, 3.2, dt)
+    if (onStage && mode === 'focus') yaw.current += dt * 0.35
+    group.current.rotation.y = yaw.current
+  })
+
+  const paint = paintHex && index === selected ? paintHex : vehicle.colors[0].hex
+  const dimmed = focused && index !== selected
+
+  return (
+    <group ref={group} position={slot.position.toArray()} rotation={[0, slot.rotationY, 0]}>
+      {!onStage && <Podium radius={2.15} active={index === selected} />}
+      <group
+        onClick={(e) => {
+          e.stopPropagation()
+          onSelect(index)
+        }}
+      >
+        <RealisticCar
+          silhouette={vehicle.silhouette}
+          color={paint}
+          finish={vehicle.colors[0].finish}
+          wheelStyle={vehicle.wheels[0]?.style}
+          interiorAccent={vehicle.interiors[0]?.accent}
+          interiorMode={mode === 'interior' && index === selected}
+          detail={index === selected && focused ? 'high' : 'low'}
+          openDoors={index === selected && panels.doors}
+          openHood={index === selected && panels.hood}
+          openBoot={index === selected && panels.boot}
+          dimmed={dimmed}
+          castShadow={index === selected}
+        />
+      </group>
+      {mode === 'explore' && (
+        <Html position={[0, CAR_PROFILES[vehicle.silhouette].roofHeight + 0.55, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'auto' }}>
+          <button type="button" className={`${styles.label} ${index === selected ? styles.labelActive : ''}`} onClick={() => onSelect(index)}>
+            <span>{vehicle.manufacturer}</span>
+            <strong>{vehicle.model}</strong>
+          </button>
+        </Html>
+      )}
+    </group>
+  )
+}
+
+export function ShowroomScene({
+  vehicles,
+  selected,
+  compareWith,
+  mode,
+  entered,
+  paintHex,
+  panels,
+  onSelect,
+  onReady,
+  onInteract,
+}: ShowroomSceneProps) {
   const isMobile = useIsMobile()
   const reduced = usePrefersReducedMotion()
   const { reducedEffects } = usePreferences()
-  const { theme } = useTheme()
-  const pose = useMemo(() => showroomPose(mode, vehicles, selected, compareWith), [mode, vehicles, selected, compareWith])
+  const pose = useMemo(() => showroomPose(mode, vehicles, selected, compareWith, entered), [mode, vehicles, selected, compareWith, entered])
+  const interior = mode === 'interior'
 
   return (
     <Canvas
       shadows={!isMobile}
       dpr={isMobile || reducedEffects ? [1, 1.15] : [1, 1.4]}
-      camera={{ position: pose.position, fov: 36, near: 0.08, far: 140 }}
+      camera={{ position: pose.position, fov: 34, near: 0.08, far: 60 }}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
       onCreated={(state) => {
         enableContextRecovery(state)
@@ -129,56 +217,32 @@ export function ShowroomScene({ vehicles, selected, compareWith, mode, onSelect,
       }}
       className={styles.canvas}
     >
-      <SceneBackground dark={theme === 'dark'} />
+      <SceneBackground />
       <Suspense fallback={null}>
-        <ShowroomHall reflective={false} />
+        <ShowroomHall doorsOpen={entered} />
+        <Podium radius={2.6} active={mode === 'focus' || mode === 'specs'} spinning={mode === 'focus'} />
 
-        {vehicles.map((vehicle, i) => {
-          const { position, rotationY } = placementFor(i, vehicles.length)
-          const active = i === selected || i === compareWith
-          const focused = mode !== 'explore' && !active
-          return (
-            <group key={vehicle.id} position={position.toArray()} rotation={[0, rotationY, 0]}>
-              <Podium radius={2.5} active={i === selected} />
-              <group
-                position={[0, 0.08, 0]}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onSelect(i)
-                }}
-              >
-                <RealisticCar
-                  silhouette={vehicle.silhouette}
-                  color={vehicle.colors[0].hex}
-                  finish={vehicle.colors[0].finish}
-                  wheelStyle={vehicle.wheels[0]?.style}
-                  interiorAccent={vehicle.interiors[0]?.accent}
-                  interiorMode={mode === 'interior' && i === selected}
-                  castShadow={!isMobile}
-                />
-              </group>
-              {mode === 'explore' && (
-                <Html position={[0, CAR_PROFILES[vehicle.silhouette].roofHeight + 0.7, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'auto' }}>
-                  <button
-                    type="button"
-                    className={`${styles.label} ${i === selected ? styles.labelActive : ''} ${focused ? styles.labelDim : ''}`}
-                    onClick={() => onSelect(i)}
-                  >
-                    <span>{vehicle.manufacturer}</span>
-                    <strong>{vehicle.model}</strong>
-                  </button>
-                </Html>
-              )}
-            </group>
-          )
-        })}
+        {vehicles.map((vehicle, i) => (
+          <Bay
+            key={vehicle.id}
+            vehicle={vehicle}
+            index={i}
+            selected={selected}
+            mode={mode}
+            paintHex={paintHex}
+            panels={panels}
+            onSelect={onSelect}
+          />
+        ))}
 
         <CameraRig
           pose={pose}
-          parallax={mode === 'explore' && !reduced && !isMobile ? 0.25 : 0}
-          enableZoom
-          minPolarAngle={mode === 'interior' ? 0.6 : 0.28}
-          maxPolarAngle={mode === 'interior' ? Math.PI - 0.6 : Math.PI / 2 - 0.08}
+          poseKey={entered ? 1 : 0}
+          parallax={entered && mode === 'explore' && !reduced && !isMobile ? 0.2 : 0}
+          enableZoom={entered}
+          autoRotate={entered && mode === 'focus' && !reduced}
+          minPolarAngle={interior ? 0.7 : 0.72}
+          maxPolarAngle={interior ? Math.PI - 0.7 : 1.22}
           onInteract={onInteract}
         />
       </Suspense>

@@ -18,6 +18,11 @@ export interface ProceduralCarProps {
   rotation?: [number, number, number]
   scale?: number
   castShadow?: boolean
+  detail?: 'low' | 'high'
+  openDoors?: boolean
+  openHood?: boolean
+  openBoot?: boolean
+  dimmed?: boolean
 }
 
 const BEVEL = 0.07
@@ -129,6 +134,11 @@ export function ProceduralCar({
   rotation = [0, 0, 0],
   scale = 1,
   castShadow = true,
+  detail = 'high',
+  openDoors = false,
+  openHood = false,
+  openBoot = false,
+  dimmed = false,
 }: ProceduralCarProps) {
   const p = CAR_PROFILES[silhouette]
   const bodyGeo = useMemo(() => extrude(bodyShape(p), p.width), [p])
@@ -150,6 +160,8 @@ export function ProceduralCar({
   const seatY = p.clearance + 0.32
   const seatX = roofEnd - 0.45
 
+  const rich = detail === 'high'
+
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {/* Body */}
@@ -161,7 +173,9 @@ export function ProceduralCar({
           roughness={f.roughness}
           clearcoat={f.clearcoat}
           clearcoatRoughness={0.12}
-          envMapIntensity={1.2}
+          envMapIntensity={dimmed ? 0.35 : 1.2}
+          opacity={dimmed ? 0.42 : 1}
+          transparent={dimmed}
         />
       </mesh>
 
@@ -281,18 +295,20 @@ export function ProceduralCar({
         <boxGeometry args={[p.length - 0.6, 0.08, p.width - 0.1]} />
         <meshStandardMaterial color="#15191d" roughness={0.9} />
       </mesh>
-      {[-1, 1].map((side) => (
-        <mesh key={`clad-${side}`} position={[0, p.clearance + 0.12, side * (p.width / 2 - 0.02)]}>
-          <boxGeometry args={[p.length * 0.62, 0.16, 0.05]} />
-          <meshStandardMaterial color="#1a1e22" roughness={0.92} />
-        </mesh>
-      ))}
-      {[-1, 1].map((side) => (
-        <mesh key={`belt-${side}`} position={[0.1, p.shoulderFront - 0.04, side * (p.width / 2 - 0.01)]}>
-          <boxGeometry args={[p.length * 0.42, 0.025, 0.03]} />
-          <meshStandardMaterial color="#d7dbe0" metalness={0.8} roughness={0.28} />
-        </mesh>
-      ))}
+      {rich &&
+        [-1, 1].map((side) => (
+          <mesh key={`clad-${side}`} position={[0, p.clearance + 0.12, side * (p.width / 2 - 0.02)]}>
+            <boxGeometry args={[p.length * 0.62, 0.16, 0.05]} />
+            <meshStandardMaterial color="#1a1e22" roughness={0.92} />
+          </mesh>
+        ))}
+      {rich &&
+        [-1, 1].map((side) => (
+          <mesh key={`belt-${side}`} position={[0.1, p.shoulderFront - 0.04, side * (p.width / 2 - 0.01)]}>
+            <boxGeometry args={[p.length * 0.42, 0.025, 0.03]} />
+            <meshStandardMaterial color="#d7dbe0" metalness={0.8} roughness={0.28} />
+          </mesh>
+        ))}
       <mesh position={[half + 0.02, p.clearance + 0.18, 0]}>
         <boxGeometry args={[0.02, 0.12, 0.34]} />
         <meshStandardMaterial color="#f4f1e6" roughness={0.7} />
@@ -301,7 +317,7 @@ export function ProceduralCar({
         <boxGeometry args={[0.02, 0.14, 0.36]} />
         <meshStandardMaterial color="#f2c94c" roughness={0.55} />
       </mesh>
-      {(silhouette === 'suv' || silhouette === 'wagon' || silhouette === 'pickup') && !interiorMode && (
+      {rich && (silhouette === 'suv' || silhouette === 'wagon' || silhouette === 'pickup') && !interiorMode && (
         <>
           {[-1, 1].map((side) => (
             <mesh key={`rail-${side}`} position={[(roofStart + roofEnd) / 2, p.roofHeight + 0.05, side * (p.width * 0.32)]}>
@@ -311,18 +327,48 @@ export function ProceduralCar({
           ))}
         </>
       )}
-      {!p.openTop && (
+      {rich && !p.openTop && (
         <mesh position={[roofStart + 0.2, p.roofHeight + 0.04, 0]}>
           <boxGeometry args={[0.12, 0.1, 0.06]} />
           <meshStandardMaterial color="#1b2026" roughness={0.5} />
         </mesh>
       )}
-      {[-1, 1].map((side) => (
-        <mesh key={`fog-${side}`} position={[half - 0.08, p.clearance + 0.14, side * (p.width / 2 - 0.28)]}>
-          <boxGeometry args={[0.06, 0.07, 0.14]} />
-          <meshStandardMaterial color="#fff4d2" emissive="#ffe7a8" emissiveIntensity={0.7} roughness={0.25} />
-        </mesh>
-      ))}
+      {rich &&
+        [-1, 1].map((side) => (
+          <mesh key={`fog-${side}`} position={[half - 0.08, p.clearance + 0.14, side * (p.width / 2 - 0.28)]}>
+            <boxGeometry args={[0.06, 0.07, 0.14]} />
+            <meshStandardMaterial color="#fff4d2" emissive="#ffe7a8" emissiveIntensity={0.7} roughness={0.25} />
+          </mesh>
+        ))}
+      {rich &&
+        [-1, 1].map((side) => (
+          <group
+            key={`door-${side}`}
+            position={[0.05, (p.shoulderFront + p.clearance) / 2 + 0.12, side * (p.width / 2 - 0.04)]}
+            rotation={[0, side * (openDoors ? 1.15 : 0), 0]}
+          >
+            <mesh position={[0.32, 0, side * 0.03]}>
+              <boxGeometry args={[0.78, 0.58, 0.05]} />
+              <meshPhysicalMaterial color={color} metalness={f.metalness} roughness={f.roughness} clearcoat={f.clearcoat} />
+            </mesh>
+          </group>
+        ))}
+      {rich && (
+        <group position={[half - 0.35, p.noseHeight + 0.02, 0]} rotation={[openHood ? -0.95 : 0, 0, 0]}>
+          <mesh position={[0.22, 0.02, 0]}>
+            <boxGeometry args={[0.55, 0.05, p.width * 0.72]} />
+            <meshPhysicalMaterial color={color} metalness={f.metalness} roughness={f.roughness} clearcoat={f.clearcoat} />
+          </mesh>
+        </group>
+      )}
+      {rich && (
+        <group position={[-half + 0.28, p.tailHeight - 0.02, 0]} rotation={[openBoot ? 0.9 : 0, 0, 0]}>
+          <mesh position={[-0.18, 0.02, 0]}>
+            <boxGeometry args={[0.48, 0.05, p.width * 0.7]} />
+            <meshPhysicalMaterial color={color} metalness={f.metalness} roughness={f.roughness} clearcoat={f.clearcoat} />
+          </mesh>
+        </group>
+      )}
 
       {/* Wheels */}
       {p.axles.map((x) =>
